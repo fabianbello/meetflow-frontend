@@ -1,0 +1,45 @@
+<!-- <h1>Dashboard</h1>
+<hr>
+
+<p>
+    
+
+</p>
+
+<h4>User info:</h4>
+<pre> {{usuario | json}}</pre>
+
+<button (click)="logout()">
+    Logout
+</button>
+ -->
+<!-- <div class="wrapper">
+  <div class="sidebar" data-color="green" data-image="">
+    <div class="sidebar-background"></div>
+  </div>
+</div>
+ -->
+<div class="main-panel">
+
+<div class="row">
+    <app-navbar></app-navbar>
+    <div class="col">
+        <app-sidebar></app-sidebar>
+    </div>
+        
+     
+      <div class="col-8">
+        
+        <div class="card"><router-outlet></router-outlet></div>
+        
+      </div>
+      
+
+</div>
+  
+  
+
+  <div>
+    <app-footer></app-footer>
+  </div>
+</div>
