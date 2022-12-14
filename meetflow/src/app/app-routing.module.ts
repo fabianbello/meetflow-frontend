@@ -11,8 +11,15 @@ const routes: Routes = [
     path: 'main',
     loadChildren: () =>
       import('./main/main.module').then((m) => m.MainModule),
-      canActivate: [ValidarTokenGuard],
-      canLoad: [ValidarTokenGuard],
+      /* canActivate: [ValidarTokenGuard],
+      canLoad: [ValidarTokenGuard], */
+  },
+  {
+    path: 'project',
+    loadChildren: () =>
+      import('./project/project.module').then((m) => m.ProjectModule),
+      /* canActivate: [ValidarTokenGuard],
+      canLoad: [ValidarTokenGuard], */
   },
   {
     path: '**',

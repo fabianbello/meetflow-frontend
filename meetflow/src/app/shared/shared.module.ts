@@ -3,17 +3,18 @@ import { CommonModule } from '@angular/common';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { FooterComponent } from './footer/footer.component';
-
-
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
     SidebarComponent,
     NavbarComponent,
-    FooterComponent
+    FooterComponent,
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    HttpClientModule
+    
   ],
   exports: [FooterComponent, NavbarComponent, SidebarComponent]
 })

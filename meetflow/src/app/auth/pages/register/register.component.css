@@ -1,17 +1,18 @@
-.btn button{
-    margin-left: 80px;
+button{
+    font-family: Poppins-regular;
     font-weight: 700;
-    color: 1b3039;
-    padding: 9px 25px;
-    background: #eceff1;
-    border: none;
-    border-radius: 50px;
+    color: #ffffff;
+    padding: 15px 30px;
+    background: #208fd8;
+    border-radius: 10px;
     cursor: pinter;
     transition: all 0.3;
+    justify-content: center;
 }
 
-.btn button:hover{
-    background-color: #e2f1f8;
-    color: #ffbc0e;
-    transform: scale(1.2)
+button:hover{
+    background-color: #208fd8;
+    color: #ffffff;
+    transform: scale(1.2);
+    justify-content: center;
 }

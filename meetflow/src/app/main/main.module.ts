@@ -5,6 +5,7 @@ import { MainRoutingModule } from './main-routing.module';
 import { MenuComponent } from './menu/menu.component';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from '../shared/shared.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -14,7 +15,9 @@ import { SharedModule } from '../shared/shared.module';
   imports: [
     CommonModule,
     MainRoutingModule,
-    SharedModule
+    SharedModule,
+    ReactiveFormsModule,
+    FormsModule,
   ]
 })
 export class MainModule { }

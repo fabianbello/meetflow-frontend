@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from 'src/app/auth/services/auth.service';
 
 declare interface RouteInfo {
   path: string;
@@ -34,12 +35,26 @@ export class SidebarComponent implements OnInit {
   menuItems: any[] = ROUTES;
   logged = false;
   process = false;
+  projects: any[] = ['', ''];
 
-  constructor() { }
+  constructor( private checkingService: AuthService) { }
 
   ngOnInit(): void {
 
     this.menuItems = ROUTES
+    this.listProjectsInicial();
+  }
+
+  listProjectsInicial(){
+    this.checkingService.listProjects().subscribe(
+      (resp: any[]) => {
+        this.projects = resp;
+      },
+      (err: any) => {
+        console.log(err);
+        this.projects = [];
+      }
+    );
   }
 
 }

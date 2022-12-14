@@ -19,30 +19,16 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  registro(name: string, email: string, password: string) {
+  registro(name: string, email: string, password: string):Observable<any> {
     const url = `${this.baseUrl}/auth/signup`;
     const body = { email, password, name };
 
-    return this.http.post<AuthResponse>(url, body).pipe(
-      tap((resp) => {
-        if (resp.active === false) {
-          /* localStorage.setItem('token', resp.token!); */
-          console.log(resp);
-          this._usuario = {
-            name: resp.name!,
-            uid: resp.uid!,
-          };
-          
-        }
-      }),
-      map((resp) => resp.active === true),
-      catchError((err) => of(err.error.msg))
-    );
+    return this.http.post(url, body);
   }
 
-  login(email: string, password: string) {
-    const url = `${this.baseUrl}/auth`;
-    const body = { email, password };
+  login(username: string, password: string) {
+    const url = `${this.baseUrl}/auth/signin`;
+    const body = { username, password };
 
     return this.http.post<AuthResponse>(url, body).pipe(
       tap((resp) => {
@@ -57,6 +43,15 @@ export class AuthService {
       map((resp) => resp.ok),
       catchError((err) => of(err.error.msg))
     );
+  }
+
+  login2(email: string, password: string): Observable<any> {
+    const url2 = `${this.baseUrl}/auth/signin`;
+    const httpParams ={
+      email: email,
+      password: password
+    }
+    return this.http.post<any>(url2, httpParams);
   }
 
   validarToken(): Observable<boolean> {
@@ -86,4 +81,20 @@ export class AuthService {
   logout() {
     localStorage.removeItem('token');
   }
+
+  setToken(token: string): void {
+    localStorage.setItem('accessToken', token);
+  }
+
+  listProjects(): Observable<any>{
+    const url = `${this.baseUrl}/project`;
+    return this.http.get(url);
+  }
+
+  addProject(namep: string, descriptionp: string): Observable<any>{
+    const params = { name: namep, description: descriptionp, projectDate: '2029-05-08'};
+    const url = `${this.baseUrl}/project`;
+    return this.http.post(url, params);
+  }
+
 }

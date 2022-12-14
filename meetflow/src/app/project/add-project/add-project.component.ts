@@ -1,18 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from 'src/app/auth/services/auth.service';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'],
+  selector: 'app-add-project',
+  templateUrl: './add-project.component.html',
+  styleUrls: ['./add-project.component.css']
 })
-export class LoginComponent implements OnInit {
+export class AddProjectComponent {
+
   miFormulario: FormGroup = this.fb.group({
-    email: ['juanperez@gmail.com', [Validators.required, Validators.email]],
-    password: ['123456', [Validators.required, Validators.minLength(6)]],
+    name: ['', [Validators.required, Validators.minLength(6)]],
+    description: ['', [Validators.required, Validators.minLength(6)]],
   });
 
   constructor(
@@ -29,14 +30,15 @@ export class LoginComponent implements OnInit {
     /* this.authService.validarToken()
     .subscribe(resp=> console.log(resp)); */
 
-    const { email, password } = this.miFormulario.value;
-    console.log(email);
-    console.log(password);
-    this.authService.login2(email, password).subscribe(
+    const { name, description } = this.miFormulario.value;
+    console.log(name);
+    console.log(description);
+    this.authService.addProject(name, description).subscribe(
       (resp) => {
         console.log(resp);
-        this.authService.setToken(resp.accessToken);
-        this.router.navigateByUrl('/main'); 
+        this.miFormulario.reset();
+        /* this.router.navigateByUrl('/main/add-project'); */
+        location.reload();
         Swal.fire({
           position: 'center',
           icon: 'success',
@@ -52,4 +54,5 @@ export class LoginComponent implements OnInit {
 
     /* this.router.navigateByUrl('/dashboard'); */
   }
+
 }

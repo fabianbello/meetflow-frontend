@@ -11,9 +11,9 @@ import { AuthService } from '../../services/auth.service';
 })
 export class RegisterComponent implements OnInit {
   miFormulario: FormGroup = this.fb.group({
-    name: ['nuevousuario', [Validators.required]],
-    email: ['nuevousuario@gmail.com', [Validators.required, Validators.email]],
-    password: ['123', [Validators.required, Validators.minLength(6)]],
+    name: ['Juan', [Validators.required]],
+    email: ['juanperez@gmail.com', [Validators.required, Validators.email]],
+    password: ['123456', [Validators.required, Validators.minLength(6)]],
   });
 
   constructor(
@@ -30,23 +30,20 @@ export class RegisterComponent implements OnInit {
 
     const { email, password, name } = this.miFormulario.value;
     this.authService.registro(name, email, password).subscribe((resp) => {
-      console.log(resp.active);
-      if (resp.active === false) {
-        /* this.router.navigateByUrl('/main'); */
-        Swal.fire({
-          title: 'Input email address',
-          icon: 'success'
-        
-        });
-      } else {
-        this.router.navigateByUrl('/login'); 
-        Swal.fire({
-          title: 'Registrado',
-          icon: 'success'
-        
-        });
-        /* Swal.fire('Error', resp.active, 'error'); */
-      }
-    });
+      this.router.navigateByUrl('/auth/signin');
+      console.log(resp);
+      Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Registrado con exito',
+        showConfirmButton: false,
+        timer: 1000
+      })
+    },
+    (err) => {
+      Swal.fire('Error', err, 'error');
+    }
+    
+    );
   }
 }
