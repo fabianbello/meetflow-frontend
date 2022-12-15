@@ -47,7 +47,7 @@ export class AddProjectComponent {
           timer: 1000
         })
       },
-      (err) => {
+      (err: { message: string | undefined; }) => {
         Swal.fire('Error', err.message, 'error');
       }
     );
