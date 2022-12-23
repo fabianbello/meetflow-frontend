@@ -121,10 +121,11 @@ export class SidebarComponent implements OnInit {
     );
   }
 
-  editProject(id: string){
+  async editProject(id: string){
     
-    this.authService.meeting(id).subscribe((resp: any) => {
+    this.authService.meeting(id).subscribe(async (resp: any) => {
 
+  const asd = await this.router.navigateByUrl('/main/loading'); 
       this.router.navigateByUrl('/main/' + id + '/edit-project');
       console.log(resp);
 
@@ -134,13 +135,13 @@ export class SidebarComponent implements OnInit {
 
       console.log(this.countMeetings);
     
-      Swal.fire({
+     /*  Swal.fire({
         position: 'center',
         icon: 'success',
         title: 'reuniones cargadas correctamente',
         showConfirmButton: false,
         timer: 1000
-      })
+      }) */
     },
     (err: string | undefined) => {
       Swal.fire('Error', err, 'error');
@@ -157,6 +158,7 @@ export class SidebarComponent implements OnInit {
   editMeeting(id: string){
     const url2= '/main/' +  this.projectSelectedId + '/meeting/' + id;
    /*  console.log(url2) */
+  
     this.router.navigateByUrl(url2);
 
   }

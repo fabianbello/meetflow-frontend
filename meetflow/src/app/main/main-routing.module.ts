@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { LoadingComponent } from '../loading/loading.component';
 import { AddMeetingComponent } from '../meeting/add-meeting/add-meeting.component';
 import { MeetingComponent } from '../meeting/meeting.component';
 import { AddProjectComponent } from '../project/add-project/add-project.component';
@@ -14,6 +15,7 @@ const routes: Routes = [
       { path: ':id/edit-project', component: EditProjectComponent},
       { path: ':id/add-meeting', component: AddMeetingComponent},
       { path: ':idP/meeting/:idM', component: MeetingComponent},
+      { path: 'loading', component: LoadingComponent},
       { path: '**', redirectTo: ''},
     ]
   }

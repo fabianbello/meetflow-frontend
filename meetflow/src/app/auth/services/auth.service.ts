@@ -120,4 +120,15 @@ export class AuthService {
     const url = `${this.baseUrl}/meeting`;
     return this.http.post(url, params);
   }
+
+  projectById(ide:string): Observable<any>{
+
+    const url =  `${this.baseUrl}/project/` + ide;
+    return this.http.get(url);
+  }
+
+  borrarProject(ide: string): Observable<any>{
+    const url =  `${this.baseUrl}/project/` + ide;
+    return this.http.delete(url);
+  }
 }

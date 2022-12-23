@@ -19,9 +19,13 @@ export class AddProjectComponent {
     private fb: FormBuilder,
     private router: Router,
     private authService: AuthService
-  ) {}
+  ) {
+    
+  }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+
+  }
 
   
   addProject() {
