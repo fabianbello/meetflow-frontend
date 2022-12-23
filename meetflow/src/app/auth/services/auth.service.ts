@@ -5,10 +5,9 @@ import { environment } from 'src/environments/environment';
 import { AuthResponse, Usuario } from '../interfaces/interfaces';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
-
   private baseUrl: string = environment.baseUrl;
 
   private _usuario!: Usuario;
@@ -19,7 +18,7 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  registro(name: string, email: string, password: string):Observable<any> {
+  registro(name: string, email: string, password: string): Observable<any> {
     const url = `${this.baseUrl}/auth/signup`;
     const body = { email, password, name };
 
@@ -47,10 +46,10 @@ export class AuthService {
 
   login2(email: string, password: string): Observable<any> {
     const url2 = `${this.baseUrl}/auth/signin`;
-    const httpParams ={
+    const httpParams = {
       email: email,
-      password: password
-    }
+      password: password,
+    };
     return this.http.post<any>(url2, httpParams);
   }
 
@@ -69,7 +68,7 @@ export class AuthService {
         this._usuario = {
           name: resp.name!,
           uid: resp.uid!,
-          email: resp.email
+          email: resp.email,
         };
 
         return true;
@@ -86,15 +85,39 @@ export class AuthService {
     localStorage.setItem('accessToken', token);
   }
 
-  listProjects(): Observable<any>{
+  listProjects(): Observable<any> {
     const url = `${this.baseUrl}/project`;
     return this.http.get(url);
   }
 
-  addProject(namep: string, descriptionp: string): Observable<any>{
-    const params = { name: namep, description: descriptionp, projectDate: '2029-05-08'};
+  addProject(namep: string, descriptionp: string): Observable<any> {
+    const params = {
+      name: namep,
+      description: descriptionp,
+      projectDate: '2029-05-08',
+    };
     const url = `${this.baseUrl}/project`;
     return this.http.post(url, params);
   }
 
+  meeting(ide: string): Observable<any> {
+    const params = { id: ide };
+    const url = `${this.baseUrl}/meeting/project/` + ide;
+    return this.http.get(url);
+  }
+
+  addMeeting(
+    idProject: string,
+    numberMeetings: number,
+  ): Observable<any> {
+    const params = {
+      name: 'Reunión ' + numberMeetings,
+      description: 'descripcion reunion '+ numberMeetings ,
+      number: numberMeetings,
+      project: idProject,
+    };
+    console.log(params);
+    const url = `${this.baseUrl}/meeting`;
+    return this.http.post(url, params);
+  }
 }

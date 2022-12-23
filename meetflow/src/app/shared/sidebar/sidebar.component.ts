@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AuthService } from 'src/app/auth/services/auth.service';
+import Swal from 'sweetalert2';
 
 declare interface RouteInfo {
   path: string;
@@ -27,7 +30,13 @@ export const ROUTES: RouteInfo[] = [
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.css']
+  styles: [
+    `
+      li {
+        cursor:pointer;
+      }
+    `
+  ]
 })
 
 export class SidebarComponent implements OnInit {
@@ -35,26 +44,168 @@ export class SidebarComponent implements OnInit {
   menuItems: any[] = ROUTES;
   logged = false;
   process = false;
-  projects: any[] = ['', ''];
+  projects: any;
+  projectSelectedId: string = '';
+  countMeetings: number=0;
+  meetings: any;
 
-  constructor( private checkingService: AuthService) { }
+  titles: string[] = ['#', 'Nombre', 'Apellido', 'Correo', 'Cargo', 'Teléfono', 'Acción'];
+
+  miFormulario: FormGroup = this.fb.group({
+    asd: ['proyect 2'],
+  });
+
+  persona = {
+    asd: 'proyecto 3',
+  };
+
+
+  constructor( 
+    private authService: AuthService,
+    private router: Router,
+    private fb: FormBuilder) {
+
+    /*   this.listProjectsInicial();
+      this.miFormulario.reset({ ...this.persona}); */
+
+     /*  this.listMeetingsInicial("639add0a0292225f19c9c870"); */
+
+     }
 
   ngOnInit(): void {
 
+    
+    
+    /* const bsButton = new bootstrap.Button('#myButton') */
     this.menuItems = ROUTES
     this.listProjectsInicial();
+   
+    
   }
 
   listProjectsInicial(){
-    this.checkingService.listProjects().subscribe(
+    this.authService.listProjects().subscribe(
       (resp: any[]) => {
+        console.log(resp);
+        
         this.projects = resp;
+
+         
       },
       (err: any) => {
         console.log(err);
         this.projects = [];
       }
     );
+  }
+
+  listMeetingsInicial(id: string){
+    this.authService.meeting(id).subscribe((resp: any) => {
+
+      this.router.navigateByUrl('/main/edit-project');
+      console.log(resp);
+
+
+      Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'reuniones correctas',
+        showConfirmButton: false,
+        timer: 1000
+      })
+    },
+    (err: string | undefined) => {
+      Swal.fire('Error', err, 'error');
+    }
+    
+    );
+  }
+
+  editProject(id: string){
+    
+    this.authService.meeting(id).subscribe((resp: any) => {
+
+      this.router.navigateByUrl('/main/' + id + '/edit-project');
+      console.log(resp);
+
+      this.meetings = resp;
+      this.projectSelectedId = id;
+      this.countMeetings = this.meetings.length;
+
+      console.log(this.countMeetings);
+    
+      Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'reuniones cargadas correctamente',
+        showConfirmButton: false,
+        timer: 1000
+      })
+    },
+    (err: string | undefined) => {
+      Swal.fire('Error', err, 'error');
+    }
+    
+    );
+
+  }
+
+  editProject2(){
+
+  }
+
+  editMeeting(id: string){
+    const url2= '/main/' +  this.projectSelectedId + '/meeting/' + id;
+   /*  console.log(url2) */
+    this.router.navigateByUrl(url2);
+
+  }
+
+  addMeeting(){
+/*     const url2= '/main/' +  this.projectSelectedId + '/add-meeting';
+    console.log(url2)
+    this.router.navigateByUrl(url2); */
+
+    
+    this.authService.addMeeting(this.projectSelectedId, this.countMeetings ).subscribe((resp: any) => {
+
+      console.log(resp);
+      Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Reunion creada correctamente',
+        showConfirmButton: false,
+        timer: 1000
+      })
+
+
+      this.authService.meeting(this.projectSelectedId).subscribe((resp: any) => {
+
+        this.meetings = resp;
+        this.countMeetings = this.meetings.length;
+      
+      /*   Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: 'reuniones cargadas correctamente',
+          showConfirmButton: false,
+          timer: 1000
+        }) */
+      },
+      (err: string | undefined) => {
+        Swal.fire('Error', err, 'error');
+      }
+      
+      );
+
+    },
+    (err: string | undefined) => {
+      Swal.fire('Error', err, 'error');
+    }
+    
+    );
+
+
   }
 
 }

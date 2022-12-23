@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  baseUrl: 'http://meetflow.info/api'
+  baseUrl: 'http://localhost:3000/api'
 };

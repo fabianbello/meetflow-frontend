@@ -7,10 +7,9 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-add-project',
   templateUrl: './add-project.component.html',
-  styleUrls: ['./add-project.component.css']
+  styleUrls: ['./add-project.component.css'],
 })
 export class AddProjectComponent {
-
   miFormulario: FormGroup = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(6)]],
     description: ['', [Validators.required, Validators.minLength(6)]],
@@ -23,7 +22,9 @@ export class AddProjectComponent {
   ) {}
 
   ngOnInit(): void {}
-  login() {
+
+  
+  addProject() {
     console.log(this.miFormulario.value);
     console.log(this.miFormulario.valid);
 
@@ -34,25 +35,27 @@ export class AddProjectComponent {
     console.log(name);
     console.log(description);
     this.authService.addProject(name, description).subscribe(
-      (resp) => {
+      async (resp) => {
         console.log(resp);
-        this.miFormulario.reset();
         /* this.router.navigateByUrl('/main/add-project'); */
-        location.reload();
         Swal.fire({
           position: 'center',
           icon: 'success',
-          title: 'Ingresado con exito',
+          title: 'Se ha creado el projecto: ',
+          text: resp.name,
           showConfirmButton: false,
-          timer: 1000
-        })
+          timer: 2000,
+        });
+        this.miFormulario.reset();
+        setTimeout(() => {
+          location.reload();
+        }, 2000);
       },
-      (err: { message: string | undefined; }) => {
+      (err: { message: string | undefined }) => {
         Swal.fire('Error', err.message, 'error');
       }
     );
 
     /* this.router.navigateByUrl('/dashboard'); */
   }
-
 }

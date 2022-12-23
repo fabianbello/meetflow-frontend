@@ -22,6 +22,13 @@ const routes: Routes = [
       canLoad: [ValidarTokenGuard], */
   },
   {
+    path: 'meeting',
+    loadChildren: () =>
+      import('./meeting/meeting.module').then((m) => m.MeetingModule),
+      /* canActivate: [ValidarTokenGuard],
+      canLoad: [ValidarTokenGuard], */
+  },
+  {
     path: '**',
     redirectTo: 'auth',
   },
