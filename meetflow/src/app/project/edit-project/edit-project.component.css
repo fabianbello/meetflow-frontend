@@ -7,19 +7,28 @@ button{
     border-radius: 10px;
     cursor: pinter;
     transition: all 0.3;
-    justify-content: center;
+    justify-content: right;
+    position: right;
+
 }
 
 button:hover{
     background-color: #208fd8;
     color: #ffffff;
     transform: scale(1.2);
-    justify-content: center;
+
+    justify-content: right;
+    position: right;
+    
 }
 
 .btn2{
     background-color: #cc2d0d;
+    justify-content: right;
+    position: right;
 }
 .btn2:hover{
     background-color: #b6301e;
+    justify-content: right;
+    position: right;
 }

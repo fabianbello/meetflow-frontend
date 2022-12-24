@@ -13,6 +13,8 @@ export class AddProjectComponent {
   miFormulario: FormGroup = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(6)]],
     description: ['', [Validators.required, Validators.minLength(6)]],
+    fechaI: ['', [ ]],
+    fechaT: ['', [ ]],
   });
 
   constructor(
@@ -56,7 +58,7 @@ export class AddProjectComponent {
         }, 2000);
       },
       (err: { message: string | undefined }) => {
-        Swal.fire('Error', err.message, 'error');
+        
       }
     );
 

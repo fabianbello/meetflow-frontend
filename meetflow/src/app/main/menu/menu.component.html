@@ -20,26 +20,21 @@
 </div>
  -->
 
-
 <div class="main-panel">
-
-<div class="row">
+  <div class="row">
     <app-navbar></app-navbar>
-    <div class="col">
-        <app-sidebar></app-sidebar>
-    </div>
-        
-     
-      <div class="col-8">
-        <hr>
-        <div class=""><router-outlet></router-outlet></div>
-        
-      </div>
-      
 
-</div>
-  
-  
+    <div class="col">
+      <div class="card">
+        <app-sidebar></app-sidebar>
+      </div>
+    </div>
+    <div class="col-8">
+      <div class="card">
+        <div class=""><router-outlet></router-outlet></div>
+      </div>
+    </div>
+  </div>
 
   <div>
     <app-footer></app-footer>

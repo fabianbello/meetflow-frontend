@@ -30,13 +30,7 @@ export const ROUTES: RouteInfo[] = [
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
-  styles: [
-    `
-      li {
-        cursor:pointer;
-      }
-    `
-  ]
+  styleUrls: ['./sidebar.component.css'],
 })
 
 export class SidebarComponent implements OnInit {
@@ -208,6 +202,64 @@ export class SidebarComponent implements OnInit {
     );
 
 
+  }
+
+  onScroll(){
+
+  }
+
+  agregarProjectNew(){
+    Swal.fire({
+      title: 'Creacion de proyecto',
+      text: '¿Nombre del proyecto?',
+      input: 'text',
+      inputAttributes: {
+        autocapitalize: 'off'
+      },
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'crear',
+     
+      showLoaderOnConfirm: true, 
+      showDenyButton: true,
+      denyButtonText: `Avanzado`,
+      preConfirm: (nameProject) => {
+        this.crearProject(nameProject);
+      },
+      allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+  
+        
+      } else if (result.isDenied) {
+
+        this.router.navigateByUrl('/main/add-project');
+      }
+    })
+  }
+
+  crearProject(nameProject: string){
+    this.authService.addProject(nameProject, 'default').subscribe(
+      (resp: any[]) => {
+        console.log(resp);
+        this.listProjectsInicial();
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: 'Se ha creado el projecto: ',
+          text: nameProject,
+          showConfirmButton: false,
+          timer: 2000,
+        });
+
+
+      },
+      (err: any) => {
+        console.log(err);
+        Swal.fire('Error', err.message, 'error');
+      }
+    );
   }
 
 }

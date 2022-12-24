@@ -1,0 +1,74 @@
+button{
+    font-family: Poppins-regular;
+    font-weight: 700;
+    color: #c31c1c;
+    padding: 15px 30px;
+    background: #208fd8;
+    border-radius: 10px;
+    cursor: pinter;
+    transition: all 0.3;
+    justify-content: center;
+}
+
+button:hover{
+    background-color: #208fd8;
+    color: #c71e1e;
+    transform: scale(1.2);
+    justify-content: center;
+}
+
+.btn2{
+    font-family: Poppins-regular;
+    font-weight: 900;
+    color: #181616;
+    padding: 20px 30px;
+
+    border-radius: 20px;
+    cursor: pinter;
+    transition: all 0.1;
+    justify-content: right;
+    background-color: #ffffff;
+    bottom: 5px
+}
+.btn2:hover{
+
+    background-color: #ffffff;
+    color: #d79626;
+    transform: scale(1.15);
+    justify-content: center;
+    
+}
+.btn2:hover .tooltip-box{
+    
+    display: inline-block;
+}
+
+
+.tooltip-box{
+    position: absolute;
+    display: none;
+    background: #9b9797;
+    line-height: 20px;
+    z-index: 500;
+    text-align: center;
+    border-color: #181616;
+    color: #ffffff; 
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    left: 0;
+    right: 0;
+    bottom: 60px
+}
+
+.tooltip-box::after{
+    
+    position: absolute;
+    content: "";
+    border-top: 7px solid #9b9797;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    bottom: -7px;
+    left: calc(50% - 7px);
+}
+
