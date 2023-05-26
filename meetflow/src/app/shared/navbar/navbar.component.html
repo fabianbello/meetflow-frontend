@@ -3,18 +3,23 @@
   <nav>
     <ul class="nav-links">
       <li>
-        <a > Actas </a>
+        <a> Actas </a>
       </li>
       <li>
-        <a> Tareas  </a>
+        <a> Tareas </a>
       </li>
       <li>
-        <a > Recordatorios </a>
+        <a> Recordatorios </a>
       </li>
       <li>
-        <a > Participantes </a>
+        <a> Participantes </a>
       </li>
     </ul>
   </nav>
-  <a href="#" class="btn"><button>Usuario</button></a>
+  <a href="#" class="btn"><button>{{user.email}}</button></a>
+  <li class="nav-item">
+    <a (click)="logoutUser()" class="btn">
+      Cerrar sesión
+    </a>
+  </li>
 </header>

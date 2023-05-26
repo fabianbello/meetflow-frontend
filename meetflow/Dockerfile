@@ -1,4 +1,4 @@
-FROM node:14 as build-step
+FROM node:20 as build-step
 
 RUN mkdir -p /app
 
@@ -10,9 +10,9 @@ RUN npm install
 
 COPY . /app 
 
-RUN npm run build --prod
+RUN npm ci && npm run build
 
-FROM nginx
+FROM nginx:alpine
 
 COPY --from=build-step /app/dist/meetflow /usr/share/nginx/html
 

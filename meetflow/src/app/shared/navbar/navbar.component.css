@@ -6,7 +6,9 @@
     padding: 150;
     font-family: 'Nunito', sans-serif;
     font-size: 20px;
+    background-color: rgb(240, 240, 240);
 }
+
 
 body{
     background-color: #208fd8;

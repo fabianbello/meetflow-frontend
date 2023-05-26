@@ -16,7 +16,14 @@ export class AuthService {
     return { ...this._usuario };
   }
 
-  constructor(private http: HttpClient) {}
+ 
+  constructor(private http: HttpClient) {
+    
+   
+  }
+/*   headers2 = new Headers(); */
+
+  headers2 = new HttpHeaders({"Authorization": "Bearer " + localStorage.getItem('token'), "Content-Type": "application/json", "Accept": "*/*", "Connection": "keep-alive"});
 
   registro(name: string, email: string, password: string): Observable<any> {
     const url = `${this.baseUrl}/auth/signup`;
@@ -24,6 +31,12 @@ export class AuthService {
 
     return this.http.post(url, body);
   }
+
+  userLogin(): Observable<any> {
+    const url = `${this.baseUrl}/user/userLogin`;
+    return this.http.get(url, {headers: this.headers2 });
+  }
+
 
   login(username: string, password: string) {
     const url = `${this.baseUrl}/auth/signin`;
@@ -46,11 +59,18 @@ export class AuthService {
 
   login2(email: string, password: string): Observable<any> {
     const url2 = `${this.baseUrl}/auth/signin`;
+    
     const httpParams = {
       email: email,
       password: password,
     };
-    return this.http.post<any>(url2, httpParams);
+
+    let HttpOptions = new HttpHeaders().set('Authorization', 'Bearer ' + localStorage.getItem('token'));
+    HttpOptions.append("Content-Type", "application/json");
+/*     this.headers2.append("Content-Type", "application/json");
+    this.headers2.append("Authorization", "Bearer "+ localStorage.getItem("token")); */
+    console.log("HEADERS =", this.headers2);
+    return this.http.post<any>(url2, httpParams, {headers: this.headers2 });
   }
 
   validarToken(): Observable<boolean> {
@@ -82,12 +102,12 @@ export class AuthService {
   }
 
   setToken(token: string): void {
-    localStorage.setItem('accessToken', token);
+    localStorage.setItem('token', token);
   }
 
   listProjects(): Observable<any> {
-    const url = `${this.baseUrl}/project`;
-    return this.http.get(url);
+    const url = `${this.baseUrl}/project/get/findByUser`;
+    return this.http.get(url, {headers: this.headers2 });
   }
 
   addProject(namep: string, descriptionp: string): Observable<any> {
@@ -96,39 +116,35 @@ export class AuthService {
       description: descriptionp,
       projectDate: '2029-05-08',
     };
-    const url = `${this.baseUrl}/project`;
-    return this.http.post(url, params);
+    const url = `${this.baseUrl}/project/create`;
+    return this.http.post(url, params, {headers: this.headers2 });
   }
 
   meeting(ide: string): Observable<any> {
     const params = { id: ide };
     const url = `${this.baseUrl}/meeting/project/` + ide;
-    return this.http.get(url);
+    return this.http.get(url, {headers: this.headers2 });
   }
 
-  addMeeting(
-    idProject: string,
-    numberMeetings: number,
-  ): Observable<any> {
+  addMeeting(idProject: string, numberMeetings: number): Observable<any> {
     const params = {
       name: 'Reunión ' + numberMeetings,
-      description: 'descripcion reunion '+ numberMeetings ,
+      description: 'descripcion reunion ' + numberMeetings,
       number: numberMeetings,
       project: idProject,
     };
     console.log(params);
     const url = `${this.baseUrl}/meeting`;
-    return this.http.post(url, params);
+    return this.http.post(url, params, {headers: this.headers2 });
   }
 
-  projectById(ide:string): Observable<any>{
-
-    const url =  `${this.baseUrl}/project/` + ide;
-    return this.http.get(url);
+  projectById(ide: string) {
+    const url = `${this.baseUrl}/project/` + ide;
+    return this.http.get(url, {headers: this.headers2 });
   }
 
-  borrarProject(ide: string): Observable<any>{
-    const url =  `${this.baseUrl}/project/` + ide;
-    return this.http.delete(url);
+  borrarProject(ide: string): Observable<any> {
+    const url = `${this.baseUrl}/project/` + ide;
+    return this.http.delete(url, {headers: this.headers2 });
   }
 }

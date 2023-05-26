@@ -22,7 +22,7 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {}
-  login() {
+  async login() {
     console.log(this.miFormulario.value);
     console.log(this.miFormulario.valid);
 
@@ -33,17 +33,24 @@ export class LoginComponent implements OnInit {
     console.log(email);
     console.log(password);
     this.authService.login2(email, password).subscribe(
-      (resp) => {
+      async (resp) => {
         console.log(resp);
-        this.authService.setToken(resp.accessToken);
-        this.router.navigateByUrl('/main'); 
-        Swal.fire({
+
+        await this.authService.setToken(resp.token);
+
+        await Swal.fire({
           position: 'center',
           icon: 'success',
           title: 'Ingresado con exito',
           showConfirmButton: false,
-          timer: 1000
-        })
+          timer: 800,
+        });
+
+        this.router
+          .navigate(['/main'])
+          .then(() => {
+            window.location.reload();
+          });
       },
       (err) => {
         Swal.fire('Error', err.message, 'error');

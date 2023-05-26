@@ -9,6 +9,7 @@ import { AuthService } from 'src/app/auth/services/auth.service';
     `
     *{
       margin: 15px;
+     background-color: rgb(240, 240, 240); 
     }
     `
   ]

@@ -40,7 +40,7 @@ export class SidebarComponent implements OnInit {
   process = false;
   projects: any;
   projectSelectedId: string = '';
-  countMeetings: number=0;
+  countMeetings: any = 1;
   meetings: any;
 
   titles: string[] = ['#', 'Nombre', 'Apellido', 'Correo', 'Cargo', 'Teléfono', 'Acción'];
@@ -118,16 +118,18 @@ export class SidebarComponent implements OnInit {
   async editProject(id: string){
     
     this.authService.meeting(id).subscribe(async (resp: any) => {
+      console.log("RESPUESTA",resp);
 
-  const asd = await this.router.navigateByUrl('/main/loading'); 
+      const asd = await this.router.navigateByUrl('/main/loading'); 
       this.router.navigateByUrl('/main/' + id + '/edit-project');
-      console.log(resp);
+      
 
       this.meetings = resp;
+      console.log("MEETING", this.meetings);
       this.projectSelectedId = id;
       this.countMeetings = this.meetings.length;
 
-      console.log(this.countMeetings);
+      console.log("CANTIDAD",this.countMeetings);
     
      /*  Swal.fire({
         position: 'center',
@@ -158,35 +160,38 @@ export class SidebarComponent implements OnInit {
   }
 
   addMeeting(){
-/*     const url2= '/main/' +  this.projectSelectedId + '/add-meeting';
-    console.log(url2)
-    this.router.navigateByUrl(url2); */
+    const url2= '/main/' +  this.projectSelectedId + '/add-meeting';
+    console.log(this.projectSelectedId)
+    this.router.navigateByUrl(url2);
+    console.log(this.countMeetings);
 
     
     this.authService.addMeeting(this.projectSelectedId, this.countMeetings ).subscribe((resp: any) => {
 
-      console.log(resp);
+      console.log("RESP 1:", resp);
       Swal.fire({
         position: 'center',
         icon: 'success',
         title: 'Reunion creada correctamente',
         showConfirmButton: false,
-        timer: 1000
+        timer: 800
       })
 
 
       this.authService.meeting(this.projectSelectedId).subscribe((resp: any) => {
 
+        console.log("RESP 2", resp);
+
         this.meetings = resp;
         this.countMeetings = this.meetings.length;
       
-      /*   Swal.fire({
+    /*      Swal.fire({
           position: 'center',
           icon: 'success',
           title: 'reuniones cargadas correctamente',
           showConfirmButton: false,
           timer: 1000
-        }) */
+        })  */
       },
       (err: string | undefined) => {
         Swal.fire('Error', err, 'error');
