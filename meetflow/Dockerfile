@@ -6,15 +6,18 @@ WORKDIR /app
 
 COPY package.json /app
 
-RUN npm install
+RUN npm install --force
 
 COPY . /app 
 
-RUN npm ci && npm run build
+RUN npm ci
+
+RUN npm run build
 
 FROM nginx:alpine
 
 COPY --from=build-step /app/dist/meetflow /usr/share/nginx/html
+
 
 
 

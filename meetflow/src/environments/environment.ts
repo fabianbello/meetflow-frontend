@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
  /*  baseUrl: 'http://meetflow.info/api' */
-  baseUrl: 'http://localhost:3000/api'
+  /* baseUrl: 'http://localhost:3002/api' */
+  baseUrl: 'http://70.35.204.110/api'
 };
 
 /*

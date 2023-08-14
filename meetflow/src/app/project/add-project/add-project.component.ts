@@ -10,7 +10,7 @@ import Swal from 'sweetalert2';
   styleUrls: ['./add-project.component.css'],
 })
 export class AddProjectComponent {
-  miFormulario: FormGroup = this.fb.group({
+  miFormulario2: FormGroup = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(6)]],
     description: ['', [Validators.required, Validators.minLength(6)]],
     fechaI: ['', [ ]],
@@ -31,13 +31,13 @@ export class AddProjectComponent {
 
   
   addProject() {
-    console.log(this.miFormulario.value);
-    console.log(this.miFormulario.valid);
+    console.log(this.miFormulario2.value);
+    console.log(this.miFormulario2.valid);
 
     /* this.authService.validarToken()
     .subscribe(resp=> console.log(resp)); */
 
-    const { name, description } = this.miFormulario.value;
+    const { name, description } = this.miFormulario2.value;
     console.log(name);
     console.log(description);
     this.authService.addProject(name, description).subscribe(
@@ -52,7 +52,7 @@ export class AddProjectComponent {
           showConfirmButton: false,
           timer: 2000,
         });
-        this.miFormulario.reset();
+        this.miFormulario2.reset();
         setTimeout(() => {
           location.reload();
         }, 2000);

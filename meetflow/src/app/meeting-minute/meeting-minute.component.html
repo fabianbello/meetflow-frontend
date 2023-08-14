@@ -1,0 +1,1894 @@
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+<!-- MDB -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css" rel="stylesheet" />
+
+<div class="card2">
+  <div class="card2-body">
+    <div class="card">
+      <div class="d-grid gap-2 d-md-flex ">
+        <div class="col-8">
+
+          <span class="" *ngIf="isEditable && isSecretary" style="color: white;">
+            <h2> <br> &nbsp; &nbsp; &nbsp;Modo edición...<button class="button1" (click)="editable()"><svg
+                  xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"
+                  style="fill: rgb(178, 178, 178);transform: msFilter">
+                  <path
+                    d="m16.192 6.344-4.243 4.242-4.242-4.242-1.414 1.414L10.535 12l-4.242 4.242 1.414 1.414 4.242-4.242 4.243 4.242 1.414-1.414L13.364 12l4.242-4.242z">
+                  </path>
+                </svg></button> </h2>
+
+          </span>
+        </div>
+
+        <div class="col-2">
+          <div class="" *ngIf="isEditable && isSecretary ">
+            <!-- <h1> Editando...</h1> -->
+          </div>
+        </div>
+
+        <div class="col-2">
+
+          <!--  TOOLTIP  -->
+          <button *ngIf="isSecretary && !isEditable " (click)="editable()" type="button" class="button1 btn-default"
+            data-toggle="tooltip" data-placement="right" title="Editar"
+            style="padding-left: 40%; padding-top: 20px;"><svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"
+              viewBox="0 0 24 24" style="fill: rgba(251, 247, 247, 1) ;transform: msFilter; ">
+              <path d="m16 2.012 3 3L16.713 7.3l-3-3zM4 14v3h3l8.299-8.287-3-3zm0 6h16v2H4z"></path>
+            </svg>
+          </button>
+
+          <button *ngIf="isSecretary && isEditable " (click)="editable()" type="button" class="button1 btn-default"
+            data-toggle="tooltip" data-placement="right" title="Editar"
+            style="padding-left: 40%; padding-top: 20px;"><svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"
+              viewBox="0 0 24 24" style="fill: rgb(163, 81, 81); transform: msFilter; ">
+              <path d="m16 2.012 3 3L16.713 7.3l-3-3zM4 14v3h3l8.299-8.287-3-3zm0 6h16v2H4z"></path>
+            </svg>
+          </button>
+
+        </div>
+
+      </div>
+      <div class="card-body">
+        <form class="" autocomplete="off" [formGroup]="meetingMinuteForm" (ngSubmit)="saveMeetingMinute()">
+          <!--  OBJETIVO -->
+
+
+          <div class="card3" *ngIf="!isEditable">
+
+            <br />
+            <div class="input-group col-11">
+              <span class="label-input100"></span>
+              <span
+                style="color: rgb(201, 192, 168); border-color: white; padding-left: 10px; padding-top: 10px;font-size: 110% ">
+                Objetivo: </span>
+              <input disabled readonly class="input100" type="text" value="{{MeetingMinuteSelected.name}}"
+                placeholder="Describir el objetivo de la reunión (escribir aquí)" />
+              <span class="focus-input100"></span>
+              <div class="" *ngIf="isAvailableSaving">
+                <span class="form-text text-danger" *ngIf="campoEsValido('name')">
+                </span>
+                <span class="form-text text-danger" *ngIf="campoEsValido('place')">
+                </span>
+                <span class="form-text text-danger" *ngIf="campoEsValido('fechaI')">
+                </span>
+                <span class="form-text text-danger" *ngIf="campoEsValido('fechaT')">
+                </span>
+                <span class="form-text text-danger" *ngIf="campoEsValido('startHour')">
+                </span>
+                <span class="form-text text-danger" *ngIf="campoEsValido('endHour')">
+                </span>
+                <!--               <span class="form-text text-danger" *ngIf="campoEsValido('participants')">
+                </span>
+                <span class="form-text text-danger" *ngIf="campoEsValido('secretaries')">
+                </span>
+                <span class="form-text text-danger" *ngIf="campoEsValido('leaders')">
+                </span> -->
+                <span class="form-text text-danger" *ngIf="campoEsValido('topics')">
+                </span>
+              </div>
+
+
+            </div>
+
+            <br />
+
+            <br />
+            <!-- LUGAR -->
+            <div class="input-group col-5">
+              <span class="label-input100"></span>
+              <span style="color: rgb(201, 192, 168); padding-left: 10px; padding-top: 10px;font-size: 110% ">
+                Lugar: </span>
+              <input disabled readonly class="input100" type="text" value="{{MeetingMinuteSelected.place}}"
+                placeholder="Ingresar lugar de la reunión (escribir aquí)" />
+              <span class="focus-input100"></span>
+            </div>
+
+            <br />
+            <br />
+
+
+          </div>
+
+
+          <div class="card3edit" *ngIf="isEditable">
+
+            <br />
+            <div class="input-group col-11">
+              <span class="label-input100"></span>
+              <span
+                style="color: rgb(201, 192, 168); border-color: white; padding-left: 10px; padding-top: 10px;font-size: 110% ">
+                Objetivo: </span>
+              <input class="input100" type="text" formControlName="name"
+                placeholder="Describir el objetivo de la reunión (escribir aquí)" />
+              <span class="focus-input100"></span>
+              <div class="" *ngIf="isAvailableSaving">
+                <span class="form-text text-danger" *ngIf="campoEsValido('name')">
+                </span>
+                <span class="form-text text-danger" *ngIf="campoEsValido('place')">
+                </span>
+                <span class="form-text text-danger" *ngIf="campoEsValido('fechaI')">
+                </span>
+                <span class="form-text text-danger" *ngIf="campoEsValido('fechaT')">
+                </span>
+                <span class="form-text text-danger" *ngIf="campoEsValido('startHour')">
+                </span>
+                <span class="form-text text-danger" *ngIf="campoEsValido('endHour')">
+                </span>
+                <!--               <span class="form-text text-danger" *ngIf="campoEsValido('participants')">
+                </span>
+                <span class="form-text text-danger" *ngIf="campoEsValido('secretaries')">
+                </span>
+                <span class="form-text text-danger" *ngIf="campoEsValido('leaders')">
+                </span> -->
+                <span class="form-text text-danger" *ngIf="campoEsValido('topics')">
+                </span>
+              </div>
+
+
+            </div>
+
+            <br />
+
+            <br />
+            <!-- LUGAR -->
+            <div class="input-group col-5">
+              <span class="label-input100"></span>
+              <span style="color: rgb(201, 192, 168); padding-left: 10px; padding-top: 10px;font-size: 110%">
+                Lugar: </span>
+              <input class="input100" type="text" formControlName="place"
+                placeholder="Ingresar lugar de la reunión (escribir aquí)" />
+              <span class="focus-input100"></span>
+            </div>
+
+            <br />
+            <br />
+
+
+          </div>
+
+
+
+
+
+          <br />
+
+
+
+          <div class="card3" *ngIf="!isNew && !isEditable">
+            <br />
+
+            <!-- FECHAS -->
+            <div class="row">
+              <!-- FECHA INICIO -->
+              <div class="col-4">
+                <span style="color: rgb(201, 192, 168);padding-left: 10px; padding-top: 10px;font-size: 110%">
+                  &nbsp;Fecha: </span>
+                &nbsp;
+                <input class="input" type="text" disabled readonly
+                  style="background: rgba(47, 56, 65,0); font-size: 120%; color: white; width:140px;"
+                  value="{{MeetingMinuteSelected.fechaI}}" onfocus="(this.type='date')" onblur=" (this.type='text' )" />
+                <br>
+
+              </div>
+              <div class="col-3">
+                <span
+                  style="color: rgb(201, 192, 168); padding-left: 10px; padding-top: 10px;font-size: 110%; width:auto;">
+                  Inicio: </span>
+
+                &nbsp;
+                <input class="input" type="text" disabled readonly
+                  style="background: rgba(47, 56, 65,0);  font-size: 120%; color: white; width:85px; "
+                  value="{{MeetingMinuteSelected.startHour}}" placeholder="Ingrese una fecha de inicio"
+                  onfocus="(this.type='time')" onblur=" (this.type='text' )" />
+
+              </div>
+
+              <!-- FECHA TERMINO -->
+              <div class="col-4">
+
+                <span style="color: rgb(201, 192, 168); padding-left: 10px; padding-top: 10px;font-size: 110% ">
+                  Término: </span>
+
+                &nbsp;
+                <input class="input" type="text" disabled readonly value="{{MeetingMinuteSelected.endHour}}"
+                  style="background: rgba(47, 56, 65,0);  font-size: 120%; color: white; width:85px;"
+                  placeholder="Ingrese una fecha de inicio" onfocus="(this.type='time')"
+                  onblur=" (this.type='text' )" />
+              </div>
+            </div>
+
+            <br>
+          </div>
+
+
+          <div class="card3edit" *ngIf="!isNew && isEditable">
+            <br />
+
+            <!-- FECHAS -->
+            <div class="row">
+              <!-- FECHA INICIO -->
+              <div class="col-4">
+                <span style="color: rgb(201, 192, 168);padding-left: 10px; padding-top: 10px;font-size: 110% ">
+                  &nbsp;Fecha: </span>
+                &nbsp;
+                <input class="input" type="text"
+                  style="background: rgba(47, 56, 65,0); font-size: 120%; color: white; width:140px;"
+                  formControlName="fechaI" placeholder={{MeetingMinuteSelected.fechaI}} onfocus="(this.type='date')"
+                  onblur=" (this.type='text' )" />
+                <br>
+
+              </div>
+              <div class="col-3">
+                <span
+                  style="color: rgb(201, 192, 168); padding-left: 10px; padding-top: 10px;font-size: 110%; width:auto;">
+                  Inicio: </span>
+
+                &nbsp;
+                <input class="input" type="text"
+                  style="background: rgba(47, 56, 65,0);  font-size: 120%; color: white; width:85px; "
+                  formControlName="startHour" placeholder="Ingrese una fecha de inicio" onfocus="(this.type='time')"
+                  onblur=" (this.type='text' )" />
+
+              </div>
+
+              <!-- FECHA TERMINO -->
+              <div class="col-4">
+
+                <span style="color: rgb(201, 192, 168); padding-left: 10px; padding-top: 10px;font-size: 110%">
+                  Término: </span>
+
+                &nbsp;
+                <input class="input" type="text" formControlName="endHour"
+                  style="background: rgba(47, 56, 65,0);  font-size: 120%; color: white; width:85px;"
+                  placeholder="Ingrese una fecha de inicio" onfocus="(this.type='time')"
+                  onblur=" (this.type='text' )" />
+              </div>
+            </div>
+
+            <br>
+          </div>
+
+
+
+
+          <br>
+
+          <!-- PARTICIPANTES -->
+          <div class="row-8">
+            <br>
+            <span class="label-input100"></span>
+            <span style="color: rgb(201, 192, 168); padding-left: 10px; padding-top: 10px;font-size: 110% ">
+              <hr>
+              <br>
+              Asistentes:
+            </span>
+            <!-- AGREGAR PARTICIPANTE -->
+            <div *ngIf="isSecretary && isEditable">
+              <div *ngIf="isAvailableSaving">
+
+                <div class="row-2">
+                  <button class="btn2 col" type="button" (click)="agregarParticipant2()"
+                    style="background-color: transparent; color: #2e79ab">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="currentColor"
+                      class="bi bi-person-plus-fill" viewBox="0 0 16 16">
+                      <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                      <path fill-rule="evenodd"
+                        d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z" />
+                    </svg>
+                    Participante
+                  </button>
+                  <button class="btn2 col" type="button" (click)="agregarSecretary2()"
+                    style="background-color: transparent; color: #783c96">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="currentColor"
+                      class="bi bi-person-plus-fill" viewBox="0 0 16 16">
+                      <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                      <path fill-rule="evenodd"
+                        d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z" />
+                    </svg>
+                    Secretario
+                  </button>
+                </div>
+
+
+              </div>
+            </div>
+          </div>
+          <br>
+
+
+
+          <div class="card4" *ngIf="!isEditable">
+
+            <!-- SE ENLISTAN LOS PARTICIPANTES -->
+            <div class="row-1">
+
+              <br>
+              <!-- ENLISTAR SECRETARIOS -->
+              <div class="col-5" formArrayName="secretaries">
+                &nbsp; &nbsp;<span style="color: #b37c9f;   right: 20px; bottom: 10px;"> Secretarios: </span>
+                <div class="input-group" *ngFor="let secretary of secretaryArr.controls; let s = index">
+                  <span style="color: #208fd8; position: absolute; bottom: 21px">
+                    &nbsp; {{ s + 1 }}
+                  </span>
+                  <!--    <span style="
+                      color: #208fd8;
+                      position: absolute;
+                      right: 10px;
+                      bottom: 21px;
+                    ">
+                    Secretario {{ s + 1 }}
+                  </span> -->
+
+                  <input class="input100 col-7" type="text" [formControlName]="s" />
+                  <!-- BORRAR SECRETARIO -->
+                  <span class="focus-input100"></span>
+                  <div *ngIf="isSecretary && isAvailableSaving && isEditable">
+                    <button class="btn3 btn-outline-danger" style="
+                        background-color: transparent;
+                        color: rgb(218, 108, 108);
+                      " (click)="borrar3(s)" type="button">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor"
+                        class="bi bi-person-fill-dash" viewBox="0 0 16 16">
+                        <path
+                          d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        <path
+                          d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                      </svg>
+                    </button>
+                  </div>
+                  <!-- MODIFICAR SECRETARIO -->
+                  <div *ngIf="isSecretary && isAvailableSaving && isEditable">
+                    <button class="btn3 btn-outline-danger" style="
+                        background-color: transparent;
+                        color: rgb(108, 145, 218);
+                      " (click)="setModification(s, secretary, 'secretario')" type="button">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor"
+                        class="bi bi-person-fill-gear" viewBox="0 0 16 16">
+                        <path
+                          d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm-9 8c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Zm9.886-3.54c.18-.613 1.048-.613 1.229 0l.043.148a.64.64 0 0 0 .921.382l.136-.074c.561-.306 1.175.308.87.869l-.075.136a.64.64 0 0 0 .382.92l.149.045c.612.18.612 1.048 0 1.229l-.15.043a.64.64 0 0 0-.38.921l.074.136c.305.561-.309 1.175-.87.87l-.136-.075a.64.64 0 0 0-.92.382l-.045.149c-.18.612-1.048.612-1.229 0l-.043-.15a.64.64 0 0 0-.921-.38l-.136.074c-.561.305-1.175-.309-.87-.87l.075-.136a.64.64 0 0 0-.382-.92l-.148-.045c-.613-.18-.613-1.048 0-1.229l.148-.043a.64.64 0 0 0 .382-.921l-.074-.136c-.306-.561.308-1.175.869-.87l.136.075a.64.64 0 0 0 .92-.382l.045-.148ZM14 12.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+
+
+
+
+
+            <!--  ENLISTAR PARTICIPANTES -->
+
+            <label class="col col-form-label"> </label>
+            <div class="col-5" formArrayName="participants">
+              &nbsp; &nbsp;<span style="color: #83a3b4;   right: 20px; bottom: 10px;"> Participantes: </span>
+              <br>
+              <div class="input-group col-10" *ngFor="
+                  let participant of participantArr.controls;
+                  let i = index
+                ">
+                <!--       <div *ngIf="!participant">
+                  Aún no hay participantes asociados.
+                </div> -->
+                <span style="color: #a1d9ff; position: absolute; bottom: 21px">
+                  &nbsp; {{ i + 1 }}
+                </span>
+                <!--  <span style="
+                    color: #a1d9ff;
+                    position: absolute;
+                    right: 10px;
+                    bottom: 21px;
+                  ">
+                  Participante {{ i + 1 }}
+                </span> -->
+                <!--     BORRAR PARTICIPANTE -->
+                <input class="input100 col-7" type="text" [formControlName]="i" />
+                <span class="focus-input100"></span>
+                <div *ngIf="isSecretary && isAvailableSaving && isEditable">
+                  <button class="btn3 btn-outline-danger" style="
+                      background-color: transparent;
+                      color: rgb(218, 108, 108);
+                    " (click)="borrar2(i)" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor"
+                      class="bi bi-person-fill-dash" viewBox="0 0 16 16">
+                      <path
+                        d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                      <path
+                        d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                    </svg>
+                  </button>
+                </div>
+                <!-- MODIFICAR PARTICIPANTE -->
+                <div *ngIf="isSecretary && isEditable">
+                  <div *ngIf="isAvailableSaving">
+                    <button class="btn3 btn-outline-danger" style="
+                        background-color: transparent;
+                        color: rgb(108, 145, 218);
+                      " (click)="
+                        setModification(i, participant, 'participante')
+                      " type="button">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor"
+                        class="bi bi-person-fill-gear" viewBox="0 0 16 16">
+                        <path
+                          d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm-9 8c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Zm9.886-3.54c.18-.613 1.048-.613 1.229 0l.043.148a.64.64 0 0 0 .921.382l.136-.074c.561-.306 1.175.308.87.869l-.075.136a.64.64 0 0 0 .382.92l.149.045c.612.18.612 1.048 0 1.229l-.15.043a.64.64 0 0 0-.38.921l.074.136c.305.561-.309 1.175-.87.87l-.136-.075a.64.64 0 0 0-.92.382l-.045.149c-.18.612-1.048.612-1.229 0l-.043-.15a.64.64 0 0 0-.921-.38l-.136.074c-.561.305-1.175-.309-.87-.87l.075-.136a.64.64 0 0 0-.382-.92l-.148-.045c-.613-.18-.613-1.048 0-1.229l.148-.043a.64.64 0 0 0 .382-.921l-.074-.136c-.306-.561.308-1.175.869-.87l.136.075a.64.64 0 0 0 .92-.382l.045-.148ZM14 12.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+
+            <!-- ENLISTAR LIDERES -->
+            <div class="col-5" formArrayName="leaders">
+              <br>
+              &nbsp; &nbsp;<span style="color: #ccb596;   right: 20px; bottom: 10px;"> Lideres: </span>
+              <div class="input-group" *ngFor="let leader of leaderArr.controls; let l = index">
+                <span style="color: #208fd8; position: absolute; bottom: 21px">
+                  &nbsp;{{ l + 1 }}
+                </span>
+                <!--            <span style="
+                            color: #208fd8;
+                            position: absolute;
+                            right: 10px;
+                            bottom: 21px;
+                          ">
+                          Lider {{ l + 1 }}
+                        </span> -->
+
+                <input class="input100 col-7" type="text" [formControlName]="l" />
+                <!-- BORRAR LIDERES -->
+                <span class="focus-input100"></span>
+                <div *ngIf="isSecretary && isAvailableSaving && isEditable">
+                  <button class="btn3 btn-outline-danger" style="
+                              background-color: transparent;
+                              color: rgb(218, 108, 108);
+                            " (click)="borrar4(l)" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor"
+                      class="bi bi-person-fill-dash" viewBox="0 0 16 16">
+                      <path
+                        d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                      <path
+                        d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                    </svg>
+                  </button>
+                </div>
+                <!-- MODIFICAR LIDERES -->
+                <div *ngIf="isSecretary && isAvailableSaving && isEditable">
+                  <button class="btn3 btn-outline-danger" style="
+                              background-color: transparent;
+                              color: rgb(108, 145, 218);
+                            " (click)="setModification(l, leader, 'lider')" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor"
+                      class="bi bi-person-fill-gear" viewBox="0 0 16 16">
+                      <path
+                        d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm-9 8c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Zm9.886-3.54c.18-.613 1.048-.613 1.229 0l.043.148a.64.64 0 0 0 .921.382l.136-.074c.561-.306 1.175.308.87.869l-.075.136a.64.64 0 0 0 .382.92l.149.045c.612.18.612 1.048 0 1.229l-.15.043a.64.64 0 0 0-.38.921l.074.136c.305.561-.309 1.175-.87.87l-.136-.075a.64.64 0 0 0-.92.382l-.045.149c-.18.612-1.048.612-1.229 0l-.043-.15a.64.64 0 0 0-.921-.38l-.136.074c-.561.305-1.175-.309-.87-.87l.075-.136a.64.64 0 0 0-.382-.92l-.148-.045c-.613-.18-.613-1.048 0-1.229l.148-.043a.64.64 0 0 0 .382-.921l-.074-.136c-.306-.561.308-1.175.869-.87l.136.075a.64.64 0 0 0 .92-.382l.045-.148ZM14 12.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+
+
+
+            <br />
+            <br>
+          </div>
+
+
+          <div class="card4edit" *ngIf="isEditable">
+
+            <!-- SE ENLISTAN LOS PARTICIPANTES -->
+            <div class="row-1">
+
+              <br>
+              <!-- ENLISTAR SECRETARIOS -->
+              <div class="col-5" formArrayName="secretaries">
+                &nbsp; &nbsp;<span style="color: #b37c9f;   right: 20px; bottom: 10px;"> Secretarios: </span>
+
+
+
+                <div class="input-group" *ngFor="let secretary of secretaryArr.controls; let s = index">
+                  <span style="color: #208fd8; position: absolute; bottom: 21px">
+                    &nbsp; {{ s + 1 }}
+                  </span>
+
+                  <input class="input100 col-7" type="text" [formControlName]="s" />
+
+
+                  <!-- BORRAR SECRETARIO -->
+                  <span class="focus-input100"></span>
+                  <div *ngIf="isSecretary && isAvailableSaving && isEditable">
+                    <button class="btn3 btn-outline-danger" style="
+                        background-color: transparent;
+                        color: rgb(218, 108, 108);
+                      " (click)="borrar3(s)" type="button">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor"
+                        class="bi bi-person-fill-dash" viewBox="0 0 16 16">
+                        <path
+                          d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        <path
+                          d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                      </svg>
+                    </button>
+                  </div>
+                  <!-- MODIFICAR SECRETARIO -->
+                  <div *ngIf="isSecretary && isAvailableSaving && isEditable">
+                    <button class="btn3 btn-outline-danger" style="
+                        background-color: transparent;
+                        color: rgb(108, 145, 218);
+                      " (click)="setModification(s, secretary, 'secretario')" type="button">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor"
+                        class="bi bi-person-fill-gear" viewBox="0 0 16 16">
+                        <path
+                          d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm-9 8c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Zm9.886-3.54c.18-.613 1.048-.613 1.229 0l.043.148a.64.64 0 0 0 .921.382l.136-.074c.561-.306 1.175.308.87.869l-.075.136a.64.64 0 0 0 .382.92l.149.045c.612.18.612 1.048 0 1.229l-.15.043a.64.64 0 0 0-.38.921l.074.136c.305.561-.309 1.175-.87.87l-.136-.075a.64.64 0 0 0-.92.382l-.045.149c-.18.612-1.048.612-1.229 0l-.043-.15a.64.64 0 0 0-.921-.38l-.136.074c-.561.305-1.175-.309-.87-.87l.075-.136a.64.64 0 0 0-.382-.92l-.148-.045c-.613-.18-.613-1.048 0-1.229l.148-.043a.64.64 0 0 0 .382-.921l-.074-.136c-.306-.561.308-1.175.869-.87l.136.075a.64.64 0 0 0 .92-.382l.045-.148ZM14 12.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+
+
+
+
+
+
+
+            <label class="col col-form-label"> </label>
+            <div class="col-5" formArrayName="participants">
+              &nbsp; &nbsp;<span style="color: #83a3b4;   right: 20px; bottom: 10px;"> Participantes: </span>
+              <br>
+              <div class="input-group col-10" *ngFor="
+                  let participant of participantArr.controls;
+                  let i = index
+                ">
+                <!--       <div *ngIf="!participant">
+                  Aún no hay participantes asociados.
+                </div> -->
+                <span style="color: #a1d9ff; position: absolute; bottom: 21px">
+                  &nbsp; {{ i + 1 }}
+                </span>
+                <!--  <span style="
+                    color: #a1d9ff;
+                    position: absolute;
+                    right: 10px;
+                    bottom: 21px;
+                  ">
+                  Participante {{ i + 1 }}
+                </span> -->
+                <!--     BORRAR PARTICIPANTE -->
+                <input class="input100 col-7" type="text" [formControlName]="i" />
+                <span class="focus-input100"></span>
+                <div *ngIf="isSecretary && isAvailableSaving && isEditable">
+                  <button class="btn3 btn-outline-danger" style="
+                      background-color: transparent;
+                      color: rgb(218, 108, 108);
+                    " (click)="borrar2(i)" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor"
+                      class="bi bi-person-fill-dash" viewBox="0 0 16 16">
+                      <path
+                        d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                      <path
+                        d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                    </svg>
+                  </button>
+                </div>
+                <!-- MODIFICAR PARTICIPANTE -->
+                <div *ngIf="isSecretary && isEditable">
+                  <div *ngIf="isAvailableSaving">
+                    <button class="btn3 btn-outline-danger" style="
+                        background-color: transparent;
+                        color: rgb(108, 145, 218);
+                      " (click)="
+                        setModification(i, participant, 'participante')
+                      " type="button">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor"
+                        class="bi bi-person-fill-gear" viewBox="0 0 16 16">
+                        <path
+                          d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm-9 8c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Zm9.886-3.54c.18-.613 1.048-.613 1.229 0l.043.148a.64.64 0 0 0 .921.382l.136-.074c.561-.306 1.175.308.87.869l-.075.136a.64.64 0 0 0 .382.92l.149.045c.612.18.612 1.048 0 1.229l-.15.043a.64.64 0 0 0-.38.921l.074.136c.305.561-.309 1.175-.87.87l-.136-.075a.64.64 0 0 0-.92.382l-.045.149c-.18.612-1.048.612-1.229 0l-.043-.15a.64.64 0 0 0-.921-.38l-.136.074c-.561.305-1.175-.309-.87-.87l.075-.136a.64.64 0 0 0-.382-.92l-.148-.045c-.613-.18-.613-1.048 0-1.229l.148-.043a.64.64 0 0 0 .382-.921l-.074-.136c-.306-.561.308-1.175.869-.87l.136.075a.64.64 0 0 0 .92-.382l.045-.148ZM14 12.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ENLISTAR LIDERES -->
+            <div class="col-5" formArrayName="leaders">
+              <br>
+              &nbsp; &nbsp;<span style="color: #ccb596;   right: 20px; bottom: 10px;"> Lideres: </span>
+              <div class="input-group" *ngFor="let leader of leaderArr.controls; let l = index">
+                <span style="color: #d5cc87; position: absolute; bottom: 21px">
+                  &nbsp; {{ l + 1 }}
+                </span>
+                <!--            <span style="
+                            color: #208fd8;
+                            position: absolute;
+                            right: 10px;
+                            bottom: 21px;
+                          ">
+                          Lider {{ l + 1 }}
+                        </span> -->
+
+                <input class="input100 col-7" type="text" [formControlName]="l" />
+                <!-- BORRAR LIDERES -->
+                <span class="focus-input100"></span>
+                <div *ngIf="isSecretary && isAvailableSaving && isEditable">
+                  <button class="btn3 btn-outline-danger" style="
+                              background-color: transparent;
+                              color: rgb(218, 108, 108);
+                            " (click)="borrar4(l)" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor"
+                      class="bi bi-person-fill-dash" viewBox="0 0 16 16">
+                      <path
+                        d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                      <path
+                        d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                    </svg>
+                  </button>
+                </div>
+                <!-- MODIFICAR LIDERES -->
+                <div *ngIf="isSecretary && isAvailableSaving && isEditable">
+                  <button class="btn3 btn-outline-danger" style="
+                              background-color: transparent;
+                              color: rgb(108, 145, 218);
+                            " (click)="setModification(l, leader, 'lider')" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor"
+                      class="bi bi-person-fill-gear" viewBox="0 0 16 16">
+                      <path
+                        d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm-9 8c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Zm9.886-3.54c.18-.613 1.048-.613 1.229 0l.043.148a.64.64 0 0 0 .921.382l.136-.074c.561-.306 1.175.308.87.869l-.075.136a.64.64 0 0 0 .382.92l.149.045c.612.18.612 1.048 0 1.229l-.15.043a.64.64 0 0 0-.38.921l.074.136c.305.561-.309 1.175-.87.87l-.136-.075a.64.64 0 0 0-.92.382l-.045.149c-.18.612-1.048.612-1.229 0l-.043-.15a.64.64 0 0 0-.921-.38l-.136.074c-.561.305-1.175-.309-.87-.87l.075-.136a.64.64 0 0 0-.382-.92l-.148-.045c-.613-.18-.613-1.048 0-1.229l.148-.043a.64.64 0 0 0 .382-.921l-.074-.136c-.306-.561.308-1.175.869-.87l.136.075a.64.64 0 0 0 .92-.382l.045-.148ZM14 12.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+
+
+
+            <br />
+            <br>
+          </div>
+
+
+
+
+
+
+          <!-- COMPROMISOS -->
+          <br>
+          <br>
+          <span *ngIf="!isNew"
+            style="color: rgb(201, 192, 168); padding-left: 10px; padding-top: 10px;font-size: 110%  ">
+            <hr>
+            <br>
+            Compromisos previos: <br>
+          </span>
+          <br>
+
+
+
+          <div class="card4" *ngIf="!isNew && !isEditable">
+            <br />
+
+            <div class="row-8">
+
+
+              <br>
+              <div *ngIf="MeetingMinuteSelected.number === 0" style="color: white; font-size: 110% ">
+
+                &nbsp;&nbsp; &nbsp;No existen compromisos previos debido a que es la primera reunión del proyecto.
+
+              </div>
+              <br />
+              <!-- ENLISTAR COMPROMISOS -->
+              <li *ngFor="let element of elementsPreviews; let l = index">
+                <div *ngIf="element.number < MeetingMinuteSelected.number && element.type === 'compromiso'">
+                  <div class="input100" data-toggle="tooltip" data-placement="right" title="{{element.description}}">
+                    &nbsp;&nbsp; &nbsp;- {{ element.number }}.{{
+                    element.type
+                    }}:
+                    {{ element.description.split(' ')[0] }} {{element.description.split(' ')[1]}}
+                    {{element.description.split(' ')[2] }} {{element.description.split(' ')[3] }}
+                    {{element.description.split(' ')[4] }}
+                    {{element.description.split(' ')[5] }} {{element.description.split(' ')[6] }}
+                    {{element.description.split(' ')[7] }} {{element.description.split(' ')[8] }}
+                    {{element.description.split(' ')[9] }} {{element.description.split(' ')[10] }}
+                    <span *ngIf="element.description.split(' ')[10] != null">(...)</span>
+                  </div>
+                </div>
+              </li>
+            </div>
+            <br>
+            <!--     <hr> -->
+            <br>
+
+
+
+
+
+
+          </div>
+
+          <div class="card4edit" *ngIf="!isNew && isEditable">
+            <br />
+
+            <div class="row-8">
+
+
+              <br>
+              <div *ngIf="MeetingMinuteSelected.number === 0" style="color: white; font-size: 110% ">
+                &nbsp;&nbsp; &nbsp;No existen compromisos previos debido a que es la primera reunión del proyecto.
+
+              </div>
+              <br />
+              <!-- ENLISTAR COMPROMISOS -->
+              <li *ngFor="let element of elementsPreviews; let l = index">
+                <div *ngIf="element.number < MeetingMinuteSelected.number">
+                  <div class="input100">
+                    &nbsp;&nbsp; &nbsp;- {{ element.number }}.{{
+                    element.type
+                    }}:
+                    {{ element.description }}
+                  </div>
+                </div>
+              </li>
+            </div>
+            <br>
+            <!--     <hr> -->
+            <br>
+
+
+
+
+
+
+          </div>
+
+
+
+          <br>
+          <br>
+          <!-- TABLA DE TEMAS -->
+          <span *ngIf="!isNew && stateMeet != 'pre-meeting'"
+            style="color: rgb(201, 192, 168); padding-left: 10px; padding-top: 10px;font-size: 110%">
+            <hr>
+            <br>
+            Tabla de temas: <br>
+          </span>
+          <br>
+
+
+          <div class="card4" *ngIf="!isNew && stateMeet != 'pre-meeting' && !isEditable">
+            <br />
+            <br />
+            <li *ngFor="let topic of MeetingMinuteSelected.topics; let j = index">
+              <div class="input100">
+                &nbsp;&nbsp; &nbsp;- TEMA {{ j }}: {{ topic }}
+              </div>
+            </li>
+            <br />
+            <br>
+          </div>
+
+          <div class="card4edit" *ngIf="!isNew && stateMeet != 'pre-meeting' && isEditable">
+            <br />
+            <br />
+            <li *ngFor="let topic of MeetingMinuteSelected.topics; let j = index">
+              <div class="input100">
+                &nbsp;&nbsp; &nbsp;- TEMA {{ j }}: {{ topic }}
+              </div>
+            </li>
+            <br />
+            <br>
+          </div>
+
+
+
+
+
+          <!-- TEMAS -->
+          <br *ngIf="stateMeet != 'pre-meeting'">
+          <br *ngIf="stateMeet != 'pre-meeting'">
+          <span *ngIf="!isNew && stateMeet != 'pre-meeting'"
+            style="color: rgb(201, 192, 168); padding-left: 10px; padding-top: 10px;font-size: 110% ">
+            <hr>
+            <br>
+            Desarrollo: <br><br>
+          </span>
+
+          &nbsp;&nbsp;&nbsp;&nbsp;<button *ngIf="!desplega" type="button" class="btn btn-light btn-rounded"
+          style="align-items: left; background-color: #718aa2; color: rgb(40, 40, 40)" (click)=" colapseAll()"
+        >             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+        style="fill: rgb(89, 89, 89);transform: msFilter;">
+        <path
+          d="M11.178 19.569a.998.998 0 0 0 1.644 0l9-13A.999.999 0 0 0 21 5H3a1.002 1.002 0 0 0-.822 1.569l9 13z">
+        </path>
+      </svg> &nbsp; Desplegar todo</button>
+       <button *ngIf="desplega" type="button" class="btn btn-light btn-rounded"
+        style="align-items: left; background-color: #718aa2; color: rgb(40, 40, 40)" (click)=" colapseAll()"
+      >         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+      style="fill: rgb(188, 208, 170);transform: msFilter;">
+      <path
+        d="M3 19h18a1.002 1.002 0 0 0 .823-1.569l-9-13c-.373-.539-1.271-.539-1.645 0l-9 13A.999.999 0 0 0 3 19z">
+      </path>
+    </svg> &nbsp; Contraer todo</button>
+         
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;<button type="button" class="btn btn-light btn-rounded"
+        style="align-items: left; background-color: #71a291; color: rgb(40, 40, 40)" (click)="muestraKanban()"
+      >Ver tablero kanban</button>
+          <br>
+          <br>
+
+          <span *ngIf="!isNew && stateMeet === 'pre-meeting'"
+            style="color: rgb(201, 192, 168); padding-left: 10px; padding-top: 10px;font-size: 110%">
+            <hr>
+            <br>
+            Tabla de temas:
+            <br>
+          </span>
+          <!-- AGREGAR TEMA -->
+          <div *ngIf="isSecretary && !isNew && isEditable">
+            <div *ngIf="isAvailableSaving">
+              <div class="row-8">
+                <div class="col-11">
+                  <button class="btn2" type="button" (click)="agregarTema2()" style="
+                                  background-color: transparent;
+                                  color: #2e79ab;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
+                      class="bi bi-clipboard-plus-fill" viewBox="0 0 16 16">
+                      <path
+                        d="M6.5 0A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3Zm3 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3Z" />
+                      <path
+                        d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1A2.5 2.5 0 0 1 9.5 5h-3A2.5 2.5 0 0 1 4 2.5v-1Zm4.5 6V9H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V10H6a.5.5 0 0 1 0-1h1.5V7.5a.5.5 0 0 1 1 0Z" />
+                    </svg>
+                    Agregar un tema
+                  </button>
+                </div>
+              </div>
+            </div>
+            <br>
+          </div>
+          <br>
+
+          <!-- TEMAS SIN EDITAR -->
+          <div class="card5" *ngIf="!isNew && !isEditable">
+
+
+            <div class="container" *ngFor="let topic of topicArr.controls; let i = index">
+
+              <div class="row">
+                <span class="label-input100"></span>
+
+
+                <!-- ENLISTAR TEMAS -->
+
+
+
+                <div class="row">
+
+                  <div class="col-11" formArrayName="topics">
+                    <!--     &nbsp; &nbsp;<span style="color: #b37c9f;   right: 20px; bottom: 10px;"> TEMAS: </span>-->
+                    <div class="input-group-vertical">
+
+                      <br>
+
+
+                      <div class="input-group">
+                        <span style="position:absolute; top: 15px; color:#83a3b4">
+                          <b> {{i}}.</b>
+                        </span>
+
+
+                        <input disabled value="{{MeetingMinuteSelected.topics[i]}}"
+                          style="font-weight: bold; font-size: 90%; text-decoration: underline #83a3b4" readonly
+                          class="input100 col-11" type="text" />
+
+                        <span class="focus-input100"></span>
+
+
+                        <p *ngIf="stateMeet != 'pre-meeting'" class="d-inline-flex gap-1">
+                          &nbsp;
+                          <button class="button1" type="button" (click)="colapseArray(i)">
+                            <div class="" *ngIf="!colapseArrayBol[i]">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"
+                                style="fill: rgb(245, 244, 242);transform: msFilter;">
+                                <path
+                                  d="M11.178 19.569a.998.998 0 0 0 1.644 0l9-13A.999.999 0 0 0 21 5H3a1.002 1.002 0 0 0-.822 1.569l9 13z">
+                                </path>
+                              </svg>
+
+                            </div>
+                            <div class="" *ngIf="colapseArrayBol[i]">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                style="fill: rgb(188, 208, 170);transform: msFilter;">
+                                <path
+                                  d="M3 19h18a1.002 1.002 0 0 0 .823-1.569l-9-13c-.373-.539-1.271-.539-1.645 0l-9 13A.999.999 0 0 0 3 19z">
+                                </path>
+                              </svg>
+
+                            </div>
+
+                          </button>
+                        </p>
+
+                        &nbsp;
+
+                        &nbsp;
+                        <!-- AGREGAR ELEMENTO -->
+                        <button data-toggle="tooltip" data-placement="right" title="Añadir elemento dialógico"
+                          *ngIf="isAvailableDialog && isParticipant" class="button1"
+                          (click)="openScrollableContent(longContent, i)" type="button"
+                          style="background-color: transparent; color: #208fd8">
+
+                          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"
+                            style="fill:rgb(123, 159, 194); transform: msFilter;">
+                            <path
+                              d="M20 2H4c-1.103 0-2 .894-2 1.992v12.016C2 17.106 2.897 18 4 18h3v4l6.351-4H20c1.103 0 2-.894 2-1.992V3.992A1.998 1.998 0 0 0 20 2zm-3 9h-4v4h-2v-4H7V9h4V5h2v4h4v2z">
+                            </path>
+                          </svg>
+
+                        </button>
+                        &nbsp;
+                        &nbsp;
+
+                        <span *ngIf="isSecretary && isEditable">
+                          <span *ngIf="isAvailableSaving">
+
+                            <!-- BORRAR TEMA -->
+
+                            <button class="btn2 col" type="button" (click)="borrarTema(i)"
+                              style="background-color: transparent; color: #b34128">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                                style="fill: rgb(214, 164, 164);transform: msFilter;">
+                                <path
+                                  d="M6 7H5v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7H6zm10.618-3L15 2H9L7.382 4H3v2h18V4z">
+                                </path>
+                              </svg>
+
+                            </button>
+
+                          </span>
+                        </span>
+
+
+
+
+
+
+
+
+                      </div>
+
+
+                      <div class="input-group">
+
+                        <div class="card55edit"
+                          style="background-color: transparent; left:50%;  right: 50%;width: 150%; box-shadow: 4px 4px 4px 3px rgba(13, 13, 13, 0);   "
+                          *ngIf="colapseArrayBol[i]">
+
+                          <div class="card card-body" style="width: 104%; ">
+
+                            <!-- TOOLTIP -->
+                            <script>
+                              $(function () {
+                                $('[data-toggle="tooltip"]').tooltip()
+                              });
+                            </script>
+
+                            <div class="" *ngFor="let ee of elements; let u = index">
+
+
+                              <li *ngIf="ee.topic === i" class="list-group-item" style="color: white; width: 100%">
+
+                                <button type="button"
+                                  *ngIf="isParticipant && stateMeet != 'post-meeting' || isSecretary "
+                                  (click)="openScrollableContent2(longContent2, i, ee)" data-toggle="tooltip"
+                                  data-placement="right" title="{{ee.description}}"
+                                  style="align-items: left; text-align: left;font-size: 70%; width: 104%; height: 50px;">
+
+                                  <label class="text-left " style="align-items: left; " for="{{ ee.topic }}">
+                                    <span *ngIf="ee.type==='compromiso'">
+
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 21 21"
+                                        style="fill: rgba(248, 251, 251, 1);transform: msFilter;">
+                                        <path
+                                          d="M5 22h14c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2h-2a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1H5c-1.103 0-2 .897-2 2v15c0 1.103.897 2 2 2zM5 5h2v2h10V5h2v15H5V5z">
+                                        </path>
+                                        <path d="m11 13.586-1.793-1.793-1.414 1.414L11 16.414l5.207-5.207-1.414-1.414z">
+                                        </path>
+                                      </svg>
+
+                                      CO.{{ee.number}}.{{ee.position}}:
+                                      <span>
+                                        {{ ee.description.split(' ')[0] }} {{ee.description.split(' ')[1]}}
+                                        {{ee.description.split(' ')[2] }} {{ee.description.split(' ')[3] }}
+                                        {{ee.description.split(' ')[4] }}
+                                        {{ee.description.split(' ')[5] + ","}}
+                                      </span>
+                                      <span *ngIf="ee.description.split(' ')[5] != null">...</span>
+                                      <span style="color: rgb(221, 217, 185)"> &nbsp;{{ee.participants}},
+                                      </span>
+
+                                      {{ee.dateLimit}}.
+
+                                    </span>
+
+                                    <span *ngIf="ee.type==='texto libre'">
+
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" style="fill: rgba(245, 241, 241, 1);transform: msFilter"><path d="M5 18v3.766l1.515-.909L11.277 18H16c1.103 0 2-.897 2-2V8c0-1.103-.897-2-2-2H4c-1.103 0-2 .897-2 2v8c0 1.103.897 2 2 2h1zM4 8h12v8h-5.277L7 18.234V16H4V8z"></path><path d="M20 2H8c-1.103 0-2 .897-2 2h12c1.103 0 2 .897 2 2v8c1.103 0 2-.897 2-2V4c0-1.103-.897-2-2-2z"></path></svg>
+
+                                      TE.{{ee.number}}.{{ee.position}}:
+                                      <span>
+                                        {{ ee.description.split(' ')[0] }} {{ee.description.split(' ')[1]}}
+                                        {{ee.description.split(' ')[2] }} {{ee.description.split(' ')[3] }}
+                                        {{ee.description.split(' ')[4] }}
+                                        {{ee.description.split(' ')[5] + ","}}
+                                      </span>
+                                      <span *ngIf="ee.description.split(' ')[5] != null">...</span>
+                                      <span style="color: rgb(221, 217, 185)"> &nbsp;{{ee.participants}},
+                                      </span>
+
+                                      {{ee.dateLimit}}.
+
+                                    </span>
+
+                                    <span *ngIf="ee.type==='duda'">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                        class="bi bi-question-circle" viewBox="0 0 16 16">
+                                        <path
+                                          d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                        <path
+                                          d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z" />
+                                      </svg>
+                                      DU.{{ee.number}}.{{ee.position}}
+                                      {{ ee.description.split(' ')[0] }} {{ee.description.split(' ')[1]}}
+                                      {{ee.description.split(' ')[2] }} {{ee.description.split(' ')[3] }}
+                                      {{ee.description.split(' ')[4] }}
+                                      {{ee.description.split(' ')[5] }}, <span
+                                        *ngIf="ee.description.split(' ')[5] != null">...</span>
+                                      <span style="color: rgb(221, 217, 185)"> &nbsp;{{ee.participants}},
+                                      </span>
+
+                                      {{ee.dateLimit}}.
+                                    </span>
+                                    <span *ngIf="ee.type==='desacuerdo'">
+
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                        class="bi bi-chat-quote" viewBox="0 0 16 16">
+                                        <path
+                                          d="M2.678 11.894a1 1 0 0 1 .287.801 10.97 10.97 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8.06 8.06 0 0 0 8 14c3.996 0 7-2.807 7-6 0-3.192-3.004-6-7-6S1 4.808 1 8c0 1.468.617 2.83 1.678 3.894zm-.493 3.905a21.682 21.682 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a9.68 9.68 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105z" />
+                                        <path
+                                          d="M7.066 6.76A1.665 1.665 0 0 0 4 7.668a1.667 1.667 0 0 0 2.561 1.406c-.131.389-.375.804-.777 1.22a.417.417 0 0 0 .6.58c1.486-1.54 1.293-3.214.682-4.112zm4 0A1.665 1.665 0 0 0 8 7.668a1.667 1.667 0 0 0 2.561 1.406c-.131.389-.375.804-.777 1.22a.417.417 0 0 0 .6.58c1.486-1.54 1.293-3.214.682-4.112z" />
+                                      </svg>
+                                      DE.{{ee.number}}.{{ ee.position}}
+                                      {{ ee.description.split(' ')[0] }} {{ee.description.split(' ')[1]}}
+                                      {{ee.description.split(' ')[2] }} {{ee.description.split(' ')[3] }}
+                                      {{ee.description.split(' ')[4] }}
+                                      {{ee.description.split(' ')[5] }}, <span
+                                        *ngIf="ee.description.split(' ')[5] != null">...</span>
+                                      <span style="color: rgb(221, 217, 185)"> &nbsp;{{ee.participants}},
+                                      </span>
+
+                                      {{ee.dateLimit}}.
+
+                                    </span>
+                                    <span *ngIf="ee.type==='acuerdo'">
+
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                        class="bi bi-hand-thumbs-up" viewBox="0 0 16 16">
+                                        <path
+                                          d="M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.016-.428 2.59-.125.36-.479 1.013-1.04 1.639-.557.623-1.282 1.178-2.131 1.41C2.685 7.288 2 7.87 2 8.72v4.001c0 .845.682 1.464 1.448 1.545 1.07.114 1.564.415 2.068.723l.048.03c.272.165.578.348.97.484.397.136.861.217 1.466.217h3.5c.937 0 1.599-.477 1.934-1.064a1.86 1.86 0 0 0 .254-.912c0-.152-.023-.312-.077-.464.201-.263.38-.578.488-.901.11-.33.172-.762.004-1.149.069-.13.12-.269.159-.403.077-.27.113-.568.113-.857 0-.288-.036-.585-.113-.856a2.144 2.144 0 0 0-.138-.362 1.9 1.9 0 0 0 .234-1.734c-.206-.592-.682-1.1-1.2-1.272-.847-.282-1.803-.276-2.516-.211a9.84 9.84 0 0 0-.443.05 9.365 9.365 0 0 0-.062-4.509A1.38 1.38 0 0 0 9.125.111L8.864.046zM11.5 14.721H8c-.51 0-.863-.069-1.14-.164-.281-.097-.506-.228-.776-.393l-.04-.024c-.555-.339-1.198-.731-2.49-.868-.333-.036-.554-.29-.554-.55V8.72c0-.254.226-.543.62-.65 1.095-.3 1.977-.996 2.614-1.708.635-.71 1.064-1.475 1.238-1.978.243-.7.407-1.768.482-2.85.025-.362.36-.594.667-.518l.262.066c.16.04.258.143.288.255a8.34 8.34 0 0 1-.145 4.725.5.5 0 0 0 .595.644l.003-.001.014-.003.058-.014a8.908 8.908 0 0 1 1.036-.157c.663-.06 1.457-.054 2.11.164.175.058.45.3.57.65.107.308.087.67-.266 1.022l-.353.353.353.354c.043.043.105.141.154.315.048.167.075.37.075.581 0 .212-.027.414-.075.582-.05.174-.111.272-.154.315l-.353.353.353.354c.047.047.109.177.005.488a2.224 2.224 0 0 1-.505.805l-.353.353.353.354c.006.005.041.05.041.17a.866.866 0 0 1-.121.416c-.165.288-.503.56-1.066.56z" />
+                                      </svg>
+                                      AC.{{ee.number}}.{{ ee.position}}
+                                      {{ ee.description.split(' ')[0] }} {{ee.description.split(' ')[1]}}
+                                      {{ee.description.split(' ')[2] }} {{ee.description.split(' ')[3] }}
+                                      {{ee.description.split(' ')[4] }}
+                                      {{ee.description.split(' ')[5] }}, <span
+                                        *ngIf="ee.description.split(' ')[5] != null">...</span>
+                                      <span style="color: rgb(221, 217, 185)"> &nbsp;{{ee.participants}},
+                                      </span>
+
+                                      {{ee.dateLimit}}.
+
+                                    </span>
+
+
+                                  </label>
+                                </button>
+
+                                <button type="button"
+                                  *ngIf="!isParticipant && !isSecretary || !isSecretary && isParticipant && stateMeet === 'post-meeting'"
+                                  data-toggle="tooltip" data-placement="right" title="{{ee.description}}"
+                                  style="align-items: left; text-align: left; width: 110%; height: 120px;">
+                                  <label class="text-left p-t-8 p-b-31" style="align-items: left;" for="{{ ee.topic }}">
+
+                                    <span *ngIf="ee.type==='compromiso'">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 21 21"
+                                        style="fill: rgba(248, 251, 251, 1);transform: msFilter;">
+                                        <path
+                                          d="M5 22h14c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2h-2a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1H5c-1.103 0-2 .897-2 2v15c0 1.103.897 2 2 2zM5 5h2v2h10V5h2v15H5V5z">
+                                        </path>
+                                        <path d="m11 13.586-1.793-1.793-1.414 1.414L11 16.414l5.207-5.207-1.414-1.414z">
+                                        </path>
+                                      </svg>
+
+                                    </span>
+                                    <span *ngIf="ee.type==='duda'">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor"
+                                        class="bi bi-question-circle" viewBox="0 0 16 16">
+                                        <path
+                                          d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                        <path
+                                          d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z" />
+                                      </svg>
+
+
+
+                                    </span>
+                                    <span *ngIf="ee.type==='desacuerdo'">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor"
+                                        class="bi bi-chat-quote" viewBox="0 0 16 16">
+                                        <path
+                                          d="M2.678 11.894a1 1 0 0 1 .287.801 10.97 10.97 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8.06 8.06 0 0 0 8 14c3.996 0 7-2.807 7-6 0-3.192-3.004-6-7-6S1 4.808 1 8c0 1.468.617 2.83 1.678 3.894zm-.493 3.905a21.682 21.682 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a9.68 9.68 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105z" />
+                                        <path
+                                          d="M7.066 6.76A1.665 1.665 0 0 0 4 7.668a1.667 1.667 0 0 0 2.561 1.406c-.131.389-.375.804-.777 1.22a.417.417 0 0 0 .6.58c1.486-1.54 1.293-3.214.682-4.112zm4 0A1.665 1.665 0 0 0 8 7.668a1.667 1.667 0 0 0 2.561 1.406c-.131.389-.375.804-.777 1.22a.417.417 0 0 0 .6.58c1.486-1.54 1.293-3.214.682-4.112z" />
+                                      </svg>
+
+
+
+                                    </span>
+                                    <span *ngIf="ee.type==='acuerdo'">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor"
+                                        class="bi bi-hand-thumbs-up" viewBox="0 0 16 16">
+                                        <path
+                                          d="M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.016-.428 2.59-.125.36-.479 1.013-1.04 1.639-.557.623-1.282 1.178-2.131 1.41C2.685 7.288 2 7.87 2 8.72v4.001c0 .845.682 1.464 1.448 1.545 1.07.114 1.564.415 2.068.723l.048.03c.272.165.578.348.97.484.397.136.861.217 1.466.217h3.5c.937 0 1.599-.477 1.934-1.064a1.86 1.86 0 0 0 .254-.912c0-.152-.023-.312-.077-.464.201-.263.38-.578.488-.901.11-.33.172-.762.004-1.149.069-.13.12-.269.159-.403.077-.27.113-.568.113-.857 0-.288-.036-.585-.113-.856a2.144 2.144 0 0 0-.138-.362 1.9 1.9 0 0 0 .234-1.734c-.206-.592-.682-1.1-1.2-1.272-.847-.282-1.803-.276-2.516-.211a9.84 9.84 0 0 0-.443.05 9.365 9.365 0 0 0-.062-4.509A1.38 1.38 0 0 0 9.125.111L8.864.046zM11.5 14.721H8c-.51 0-.863-.069-1.14-.164-.281-.097-.506-.228-.776-.393l-.04-.024c-.555-.339-1.198-.731-2.49-.868-.333-.036-.554-.29-.554-.55V8.72c0-.254.226-.543.62-.65 1.095-.3 1.977-.996 2.614-1.708.635-.71 1.064-1.475 1.238-1.978.243-.7.407-1.768.482-2.85.025-.362.36-.594.667-.518l.262.066c.16.04.258.143.288.255a8.34 8.34 0 0 1-.145 4.725.5.5 0 0 0 .595.644l.003-.001.014-.003.058-.014a8.908 8.908 0 0 1 1.036-.157c.663-.06 1.457-.054 2.11.164.175.058.45.3.57.65.107.308.087.67-.266 1.022l-.353.353.353.354c.043.043.105.141.154.315.048.167.075.37.075.581 0 .212-.027.414-.075.582-.05.174-.111.272-.154.315l-.353.353.353.354c.047.047.109.177.005.488a2.224 2.224 0 0 1-.505.805l-.353.353.353.354c.006.005.041.05.041.17a.866.866 0 0 1-.121.416c-.165.288-.503.56-1.066.56z" />
+                                      </svg>
+
+                                    </span>
+
+
+                                    {{ ee.type }} {{ee.number}}.{{ u }} &nbsp;
+                                    {{ ee.description.split(' ')[0] }} {{ee.description.split(' ')[1]}}
+                                    {{ee.description.split(' ')[2] }} {{ee.description.split(' ')[3] }}
+                                    {{ee.description.split(' ')[4] }}
+                                    {{ee.description.split(' ')[5] }} {{ee.description.split(' ')[6] }}
+                                    {{ee.description.split(' ')[7] }} {{ee.description.split(' ')[8] }}
+                                    {{ee.description.split(' ')[9] }} {{ee.description.split(' ')[10] }} <span
+                                      *ngIf="ee.description.split(' ')[10] != null">(...)</span>
+                                    <br> Responsable:
+                                    <span style="color: rgb(221, 217, 185)">{{ ee.participants }}
+                                    </span>
+                                    <br> Fecha límite:
+                                    <span style="color: rgb(221, 217, 185)">
+                                      {{ ee.dateLimit }}
+                                    </span>
+                                  </label>
+                                </button>
+
+                              </li>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+
+
+
+          </div>
+
+
+          <!--    TEMA EDITABLE -->
+          <div class="card5edit" *ngIf="!isNew && isEditable">
+
+            <div class="container" *ngFor="let topic of topicArr.controls; let i = index">
+
+              <div class="row">
+                <span class="label-input100"></span>
+
+
+                <!-- ENLISTAR TEMAS -->
+
+
+
+                <div class="row">
+
+                  <div class="col-10" formArrayName="topics">
+                    <!--     &nbsp; &nbsp;<span style="color: #b37c9f;   right: 20px; bottom: 10px;"> TEMAS: </span>-->
+                    <div class="input-group-vertical">
+
+                      <div class="input-group">
+
+                        <input class="input100 col-12" type="textarea" [formControlName]="i" />
+
+                        <span class="focus-input100"></span>
+
+
+                        <p *ngIf="stateMeet != 'pre-meeting'" class="d-inline-flex gap-1">
+                          &nbsp;
+                          <button class="button1" type="button" (click)="colapseArray(i)">
+                            <div class="" *ngIf="!colapseArrayBol[i]">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"
+                                style="fill: rgb(245, 244, 242);transform: msFilter;">
+                                <path
+                                  d="M11.178 19.569a.998.998 0 0 0 1.644 0l9-13A.999.999 0 0 0 21 5H3a1.002 1.002 0 0 0-.822 1.569l9 13z">
+                                </path>
+                              </svg>
+
+                            </div>
+                            <div class="" *ngIf="colapseArrayBol[i]">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                style="fill: rgb(188, 208, 170);transform: msFilter;">
+                                <path
+                                  d="M3 19h18a1.002 1.002 0 0 0 .823-1.569l-9-13c-.373-.539-1.271-.539-1.645 0l-9 13A.999.999 0 0 0 3 19z">
+                                </path>
+                              </svg>
+
+                            </div>
+
+                          </button>
+                        </p>
+
+
+
+
+                        <!-- AGREGAR ELEMENTO -->
+                        <button data-toggle="tooltip" data-placement="right" title="Añadir elemnto dialógico"
+                          *ngIf="isAvailableDialog && isParticipant" class="button1"
+                          (click)="openScrollableContent(longContent, i)" type="button"
+                          style="background-color: transparent; color: #208fd8">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"
+                            style="fill:rgb(123, 159, 194); transform: msFilter;">
+                            <path
+                              d="M20 2H4c-1.103 0-2 .894-2 1.992v12.016C2 17.106 2.897 18 4 18h3v4l6.351-4H20c1.103 0 2-.894 2-1.992V3.992A1.998 1.998 0 0 0 20 2zm-3 9h-4v4h-2v-4H7V9h4V5h2v4h4v2z">
+                            </path>
+                          </svg>
+
+                        </button>
+                        &nbsp;
+                        &nbsp;
+
+
+
+
+
+
+
+                        <!-- BORRAR TEMA -->
+
+                        <button *ngIf="isSecretary && isEditable && isAvailableSaving " class="button1" type="button"
+                          (click)="borrarTema(i)" style="background-color: transparent; color: #b34128">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"
+                            style="fill: rgb(214, 164, 164);transform: msFilter;">
+                            <path d="M6 7H5v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7H6zm10.618-3L15 2H9L7.382 4H3v2h18V4z">
+                            </path>
+                          </svg>
+
+                        </button>
+
+
+
+                      </div>
+                      <div class="input-group">
+
+                        <div class="card5edit" style="background-color: transparent; " *ngIf="colapseArrayBol[i]">
+                          <div class="card card-body">
+
+                            <!-- TOOLTIP -->
+                            <script>
+                              $(function () {
+                                $('[data-toggle="tooltip"]').tooltip()
+                              });
+                            </script>
+
+                            <div class="" *ngFor="let ee of elements; let u = index">
+                              <li *ngIf="ee.topic === i" class="list-group-item" style="color: white">
+
+                                <button type="button" (click)="openScrollableContent2(longContent2, i, ee)"
+                                  data-toggle="tooltip" data-placement="right" title="{{ee.description}}"
+                                  style="align-items: left; text-align: left; width: 100%; height: 120px;">
+                                  <label class="text-left p-t-8 p-b-31" style="align-items: left;" for="{{ ee.topic }}">
+
+                                    <span *ngIf="ee.type==='compromiso'">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 21 21"
+                                        style="fill: rgba(248, 251, 251, 1);transform: msFilter;">
+                                        <path
+                                          d="M5 22h14c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2h-2a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1H5c-1.103 0-2 .897-2 2v15c0 1.103.897 2 2 2zM5 5h2v2h10V5h2v15H5V5z">
+                                        </path>
+                                        <path d="m11 13.586-1.793-1.793-1.414 1.414L11 16.414l5.207-5.207-1.414-1.414z">
+                                        </path>
+                                      </svg>
+                                    </span>
+                                    <span *ngIf="ee.type==='duda'">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor"
+                                        class="bi bi-question-circle" viewBox="0 0 16 16">
+                                        <path
+                                          d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                        <path
+                                          d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z" />
+                                      </svg>
+                                    </span>
+                                    <span *ngIf="ee.type==='desacuerdo'">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor"
+                                        class="bi bi-chat-quote" viewBox="0 0 16 16">
+                                        <path
+                                          d="M2.678 11.894a1 1 0 0 1 .287.801 10.97 10.97 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8.06 8.06 0 0 0 8 14c3.996 0 7-2.807 7-6 0-3.192-3.004-6-7-6S1 4.808 1 8c0 1.468.617 2.83 1.678 3.894zm-.493 3.905a21.682 21.682 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a9.68 9.68 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105z" />
+                                        <path
+                                          d="M7.066 6.76A1.665 1.665 0 0 0 4 7.668a1.667 1.667 0 0 0 2.561 1.406c-.131.389-.375.804-.777 1.22a.417.417 0 0 0 .6.58c1.486-1.54 1.293-3.214.682-4.112zm4 0A1.665 1.665 0 0 0 8 7.668a1.667 1.667 0 0 0 2.561 1.406c-.131.389-.375.804-.777 1.22a.417.417 0 0 0 .6.58c1.486-1.54 1.293-3.214.682-4.112z" />
+                                      </svg>
+                                    </span>
+                                    <span *ngIf="ee.type==='acuerdo'">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor"
+                                        class="bi bi-hand-thumbs-up" viewBox="0 0 16 16">
+                                        <path
+                                          d="M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.016-.428 2.59-.125.36-.479 1.013-1.04 1.639-.557.623-1.282 1.178-2.131 1.41C2.685 7.288 2 7.87 2 8.72v4.001c0 .845.682 1.464 1.448 1.545 1.07.114 1.564.415 2.068.723l.048.03c.272.165.578.348.97.484.397.136.861.217 1.466.217h3.5c.937 0 1.599-.477 1.934-1.064a1.86 1.86 0 0 0 .254-.912c0-.152-.023-.312-.077-.464.201-.263.38-.578.488-.901.11-.33.172-.762.004-1.149.069-.13.12-.269.159-.403.077-.27.113-.568.113-.857 0-.288-.036-.585-.113-.856a2.144 2.144 0 0 0-.138-.362 1.9 1.9 0 0 0 .234-1.734c-.206-.592-.682-1.1-1.2-1.272-.847-.282-1.803-.276-2.516-.211a9.84 9.84 0 0 0-.443.05 9.365 9.365 0 0 0-.062-4.509A1.38 1.38 0 0 0 9.125.111L8.864.046zM11.5 14.721H8c-.51 0-.863-.069-1.14-.164-.281-.097-.506-.228-.776-.393l-.04-.024c-.555-.339-1.198-.731-2.49-.868-.333-.036-.554-.29-.554-.55V8.72c0-.254.226-.543.62-.65 1.095-.3 1.977-.996 2.614-1.708.635-.71 1.064-1.475 1.238-1.978.243-.7.407-1.768.482-2.85.025-.362.36-.594.667-.518l.262.066c.16.04.258.143.288.255a8.34 8.34 0 0 1-.145 4.725.5.5 0 0 0 .595.644l.003-.001.014-.003.058-.014a8.908 8.908 0 0 1 1.036-.157c.663-.06 1.457-.054 2.11.164.175.058.45.3.57.65.107.308.087.67-.266 1.022l-.353.353.353.354c.043.043.105.141.154.315.048.167.075.37.075.581 0 .212-.027.414-.075.582-.05.174-.111.272-.154.315l-.353.353.353.354c.047.047.109.177.005.488a2.224 2.224 0 0 1-.505.805l-.353.353.353.354c.006.005.041.05.041.17a.866.866 0 0 1-.121.416c-.165.288-.503.56-1.066.56z" />
+                                      </svg>
+
+                                    </span>
+                                    {{ ee.type }} {{ee.number}}.{{ u }} &nbsp;
+                                    {{ ee.description.split(' ')[0] }} {{ee.description.split(' ')[1]}}
+                                    {{ee.description.split(' ')[2] }} {{ee.description.split(' ')[3] }}
+                                    {{ee.description.split(' ')[4] }}
+                                    {{ee.description.split(' ')[5] }} {{ee.description.split(' ')[6] }}
+                                    {{ee.description.split(' ')[7] }} {{ee.description.split(' ')[8] }}
+                                    {{ee.description.split(' ')[9] }} {{ee.description.split(' ')[10] }}
+                                    <span *ngIf="ee.description.split(' ')[10] != null">(...)</span>
+                                    <br> Responsable:
+                                    <span style="color: rgb(129, 127, 255)">{{ ee.participants }}
+                                    </span>
+                                    <br> Fecha límite:
+                                    <span style="color: rgb(150, 150, 251)">
+                                      {{ ee.dateLimit }}
+                                    </span>
+                                  </label>
+                                </button>
+
+                              </li>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <br>
+          <div class="text-right p-t-8 p-b-31"></div>
+          <!-- ADJUNTOS -->
+          <span *ngIf="!isNew"
+            style="color: rgb(201, 192, 168); padding-left: 10px; padding-top: 10px;font-size: 110%; ">
+            <hr>
+            <br>
+            Adjuntos:
+          </span>
+          <div *ngIf="isSecretary && !isNew && isEditable">
+            <div *ngIf="isAvailableSaving">
+              <div class="row-5">
+                <div class="input-group col-7">
+                </div>
+                <!-- GREGAR LINK A LOS ADJUNTOS -->
+                <div class="input-group col-7">
+                  <button class="btn2" type="button" (click)="addURL()"
+                    style="background-color: transparent; color: #2e79ab">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
+                      class="bi bi-link-45deg" viewBox="0 0 16 16">
+                      <path
+                        d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z" />
+                      <path
+                        d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z" />
+                    </svg>
+                    Agregar un Link
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <br>
+          <br>
+
+
+          <div class="card4" *ngIf="!isNew && !isEditable">
+            <div class="row-8">
+              <br>
+              <span class="label-input100"></span>
+            </div>
+            <br>
+            <div>
+              <li *ngFor="let link of links; let y = index">
+                <div class="input100">&nbsp;&nbsp; &nbsp; {{ link }}</div>
+              </li>
+            </div>
+
+            <br />
+            <br>
+          </div>
+
+          <div class="card4edit" *ngIf="!isNew && isEditable">
+            <div class="row-8">
+              <br>
+              <span class="label-input100"></span>
+
+            </div>
+
+
+            <br>
+            <div>
+              <li *ngFor="let link of links; let y = index">
+                <div class="input100">&nbsp;&nbsp; &nbsp; {{ link }}</div>
+              </li>
+            </div>
+
+            <br />
+            <br>
+          </div>
+
+
+
+          <br>
+          <br>
+          <!-- PASAR A PRE-REUNION -->
+          <div>
+            <div *ngIf="isAvailableSaving && stateMeet==='new'">
+              <div *ngIf="isAvailableSave && isSecretary">
+                <div class="text-center">
+                  <button type="button" (click)="nextFasePre()" style="
+                          width: 40%;
+                      height: 80px;
+                      border-radius: 5px;
+                      color: rgb(40, 40, 40);
+                      background-color: rgb(255, 255, 255);
+                      font-size: 20px;
+                      
+                    " class="btn btn-light btn-rounded" mdbRipple>
+
+                    Concluir: <span style="color: rgb(40, 40, 40);">"Creacíon de reunión" </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- PASAR A IN-REUNION -->
+          <div>
+            <div *ngIf="isAvailableSaving  && stateMeet==='pre-meeting'">
+              <div *ngIf="isAvailableSave && isSecretary">
+
+                <div class="text-center">
+                  <button type="button" (click)="nextFaseIn()" style="
+                      width: 40%;
+                      height: 80px;
+                      border-radius: 5px;
+                      color: rgb(40, 40, 40);
+                      background-color: rgb(255, 255, 255);
+                      font-size: 20px;
+                      
+    
+                    " class="btn btn-light btn-rounded" mdbRipple>
+                    <span> <span style=" color: rgb(40, 40, 40);">CONCLUIR: "PRE-REUNIÓN" </span></span><br>
+                    <!--  <span>AVANZAR A EN-REUNIÓN </span> -->
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- PASAR A POST-REUNION -->
+          <div>
+            <div *ngIf="isAvailableSaving  && stateMeet==='in-meeting'">
+              <div *ngIf="isAvailableSave && isSecretary">
+
+                <div class="text-center">
+                  <button type="button" (click)="nextFasePost()" style="
+                   width: 40%;
+                      height: 80px;
+                      border-radius: 5px;
+                      color: rgb(40, 40, 40);
+                      background-color: rgb(255, 255, 255);
+                      font-size: 20px;
+                    " class="btn btn-light btn-rounded" mdbRipple>
+                    <span style="color: rgb(40, 40, 40);"> CONCLUIR: "EN-REUNIÓN" </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
+
+          <div class="" *ngIf="!isAvailableSaving">
+            <span style="color: rgb(201, 192, 168); padding-left: 10px; padding-top: 10px;font-size: 110% ">
+              Fecha de inicio real: </span>
+            <span style="color: rgb(255, 255, 255); padding-left: 10px; padding-top: 10px;font-size: 110% ">
+              {{MeetingMinuteSelected.realStartTime}}
+            </span>
+            <br>
+            <span style="color: rgb(201, 192, 168); padding-left: 10px; padding-top: 10px;font-size: 110% ">
+
+              Fecha de Término real: </span>
+            <span style="color: rgb(255, 255, 255); padding-left: 10px; padding-top: 10px;font-size: 110% ">
+
+              {{MeetingMinuteSelected.realEndTime}}
+
+            </span>
+
+
+
+          </div>
+          <br>
+          
+          <!-- PASAR A POST-REUNION -->
+  <!--         <div>
+            <div *ngIf="!isAvailableSaving  && stateMeet==='post-meeting'">
+              <div *ngIf="isAvailableSave && isSecretary">
+
+                <div class="text-center">
+                  <button type="button" (click)="nextFasePostCreate()" style="
+                       width: 40%;
+                          height: 80px;
+                          border-radius: 5px;
+                          color: rgb(40, 40, 40);
+                          background-color: rgb(255, 255, 255);
+                          font-size: 20px;
+                        " class="btn btn-light btn-rounded" mdbRipple>
+                    <span style=" color: rgb(40, 40, 40);"> Crear nueva reunión </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div> -->
+
+          <!-- PASAR A POST-REUNION -->
+          <!--           <div>
+                    <div *ngIf=" stateMeet==='post-meeting'">
+                      <div *ngIf="isAvailableSave && isSecretary">
+        
+                        <div class="text-center">
+                          <button type="btn"  style="
+                           width: 40%;
+                              height: 80px;
+                              border-radius: 5px;
+                              color: rgb(44, 44, 44);
+                              background-color: rgb(232, 255, 238);
+                              font-size: 20px;
+                            " class="btn btn-light btn-rounded" mdbRipple>
+                            CONCLUIR <span style="color: rgb(171, 88, 88);">POST-REUNIÓN </span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div> -->
+          <!--    <div class="login100-form-btn">
+            <div *ngIf="isAvailableCreate">
+              <button class="btn" type="submit">Crear Acta</button>
+            </div>
+          </div> -->
+          <!-- GUARDAR REUNION -->
+          <br>
+
+          <!--       <div>
+            <div *ngIf="isAvailableSaving">
+              <div *ngIf="isAvailableSave && isSecretary">
+                <div class="">
+                  <button type="submit" style="
+                      width: 15%;
+                      height: 50px;
+                      border-radius: 5px;
+                      color: rgb(0, 0, 0);
+                      background-color: rgb(202, 226, 255);
+                    " class="btn btn-light btn-rounded" mdbRipple>
+                    Guardar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div> -->
+          <div class="flex-col-r p-t-8 p-b-31"></div>
+          <!--  NOTIFICAR REUNION -->
+
+          <!--           <div>
+            <div *ngIf="isAvailableSaving">
+              <div *ngIf="isAvailableSave && isSecretary">
+                <div class="">
+                  <button type="btn" (click)="notificarParticipantes()" style="
+                      width: 15%;
+                      height: 50px;
+                      border-radius: 5px;
+                      color: rgb(0, 0, 0);
+                      background-color: rgb(241, 238, 214);
+                    " class="btn btn-light btn-rounded" mdbRipple>
+                    Notificar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div> -->
+
+          <!-- <div class="flex-col-r p-t-8 p-b-31"></div>
+          <div class="login100-form-btn flex-col-r">
+            <div *ngIf="isAvailableSaving">
+              <div *ngIf="isAvailableSave && isSecretary">
+              </div>
+            </div>
+          </div>
+
+          <div class="flex-col-c p-t-30">
+          </div> -->
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- CREAR ELEMENTO -->
+<ng-template #longContent let-modal>
+  <div class="card9"
+    style="background: rgba(33,37,41,1); border-color:rgba(86, 86, 86, 0.9);   box-shadow: 4px 4px 4px 3px rgba(86, 86, 86, 0.3); ">
+    <form autocomplete="off" [formGroup]="elementForm" (ngSubmit)="crearElemento()">
+      <div class="row">
+        <div class="col-11">
+
+          <h4 class="modal-title" style="color: white;"> <br> &nbsp; &nbsp; &nbsp;
+
+            {{MeetingMinuteSelected.topics[selectTopic]}}
+
+          </h4>
+
+
+
+        </div>
+        <!--     <div class="col-3">
+          <select class="form-select" formControlName="topic" style="right: 20px; position: relative;"
+            aria-label="Default select example">
+            <option>{{selectTopic}}</option>
+
+            <option *ngFor="let topic of topicArr.controls; let k = index">
+              {{k}}
+            </option>
+
+          </select><br>
+
+        </div> -->
+
+      </div>
+      <br>
+
+
+      <div class="row">
+        <div class="col-11" style="left: 20px;; position:relative">
+          <select class="form-select" formControlName="type"
+            style="padding-right: 20px; background-color:  rgba(11, 11, 11, 0.9); color: whitesmoke"
+            placeholder="Seleccionar elemento" onfocus="(this.type='select')">
+            <option selected>Seleccionar tipo de elemento dialógico</option>
+            <option *ngFor="let type of typesElements ; let j = index">
+              {{type}}
+            </option>
+
+          </select>
+          <br>
+        </div>
+
+      </div>
+      <div class="row">
+        <br>
+        <div class="col-6" style="left: 20px; position:relative">
+          <select class="form-select" formControlName="participants"
+            style="background-color:  rgba(11, 11, 11, 0.9); color: whitesmoke" aria-label="Default select example">
+            <option selected>Seleccionar responsable</option>
+
+            <option *ngFor="let participant of MeetingMinuteSelected.participants; let p = index">
+              {{participant}}
+            </option>
+            <option *ngFor="let leader of MeetingMinuteSelected.leaders; let o = index">
+              {{leader}}
+            </option>
+            <option *ngFor="let secretary of MeetingMinuteSelected.secretaries; let u = index">
+              {{secretary}}
+            </option>
+
+          </select>
+        </div>
+        <div class="col-5" style="left: 20px;; position:relative">
+          <input type="text" class="form-control" placeholder="fecha limite" aria-label="name"
+            aria-describedby="basic-addon1" formControlName="dateLimit"
+            style="font-size: 120%; background-color:  rgba(11, 11, 11, 0.9); color:whitesmoke;"
+            onfocus="(this.type='date')" />
+        </div>
+      </div>
+      <br>
+      <div class="modal-body">
+
+        <textarea mdbInput aria-label="name" aria-describedby="basic-addon1"
+          style="font-size: 120%; color: rgb(255, 255, 255);background-color:  rgba(11, 11, 11, 0.9);"
+          placeholder="Escribir descripción del elemento dialógico" formControlName="description" class="form-control"
+          id="textAreaExample" rows="4"></textarea>
+      </div>
+      <br>
+
+      <div class="card5">
+        &nbsp; &nbsp; &nbsp;
+        <button type="submit" class="btn btn-light btn-rounded"
+          style="align-items: right; background-color: #e5e5e5;  color: rgb(40, 40, 40)"
+          (click)="modal.close('Close click')">Crear</button>&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;<button type="button" class="btn btn-dark btn-rounded"
+          style="background-color: rgb(10, 10, 10)" (click)="modal.close('Close click')">Cancelar</button>
+
+
+      </div>
+      <br>
+
+    </form>
+  </div>
+</ng-template>
+
+<!-- ACTUALIZAR ELEMENTO -->
+<ng-template #longContent2 let-modal style="background: rgb(0, 0, 0); border-color: black;">
+  <div class="card9"
+    style="background: rgba(33,37,41,1); border-color:rgba(86, 86, 86, 0.9);   box-shadow: 4px 4px 4px 3px rgba(86, 86, 86, 0.3); ">
+    <form autocomplete="off" [formGroup]="elementEditForm" (ngSubmit)="actualizarElemento()">
+
+
+      <div class="row">
+        <div class="col-11">
+
+
+          <h4 class="modal-title" style="color: white;"> <br> &nbsp; &nbsp; &nbsp;
+
+            {{MeetingMinuteSelected.topics[selectTopic]}}
+
+          </h4>
+
+
+
+
+
+        </div>
+        <!--         <div class="col-3">
+          <select class="form-select" formControlName="topic" style="right: 20px; position: relative;"
+            aria-label="Default select example">
+            <option selected>{{selectTopic}}</option>
+
+            <option *ngFor="let topic of topicArr.controls; let k = index">
+              {{k}}
+            </option>
+
+          </select><br>
+
+        </div> -->
+
+      </div>
+      <br>
+
+
+      <div class="row">
+        <div class="col-11" style="left: 20px;; position:relative">
+          <select class="form-select" formControlName="type"
+            style="padding-right: 20px; background-color:  rgba(11, 11, 11, 0.9); color: whitesmoke"
+            aria-label="Default select example">
+            <option selected>Seleccionar un elemento dialógico</option>
+            <option value="compromiso">Compromiso</option>
+            <option value="duda">Duda</option>
+            <option value="acuerdo">Acuerdo</option>
+            <option value="desacuerdo">Desacuerdo</option>
+            <option value="texto libre">Texto libre</option>
+          </select>
+          <br>
+        </div>
+
+      </div>
+      <div class="row">
+        <br>
+        <div class="col-6" style="left: 20px; position:relative;">
+          <select class="form-select" formControlName="participants" aria-label="Default select example"
+            style="background-color:  rgba(11, 11, 11, 0.9); color: whitesmoke">
+            <option selected>{{selectResponsable}}</option>
+
+            <option *ngFor="let participant of MeetingMinuteSelected.participants; let p = index">
+              {{participant}}
+            </option>
+            <option *ngFor="let leader of MeetingMinuteSelected.leaders; let o = index">
+              {{leader}}
+            </option>
+            <option *ngFor="let secretary of MeetingMinuteSelected.secretaries; let u = index">
+              {{secretary}}
+            </option>
+
+          </select>
+        </div>
+
+        <div class="col-5" style="left: 20px; position:relative; ">
+          <input type="text" class="form-control" placeholder="fecha limite" aria-label="name"
+            aria-describedby="basic-addon1" formControlName="dateLimit"
+            style="font-size: 120%; background-color:  rgba(11, 11, 11, 0.9); color:whitesmoke;"
+            onfocus="(this.type='date')" />
+        </div>
+      </div>
+      <br>
+      <div class="modal-body">
+
+        <textarea mdbInput aria-label="name" aria-describedby="basic-addon1"
+          style="font-size: 100%; color: rgb(255, 255, 255);background-color:  rgba(11, 11, 11, 0.9);"
+          placeholder="Escribir descripción del elemento dialógico" formControlName="description" class="form-control"
+          id="textAreaExample" rows="4"></textarea>
+
+      </div>
+   
+
+
+
+
+      <div class="card5">
+        <br>
+        &nbsp; &nbsp; &nbsp;
+        <button type="submit" class="btn btn-light btn-rounded"
+          style="align-items: right; background-color: #e5e5e5; color: rgb(40, 40, 40)"
+          (click)="modal.close('Close click')">Actualizar </button>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" class="btn btn-light btn-rounded"
+          style="align-items: left; background-color: #71a291; color: rgb(40, 40, 40)"
+          (click)="muestraTarea()">Ver tarea</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;<button type="button" class="btn btn-dark btn-rounded"
+          style="background-color: rgb(10, 10, 10)" (click)="modal.close('Close click')">Cancelar</button>
+
+      </div>
+      <br>
+
+    </form>
+  </div>
+</ng-template>
+
+
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Modal title</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <p>One fine body&hellip;</p>
+  </div>
+  <div class="modal-footer" style="color: blue">
+    <button type="btn" class="button" style="color: blue; background-color: darkblue"
+      (click)="modal.close('Close click')"><span>Cerrar</span></button>
+  </div>
+</ng-template>

@@ -1,36 +1,58 @@
 <div>
     <div>
-        <section class="step-wizard">
-            <ul class="step-wizard-list">
-                 
-                <li class="step-wizard-item  current-item ">
-                    
-                    <span class="progress-count "> </span>
-                    
-                    <span class="progress-label"></span>
-             
-                </li>
-                
-                <li class="step-wizard-item  ">
-                    
-                    <span class="progress-count  ">1 </span>
-                    <span class="progress-label">Pre reunion</span>
-                   <!--  <button class="btn2"> Iniciar reunion </button>  -->
-                  <!--   <button class="btn2"> Preparar reunión </button> -->
-                </li>
-                
-                <li class="step-wizard-item   ">
-                    <span class="progress-count ">2 </span>
-                    <span class="progress-label">en reunion </span>
-         <!--            <button class="btn2"> Iniciar reunion </button> -->
-                </li>
-                <li class="step-wizard-item  ">
-                    <span class="progress-count">3 </span>
-                    <span class="progress-label">post reunion</span>
-                   <!--  <button class="btn2" disabled> Terminar reunion </button> -->
-                </li>
-                
-            </ul>
-        </section>
+      <section class="step-wizard">
+        <ul class="step-wizard-list">
+          <li class="step-wizard-item current-item">
+            <span class="progress-count"> </span>
+  
+            <span class="progress-label" style="color:rgb(255, 255, 255);">Creando...</span>
+          </li>
+  
+          <li class="step-wizard-item ">
+            <span class="progress-count">1 </span>
+            <span class="progress-label"  style="color: rgb(223, 223, 223)">Pre-Reunión</span>
+      
+  
+            <!--   <button class="btn2"> Preparar reunión </button> -->
+          </li>
+  
+          <li class="step-wizard-item">
+            <span class="progress-count">2 </span>
+            <span class="progress-label"  style="color: rgb(223, 223, 223)">En-Reunión </span>
+            <br />
+  <!--           <button type="submit" style="font-size: 50px; z-index: 0; top: 500px;  border-radius: 5px; color: rgb(0, 0, 0);  background-color: rgb(202, 226, 255); " class="btn btn-light btn-rounded" mdbRipple>
+              Iniciar
+            </button> -->
+          </li>
+          <li class="step-wizard-item">
+            <span class="progress-count">3 </span>
+            <span class="progress-label"  style="color: rgb(223, 223, 223)">Post-Reunión</span>
+  <!--           <button class="btn" disabled>Terminar</button> -->
+          </li>
+        </ul>
+   <!--      <br />
+        <button type="submit" style="top: 50px; border-radius: 5px; color: rgb(0, 0, 0);  background-color: rgb(202, 226, 255); " class="btn btn-light btn-rounded" mdbRipple>
+            Acta Dialogica
+          </button> -->
+          
+  
+      </section>
+
+     
     </div>
-</div>
+  
+
+    
+    <div *ngIf="isMeetingMinute" class="col-8">
+
+      <div class="card"><app-meeting-minute></app-meeting-minute></div>
+    </div>
+  
+    <br />
+  <!--   <button class="btn2">Encuesta</button> -->
+    <!--   <br />
+    <button class="btn">Crear grafica</button>
+    <br />
+    <button class="btn">Crear borrador</button> -->
+  </div>
+  

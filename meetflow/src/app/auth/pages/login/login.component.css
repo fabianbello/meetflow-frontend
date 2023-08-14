@@ -1,4 +1,4 @@
-button{
+/* button{
     font-family: Poppins-regular;
     font-weight: 700;
     color: #ffffff;
@@ -15,4 +15,24 @@ button:hover{
     color: #ffffff;
     transform: scale(1.2);
     justify-content: center;
+} */
+
+
+
+.card{
+    background-color: rgba(33,37,41,0.5);
+    box-shadow: 4px 4px 4px 3px rgba(21, 21, 21, 0.428);
+    border-radius: 20px;
+    top: 50%;
+    left: 50%;
+    width: 420px;
+    height: 480px;
+    position: absolute;
+    transform: translate(-50%, -50%);
+
 }
+
+img{
+    background-size: cover;
+}
+

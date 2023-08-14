@@ -20,30 +20,134 @@ export class RegisterComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private authService: AuthService
-  ) {}
+  ) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
+
+  // REGISTRAR USUARIO
   register() {
     console.log(this.miFormulario.value);
     console.log(this.miFormulario.valid);
     //this.router.navigateByUrl('/dashboard');
 
     const { email, password, name } = this.miFormulario.value;
-    this.authService.registro(name, email, password).subscribe((resp) => {
-      this.router.navigateByUrl('/auth/signin');
-      console.log(resp);
-      Swal.fire({
-        position: 'center',
-        icon: 'success',
-        title: 'Registrado con exito',
-        showConfirmButton: false,
-        timer: 1000
-      })
-    },
-    (err) => {
-      Swal.fire('Error', err, 'error');
+    let nameSplit = name.split(' ');
+    let firstName = nameSplit[0][0].toUpperCase();
+    let secondName = ' ';
+    let thirdName = ' ';
+    if (nameSplit.length > 1) {
+      secondName = nameSplit[1][0].toUpperCase();
     }
-    
+    if (nameSplit.length > 2) {
+      thirdName = nameSplit[2][0].toUpperCase();
+    }
+
+
+    let tagName = firstName + '' + secondName + '' + thirdName;
+
+    this.authService.registro(name, tagName, email, password).subscribe((resp) => {
+/*       this.router.navigateByUrl('/auth/signin'); */
+      console.log(resp);
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'bottom-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+      })
+
+      Toast.fire({
+        icon: 'success',
+        title: 'Se ha registrado exitosamente.'
+      })
+
+      this.authService.login2(email, password).subscribe(
+        async (resp) => {
+          console.log(resp);
+  
+          await this.authService.setToken(resp.token);
+  
+          const Toast = Swal.mixin({
+            toast: true,
+            position: 'bottom-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.addEventListener('mouseenter', Swal.stopTimer)
+              toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+          })
+  
+          Toast.fire({
+            icon: 'success',
+            title: 'Se ha ingresado exitosamente.'
+          })
+  
+          this.router.navigate(['/main']).then(() => {
+            window.location.reload();
+          });
+        },
+        (err) => {
+          console.log('ERROR', err.error.error.message);
+          if (err.error.error.error === 'Bad Request') {
+            this.miFormulario.markAllAsTouched();
+  
+            Swal.fire(
+              'Revisar campos',
+              err.error.error.message[0] + ', ' + err.error.error.message[1],
+              'error'
+            );
+          } else if (err.error.error.message === 'Timeout has occurred') {
+            Swal.fire('ERROR', 'Microservicio de Usuarios no responde.', 'error');
+          } else {
+            Swal.fire('ERROR', err.error.error.message, 'error');
+          }
+        }
+      );
+    },
+      (err) => {
+        console.log('ERROR', err.error.error.message);
+        if (err.error.error.error === 'Bad Request') {
+          this.miFormulario.markAllAsTouched();
+
+          /* this.isError = true; */
+
+          Swal.fire(
+            'Revisar campos',
+            err.error.error.message[0] +
+            ', ' +
+            err.error.error.message[1],
+
+            'error'
+          );
+        }
+        else if (err.error.error.message === 'Timeout has occurred') {
+          Swal.fire('ERROR', 'Microservicio de Usuarios no responde. (Peticiones se cargaran una vez vuelva a estar en funcionamiento)', 'error');
+        }
+
+        else {
+          this.miFormulario.markAllAsTouched();
+          Swal.fire('ERROR', err.error.error.message, 'error');
+        }
+      }
+
     );
+  }
+  campoEsValido(campo: string) {
+    if (campo === 'error') {
+      console.log("ERROR AQUI!!!")
+      return true;
+
+    } else {
+      return (
+        this.miFormulario.controls[campo].errors &&
+        this.miFormulario.controls[campo].touched
+      );
+    }
   }
 }

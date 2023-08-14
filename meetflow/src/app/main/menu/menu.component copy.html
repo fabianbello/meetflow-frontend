@@ -1,0 +1,189 @@
+<!-- <h1>Dashboard</h1>
+<hr>
+
+<p>
+    
+
+</p>
+
+<h4>User info:</h4>
+<pre> {{usuario | json}}</pre>
+
+<button (click)="logout()">
+    Logout
+</button>
+ -->
+<!-- <div class="wrapper">
+  <div class="sidebar" data-color="green" data-image="">
+    <div class="sidebar-background"></div>
+  </div>
+</div>
+ -->
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MENU</title>
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <nav class="sidebar close">
+      <header>
+        <div class="text logo">
+          <span class="name"> Meetflow</span>
+          <span class="profe"> Desarrollador</span>
+        </div>
+        <i class="bx bx-menu toggle"></i>
+      </header>
+
+      <div class="menu-bar">
+        <div class="menu">
+          <li class="search-box">
+            <i class="bx bx-search icon"></i>
+            <input class="input" type="text" placeholder="buscar.." />
+          </li>
+
+          <ul class="menu-links">
+            <li class="nav-link">
+              <a href="#">
+                <i class="bx bx-home-alt icon"></i>
+                <span class="text nav-text">Dashboard</span>
+              </a>
+            </li>
+
+            <li class="nav-link">
+              <a href="#">
+                <i class="bx bx-bar-chart-alt-2 icon"></i>
+                <span class="text nav-text">Ganancias</span>
+              </a>
+            </li>
+
+            <li class="nav-link">
+              <a href="#">
+                <i class="bx bx-bell icon"></i>
+                <span class="text nav-text">Notificaciones</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="bottom-content">
+          <li class="">
+            <a href="#">
+              <i class="bx bx-log-out icon"></i>
+              <span class="text nav-text">Salir</span>
+            </a>
+          </li>
+          <li class="mode">
+            <div class="sun-moon">
+              <i class="bx bx-moon icon moon"></i>
+              <i class="bx bx-sun icon sun"></i>
+            </div>
+            <span class="mode-text text"> Modo Oscuro</span>
+            <div class="toggle-switch">
+              <span class="switch"></span>
+            </div>
+          </li>
+        </div>
+      </div>
+    </nav>
+
+    <section class="home">
+      <div class="text">
+              <!-- <app-navbar></app-navbar>
+
+
+      <app-sidebar></app-sidebar> -->
+  
+      <router-outlet></router-outlet>
+      </div>
+    </section>
+    <script src="/script.js"></script>
+  </body>
+  <script src="/script.js"></script>
+  <script>
+    const body = document.querySelector('body'),
+    sidebar = body.querySelector('nav'),
+    togle = body.querySelector(".toggle"),
+    searchBtn = body.querySelector(".search-box"),
+    modeSwitch = body.querySelector(".toggle-switch"),
+    modeText = body.querySelector(".mode-text");
+
+toggle.addEventListener("click", ()=> {
+    sidebar.classList.toggle("close");
+
+})
+
+searchBtn.addEventListener("click", () => {
+    sidebar.classList.remove("close");
+})
+
+modeSwitch.addEventListener("click", () => {
+    body.classList.toggle("dark");
+    if(body.classList.contains("dark")){
+        modeText.innerText = "light mode"
+    } else {
+        modeText.innerText = "Dark mode"
+    }
+})
+
+  </script>
+</html>
+
+<div class="main-panel">
+  <div class="row">
+    <!--         <nav>
+          <span id="open-close"> <i class="bx bx-menu">MENU DESPLEGABLE</i>
+            
+          </span>
+
+        </nav>
+
+        <aside>
+          <div class="container-svg">
+            <div>
+              icono casita: inicio
+            </div>
+            <div>
+              icono explorar: explorar
+            </div>
+            <div>
+              icono casita: suscriptores
+            </div>
+
+          </div>
+
+          <div class="container-svg">
+            <span> MAS </span>
+            <div>
+              mas 1
+            </div>
+            <div>
+              mas 2
+            </div>
+            <div>
+              mas 3
+            </div>
+
+          </div>
+
+
+        </aside> -->
+    <!--     <nav>
+      <app-navbar></app-navbar>
+    </nav> -->
+
+    <!--    <app-sidebar></app-sidebar> -->
+
+    <!--     <router-outlet></router-outlet> -->
+  </div>
+
+  <div>
+    <!--     <app-footer></app-footer> -->
+  </div>
+</div>

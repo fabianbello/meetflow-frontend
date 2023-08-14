@@ -8,7 +8,8 @@ import { AddProjectComponent } from './add-project/add-project.component';
 import { EditProjectComponent } from './edit-project/edit-project.component';
 import { SharedModule } from '../shared/shared.module';
 import { MainRoutingModule } from '../main/main-routing.module';
-
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzFormModule } from 'ng-zorro-antd/form';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,11 @@ import { MainRoutingModule } from '../main/main-routing.module';
     ReactiveFormsModule,
     MainRoutingModule,
     FormsModule,
-    SharedModule
+    SharedModule,
+    NzButtonModule,
+    NzFormModule
+
+
   
   ]
 })

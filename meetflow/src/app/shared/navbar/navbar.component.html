@@ -1,25 +1,212 @@
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+<!-- MDB -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css" rel="stylesheet" />
+
+<link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet" />
+
+
 <header class="header">
-  <div class="logo"></div>
-  <nav>
-    <ul class="nav-links">
-      <li>
-        <a> Actas </a>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MENU</title>
+
+  <!-- TOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOODOOOOOOOOOOOOOOOOO -->
+
+  <div class="collapse fixed-top" id="navbarToggleExternalContent" mdbCollapse #externalContent="mdbCollapse">
+    <div class="bg-dark p-7 md-5">
+      <h5 class="text-white h4">Proyecto</h5>
+      <span class="text-muted">Reunion</span>
+    </div>
+  </div>
+
+  <nav class="navbar bg fixed-top p-3" style="background-color: rgba(33, 37, 41, 1); color: rgba(33, 37, 41, 0.5)">
+    <div class="left">
+
+
+      <div class="btn-group">
+        <div class="dropdown">
+          <button type="button2" (click)="SideNavToggle()" class="btn btn-outline-light dropdown-toggle"
+            style="left: 50px" data-bs-toggle="dropdown">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+              style="fill: rgb(150, 150, 150);transform: ;msFilter:;">
+              <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"></path>
+            </svg>
+          </button>
+          <form class="dropdown-menu"></form>
+        </div>
+
+      </div>
+      &nbsp;
+      <b style="color: whitesmoke">&nbsp;MEETFLOW</b>
+      <button class="button1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample"
+        aria-expanded="false" aria-controls="collapseExample">
+        <span style="color: rgb(178, 178, 178);">
+
+          {{ nameProjectEmite }} /
+        </span>
+        <a style="color: rgb(255, 255, 255)" href="#"> {{ nameMeetingEmite }}</a>
+      </button>
+
+      <div class="collapse" id="collapseExample">
+        <div class="card card-body" style="color: white">
+          Proyecto: {{ nameProjectEmite }}
+          <br />
+          Reunión: {{ nameMeetingEmite }}
+        </div>
+      </div>
+      <!--  TOOLTIP -->
+      <script>
+        $(function () {
+          $('[data-toggle="tooltip"]').tooltip()
+        });
+      </script>
+      <div class="btn-group">
+        <div class="button1" style="padding: 1px; border-radius: 20px;" *ngFor="let newParticipant of newParticipants">
+          <button data-toggle="tooltip" data-placement="right" title="{{newParticipant.split(',')[5]}}"
+            class="btn btn-outline-light" type="button" (click)="showUser(newParticipant)"
+            style="background-color: {{newParticipant.split(',')[1]}}; color: white; border-radius: 20px;">
+            {{newParticipant.split(',')[0]}}
+          </button>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class="btn-group">
+      <!--! ---------------------------------------------------------------------------- -->
+      <!--! AQUI ESTAN LOS BOTONES DE USUARIOS COMO PERFIL CON SUS INICIALES -->
+      <!--!  --------------------------------------------------------------------------- -->
+
+      <div class="dropdown" style="right: 10px">
+
+        <!-- <button type="button" class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown"
+          aria-expanded="false" data-bs-auto-close="outside">
+          Color
+        </button> -->
+
+        <form class="dropdown-menu dropdown-menu-dark p-4" [formGroup]="tagForm" (ngSubmit)="setColor()">
+          <button type="submit" class="btn btn-dark" style="bottom: 50px">
+            Guardar
+          </button>
+          <div class="mb">
+            <label for="exampleDropdownFormEmail2" class="form-label" style="color: white">
+              <br />Seleccionar un color color: <br /></label>
+          </div>
+
+          <input type="color" class="form-control" id="exampleDropdownFormEmail2"
+            style="top: 50px; background-color: grey" formControlName="color" />
+        </form>
+      </div>
+
+      <div class="btn-group dropstart">
+        <button type="button" class="btn btn-outline-light dropdown-toggle"  data-bs-auto-close="outside" 
+        style=" background-color: {{ colorTag }}; color: white; border-radius: 20px;" data-bs-toggle="dropdown"
+        aria-expanded="false">
+        <span>{{ tagName }} </span>
+
+      </button>
+
+      
+
+      <ul class="dropdown-menu dropdown-menu dropdown-menu-dark"  >
+        <li>
+
+            <br>
+            &nbsp;&nbsp; {{userSelected.name}}
+      
+        </li>
+        <hr>
+
+        <!--  <li>
+          <button class="dropdown-item" type="button">
+            <a style="color: white" href="#/main/task">Tareas</a>
+          </button>
+        </li> -->
+
+      
+
+        <li>
+
+          <a style="color: white" href="#/main/user-edit" ><button class="dropdown-item" type="button">Perfil </button></a>
+  
       </li>
-      <li>
-        <a> Tareas </a>
+
+        <li>
+          
+            <a style="color: white" href="#/main/remember"><button class="dropdown-item" type="button">Recordatorios </button></a>
+         
+        </li>
+        <li>
+          
+          <a style="color: white" href="#/main/task"><button class="dropdown-item" type="button">Tareas </button></a>
+       
       </li>
-      <li>
-        <a> Recordatorios </a>
-      </li>
-      <li>
-        <a> Participantes </a>
-      </li>
-    </ul>
+        <div class="btn-group dropstart">
+          <button class="dropdown-item dropdown-toggle" type="button" data-bs-toggle="dropdown"
+            data-bs-auto-close="outside" style="fill: 100%; width: 150px;" aria-expanded="true">
+            Color 
+          </button>
+          <ul class="dropdown-menu"  style="background-color: rgb(81, 81, 81); width: 50px;" >
+            <button class="dropdown-item" style=" padding: 10px; width: 80%; border-radius: 50px;"  type="button" disabled>
+              Seleccionar color
+              <hr>
+            </button>
+              <button class="dropdown-item" (click)="setColor2('red')" style=" padding: 10px; background-color: rgb(151, 0, 0); width: 80%; border-radius: 50px;"  type="button">
+              </button>
+              <hr>
+              <button class="dropdown-item"  (click)="setColor2('green')"  style="background-color: rgb(51, 164, 45); width: 80%; border-radius: 50px;"  type="button">
+              </button>
+              <hr>
+              <button class="dropdown-item"  (click)="setColor2('blue')" style="background-color: rgb(60, 96, 173); width: 80%; border-radius: 50px;"  type="button">
+              </button>
+              <hr>
+              <button class="dropdown-item"  (click)="setColor2('orange')"  style="background-color: rgb(197, 165, 68); width: 80%; border-radius: 50px;"  type="button">
+              </button>
+              <hr>
+              <div class="dropdown" style="right: 10px">
+                &nbsp;
+                <button type="button" class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown"
+                  aria-expanded="false" data-bs-auto-close="outside">
+                  Personalizar
+                </button>
+        
+                <form class="dropdown-menu dropdown-menu-dark p-4" [formGroup]="tagForm" (ngSubmit)="setColor()">
+                  <button type="submit" class="btn btn-dark" style="bottom: 50px">
+                    Guardar
+                  </button>
+                  <div class="mb">
+                    <label for="exampleDropdownFormEmail2" class="form-label" style="color: white">
+                      <br />Seleccionar un color color: <br /></label>
+                  </div>
+        
+                  <input type="color" class="form-control" id="exampleDropdownFormEmail2"
+                    style="top: 50px; background-color: grey" formControlName="color" />
+                </form>
+              </div>
+              <br>
+         
+           
+          </ul>
+        </div>
+     
+        <li>
+          <button class="dropdown-item" type="button" (click)="logoutUser()">
+            Cerrar Sesión
+          </button>
+        </li>
+        <br>
+      </ul>
+
+      </div>
+     
+    </div>
+    <!-- Container wrapper -->
   </nav>
-  <a href="#" class="btn"><button>{{user.email}}</button></a>
-  <li class="nav-item">
-    <a (click)="logoutUser()" class="btn">
-      Cerrar sesión
-    </a>
-  </li>
+
 </header>

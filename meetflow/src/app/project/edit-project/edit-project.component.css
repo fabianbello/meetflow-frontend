@@ -1,34 +1,245 @@
+/* 
+
 button{
     font-family: Poppins-regular;
     font-weight: 700;
-    color: #ffffff;
+    color: rgb(255, 209, 111);
+    padding: 15px 30px;
+    background: rgb(255, 255, 255);
+    border-radius: 10px;
+    cursor: pinter;
+    transition: all 0.3;
+    justify-content: left;
+}
+
+button:hover{
+    background-color: rgb(255, 255, 255);
+    color: rgb(255, 209, 111);
+    transform: scale(1.2);
+    justify-content: center;
+}
+
+.btn2{
+    font-family: Poppins-regular;
+    font-weight: 900;
+    color: #181616;
+    padding: 20px 30px;
+
+    border-radius: 20px;
+    cursor: pinter;
+    transition: all 0.1;
+    justify-content: right;
+    background-color: rgb(255, 255, 255);
+    bottom: 5px
+}
+.btn2:hover{
+
+    background-color: rgb(255, 255, 255);
+    color: #d79626;
+    transform: scale(1.15);
+    justify-content: center;
+    
+}
+.btn2:hover .tooltip-box{
+    
+    display: inline-block;
+}
+
+.btn3{
+    font-family: Poppins-regular;
+    font-weight: 700;
+    color:  #ffffff;
     padding: 15px 30px;
     background: #208fd8;
     border-radius: 10px;
     cursor: pinter;
     transition: all 0.3;
-    justify-content: right;
-    position: right;
+    justify-content: center;
+}
+
+.btn3:hover{
+    background-color:  #208fd8;
+    color:  #ffffff;
+    transform: scale(1.2);
+    justify-content: center;
+}
+
+
+
+.tooltip-box{
+    position: absolute;
+    display: none;
+    background: #9b9797;
+    line-height: 20px;
+    z-index: 500;
+    text-align: center;
+    border-color: #181616;
+    color: #ffffff; 
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    left: 0;
+    right: 0;
+    bottom: 60px
+}
+
+.tooltip-box::after{
+    
+    position: absolute;
+    content: "";
+    border-top: 7px solid #9b9797;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    bottom: -7px;
+    left: calc(50% - 7px);
+} */
+
+.card{
+    background-color: rgba(33,37,41,1);
+    box-shadow: 4px 4px 4px 3px rgba(13, 13, 13, 0.428);
+    border-radius: 20px;
+    top: 60%;
+    left: 28%;
+    width: 90%;
+    height: 100%;
+/*     padding-top: 500px; */
+    transform: translate(-27%, 2%);
+    position: flex;
+/*     justify-content: center; */
+}
+
+.card2{
+    background-color: rgba(33,37,41,0.5);
+    box-shadow: 4px 4px 4px 3px rgba(21, 21, 21, 0.428);
+    border-radius: 20px;
+    top: 50%;
+    left: 80%;
+    width: 110%;
+    height: 1300px;;
+/*     padding-top: 500px; */
+
+ /*    justify-content: fixed; */
+    overflow-y: auto;
+    height: calc(90vh - 6rem);
+}
+
+
+.side-nav-content {
+    color: white;
+
+    width: 270px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+}
+
+.nav-list {
+    list-style: none;
+    height: 100%;
+    padding: 0%;
+    margin-bottom: 0%;
 
 }
 
-button:hover{
-    background-color: #208fd8;
-    color: #ffffff;
-    transform: scale(1.2);
+.nav-list-item {
+    display: flex;
+    align-items: center;
+    height: 50px;
 
-    justify-content: right;
-    position: right;
+    color: rgb(143, 0, 0);
+    background-color: rgb(172, 41, 41);
     
 }
 
-.btn2{
-    background-color: #cc2d0d;
-    justify-content: right;
-    position: right;
+.nav-list-open .nav-list-item:hover {
+    background-color: rgba(130, 130, 130, 0.1);
+/*     border-radius: 10px; */
 }
-.btn2:hover{
-    background-color: #b6301e;
-    justify-content: right;
-    position: right;
+
+.btn{
+    color: rgb(121, 121, 121);
+    background-color:rgba(41, 41, 41, 0)
 }
+
+
+.nav-list-item i {
+    font-size: 20px;
+    height: 30px;
+    width: 30px;
+    margin-right: 15px;
+    margin-left: 10px;
+    text-align: center;
+    line-height: 30px;
+}
+
+.nav-list-item span {
+    width: 300px;
+    text-transform: capitalize;
+}
+
+
+
+.border-white {
+    border: 1px solid white;
+}
+
+.button1{
+
+    font-weight: 300;
+    color: rgba(132, 131, 131, 0);
+    padding: 10px 10px;
+    background: rgba(41, 41, 41, 0);
+
+    cursor: pointer;
+    transition: all 0.3;
+    justify-content: center;
+    border: none;
+
+}
+
+.btn-check{
+
+    font-weight: 300;
+    color: rgba(194, 194, 194, 0);
+    padding: 10px 10px;
+    background: rgba(41, 41, 41, 0);
+
+    cursor: pointer;
+    transition: all 0.3;
+    justify-content: center;
+    border: none;
+}
+/* .btn{
+     font-weight: 300;
+    color: rgba(41, 41, 41, 0);
+    padding: 10px 10px;
+    background: rgba(41, 41, 41, 0);
+    cursor: pointer;
+    transition: all 0.3;
+    justify-content: center;
+    border: none;
+} */
+
+.button1:hover{
+    background-color: rgba(41, 41, 41, 0);
+    color: rgba(255, 255, 255, 0);
+    transform: scale(1.2);
+    justify-content: center;
+}
+
+.nav-list-item{
+    overflow-y: none;
+    justify-content: left;
+    background-color: rgb(8, 8, 8);
+
+   
+
+}
+
+.scrollinging{
+    overflow-y: auto;
+
+
+    height: calc(80vh - 60vh);
+}
+

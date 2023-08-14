@@ -1,42 +1,45 @@
-<!-- <h1>Dashboard</h1>
-<hr>
 
-<p>
-    
+<!DOCTYPE html>
+<html lang="es">
 
-</p>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MENU</title>
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+</head>
 
-<h4>User info:</h4>
-<pre> {{usuario | json}}</pre>
+<body>
 
-<button (click)="logout()">
-    Logout
-</button>
- -->
-<!-- <div class="wrapper">
-  <div class="sidebar" data-color="green" data-image="">
-    <div class="sidebar-background"></div>
-  </div>
-</div>
- -->
+  <section class="home">
+    <div class="text">
+      <app-navbar (sideNavToggled)="sideNavStatus = $event" [nameMeetingEmite]="nameMeetingEmite"
+        [nameProjectEmite]="nameProjectEmite" [newParticipants]="newParticipants"></app-navbar>
+      <main>
+        <app-sidebar [sideNavStatus]="sideNavStatus" [ngClass]="{'app-side-nav-open': sideNavStatus}"
+          class="black-border" (meetingStatus)="nameMeetingEmite = $event" (projectStatus)="nameProjectEmite = $event"
+          (changeStatus)="newParticipants = $event"></app-sidebar>
+        <div class="display-area p-3" [ngClass]="{'display-area-shrink': !sideNavStatus}">
+
+          <router-outlet></router-outlet>
+          <app-footer></app-footer>
+        </div>
+      </main>
+
+    </div>
+  </section>
+
+
+</body>
+
+
+</html>
 
 <div class="main-panel">
   <div class="row">
-    <app-navbar></app-navbar>
 
-    <div class="col">
-      <div class="card">
-        <app-sidebar></app-sidebar>
-      </div>
-    </div>
-    <div class="col-8">
-      <div class="card">
-        <div class=""><router-outlet></router-outlet></div>
-      </div>
-    </div>
   </div>
 
-  <div>
-    <app-footer></app-footer>
-  </div>
+
 </div>

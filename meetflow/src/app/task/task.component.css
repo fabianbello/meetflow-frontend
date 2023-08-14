@@ -1,0 +1,111 @@
+.card{
+    background-color: rgba(33,37,41,1);
+    box-shadow: 4px 4px 4px 3px rgba(13, 13, 13, 0.428);
+    border-radius: 20px;
+    top: 60%;
+    left: 27%;
+    width: 88%;
+    height: 100%;
+/*     padding-top: 500px; */
+    transform: translate(-26%, 10%);
+    position: flex;
+/*     justify-content: center; */
+}
+
+.card2{
+    background-color: rgba(33,37,41,0.5);
+    box-shadow: 4px 4px 4px 3px rgba(21, 21, 21, 0.428);
+    border-radius: 20px;
+    top: 50%;
+    left: 80%;
+    width: 110%;
+    height: 1300px;;
+/*     padding-top: 500px; */
+
+ /*    justify-content: fixed; */
+    overflow-y: auto;
+    height: calc(90vh - 6rem);
+}
+.button2{
+
+    font-weight: 300;
+    color: rgba(132, 131, 131, 0);
+    padding: 10px 10px;
+    background: rgba(41, 41, 41, 0);
+
+    cursor: pointer;
+    transition: all 0.3;
+    justify-content: center;
+    border: none;
+
+}
+
+.button2:hover{
+    background-color: rgba(41, 41, 41, 0);
+    color: rgba(255, 255, 255, 0);
+    transform: scale(1.2);
+    justify-content: center;
+}
+
+/* .button1{
+
+    font-weight: 300;
+    color: rgba(255, 255, 255, 1);
+    padding: 10px 10px;
+    background: rgba(255, 255, 255, 0);
+
+    cursor: pointer;
+    transition: all 0.3;
+    justify-content: center;
+    border: none;
+
+} */
+
+/* .btn-check{
+
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0);
+    padding: 10px 10px;
+    background: rgba(255, 255, 255, 0);
+
+    cursor: pointer;
+    transition: all 0.3;
+    justify-content: center;
+    border: none;
+} */
+
+/* .btn{
+    color: rgb(189, 189, 189);
+    background-color:rgba(140, 140, 140, 0)
+} */
+
+/* .button1:hover{
+    background-color: rgba(41, 41, 41, 0);
+    color: rgba(255, 255, 255, 1);
+    transform: scale(1.2);
+    justify-content: center;
+} */
+
+.button1:hover{
+    background-color: rgba(41, 41, 41, 0);
+    color: rgba(255, 255, 255, 0);
+    transform: scale(1.2);
+    justify-content: center;
+}
+
+.nav-list-item{
+    overflow-y: none;
+    justify-content: left;
+    background-color: rgb(8, 8, 8);
+
+   
+
+}
+
+.scrollinging{
+    overflow-y: auto;
+
+
+    height: calc(80vh - 60vh);
+}
+

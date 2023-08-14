@@ -1,18 +1,23 @@
-button{
+/* *{
+    background: rgb(255, 255, 255);
+} */
+
+/* button{
     font-family: Poppins-regular;
     font-weight: 700;
-    color: #c31c1c;
+    color: rgb(255, 255, 255);
     padding: 15px 30px;
-    background: #208fd8;
+    background: rgb(240, 240, 240);
     border-radius: 10px;
     cursor: pinter;
     transition: all 0.3;
     justify-content: center;
+    
 }
 
 button:hover{
-    background-color: #208fd8;
-    color: #c71e1e;
+    background-color: rgb(255, 255, 255);
+    color: rgb(255, 255, 255);
     transform: scale(1.2);
     justify-content: center;
 }
@@ -27,12 +32,12 @@ button:hover{
     cursor: pinter;
     transition: all 0.1;
     justify-content: right;
-    background-color: #ffffff;
+    background-color: rgb(255, 255, 255);
     bottom: 5px
 }
 .btn2:hover{
 
-    background-color: #ffffff;
+    background-color: rgb(255, 255, 255);
     color: #d79626;
     transform: scale(1.15);
     justify-content: center;
@@ -41,10 +46,12 @@ button:hover{
 .btn2:hover .tooltip-box{
     
     display: inline-block;
-}
+    
+    
+} */
 
 
-.tooltip-box{
+/* .tooltip-box{
     position: absolute;
     display: none;
     background: #9b9797;
@@ -58,7 +65,9 @@ button:hover{
     border-radius: 5px;
     left: 0;
     right: 0;
-    bottom: 60px
+    bottom: 60px;
+    transition-duration: 5s;
+    transition-delay: ease-out;
 }
 
 .tooltip-box::after{
@@ -71,4 +80,155 @@ button:hover{
     bottom: -7px;
     left: calc(50% - 7px);
 }
+ */
 
+.side-nav-content {
+    color: white;
+    width: 270px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+}
+
+.nav-list {
+    list-style: none;
+    height: 100%;
+    padding: 0%;
+    margin-bottom: 0%;
+
+}
+
+.nav-list-item {
+    display: flex;
+    align-items: center;
+    height: 50px;
+
+    color: white;
+    
+}
+
+.nav-list-open .nav-list-item:hover {
+    background-color: rgba(130, 130, 130, 0.1);
+/*     border-radius: 10px; */
+}
+
+.nav-list-item i {
+    font-size: 20px;
+    height: 30px;
+    width: 30px;
+    margin-right: 15px;
+    margin-left: 10px;
+    text-align: center;
+    line-height: 30px;
+    color: white;
+    background-color: white;
+}
+
+.nav-list-item span {
+    width: 300px;
+    text-transform: capitalize;
+    color: white;
+}
+
+
+
+.border-white {
+    border: 1px solid white;
+}
+
+.button1{
+
+    font-weight: 300;
+    color: rgba(132, 131, 131, 0);
+    padding: 10px 10px;
+    background: rgba(41, 41, 41, 0);
+
+    cursor: pointer;
+    transition: all 0.3;
+    justify-content: right;
+    border: none;
+
+}
+
+.button2{
+
+    font-weight: 300;
+    color: rgb(160, 160, 160);
+    padding: 10px 10px;
+    background: rgba(132, 131, 131, 0);
+
+    cursor: pointer;
+    transition: all 0.3;
+    justify-content: center;
+    border: none;
+    right: 50px;
+
+}
+
+.button2:hover{
+
+    font-weight: 300;
+    color: rgb(255, 255, 255);
+    padding: 10px 10px;
+    background: rgba(132, 131, 131, 0);
+
+    cursor: pointer;
+    transition: all 0.3;
+    justify-content: center;
+    border: none;
+
+}
+
+.btn{
+    color: rgb(121, 121, 121);
+    background-color:rgba(41, 41, 41, 0)
+}
+
+.btn-check{
+
+    font-weight: 300;
+    color: rgba(194, 194, 194, 0);
+    padding: 10px 10px;
+    background: rgba(41, 41, 41, 0);
+
+    cursor: pointer;
+    transition: all 0.3;
+    justify-content: center;
+    border: none;
+}
+/* .btn{
+     font-weight: 300;
+    color: rgba(41, 41, 41, 0);
+    padding: 10px 10px;
+    background: rgba(41, 41, 41, 0);
+    cursor: pointer;
+    transition: all 0.3;
+    justify-content: center;
+    border: none;
+} */
+
+.button1:hover{
+    background-color: rgba(41, 41, 41, 0);
+    color: rgba(255, 255, 255, 0);
+    transform: scale(1.2);
+    justify-content: center;
+}
+
+.nav-list-item{
+    overflow-y: none;
+    justify-content: left;
+    background-color: rgb(8, 8, 8);
+
+   
+
+}
+
+.scrollinging{
+    overflow-y: auto;
+    height: calc(90vh - 20rem);
+}
+
+.custom-tooltip {
+    --bs-tooltip-bg: var(--bd-violet-bg);
+    --bs-tooltip-color: var(--bs-white);
+  }

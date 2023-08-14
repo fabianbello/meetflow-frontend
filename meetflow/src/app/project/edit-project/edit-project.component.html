@@ -1,87 +1,386 @@
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+<!-- MDB -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css" rel="stylesheet" />
+
+<div class="" style="padding-left: 10px;">
+
+  <div class="" style="padding-bottom: 15px; padding-top: 15px;">
+    <!--   <button  style=" border-radius: 5px; color: rgb(0, 0, 0);  background-color: rgb(202, 226, 255); " class="btn btn-light btn-rounded" mdbRipple>
+    Editar Proyecto
+
+  </button> -->
+
+  </div>
+
+  <!-- TOOLTIP -->
+  <script>
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    });
+  </script>
+
+  <div class="card2">
+
+    <div class="card2-body">
+      <div class="card">
+        <div class="card-body">
+
+          <form autocomplete="off" [formGroup]="miFormulario" (ngSubmit)="saveProject()">
+
+            <div class="">
+              <h1>
+                <div class="d-grid gap-2 d-md-flex ">
+                  <div class="col-8">
+                    <span class="" style="color: white; text-align: right; border-radius: 10px;">{{
+                      projectSelected.shortName }}</span>
+                  </div>
+
+                  <div class="col-3">
+                    <div class="" *ngIf="isEditable">
+                      Editando...
+                    </div>
+                  </div>
+
+                  <div class="col-1">
+
+                    <!--  TOOLTIP  -->
+                    <button (click)="editable()" type="button" class="button1 btn-default" data-toggle="tooltip"
+                      data-placement="right" title="Editar">
+
+                      <svg *ngIf="!isEditable && isOwner" xmlns="http://www.w3.org/2000/svg" width="50" height="50"
+                        viewBox="0 0 24 24" style="fill: rgba(251, 247, 247, 1) ;transform: msFilter; ">
+                        <path d="m16 2.012 3 3L16.713 7.3l-3-3zM4 14v3h3l8.299-8.287-3-3zm0 6h16v2H4z"></path>
+                      </svg>
+                      <svg *ngIf="isEditable && isOwner" xmlns="http://www.w3.org/2000/svg" width="50" height="50"
+                        viewBox="0 0 24 24" style="fill: rgb(190, 143, 143) ;transform: msFilter; ">
+                        <path d="m16 2.012 3 3L16.713 7.3l-3-3zM4 14v3h3l8.299-8.287-3-3zm0 6h16v2H4z"></path>
+                      </svg>
+                    </button>
+
+      
+                  </div>
+
+                </div>
+              </h1>
+
+            </div>
+
+
+            <hr />
+            <br />
+
+            <div class="" *ngIf="!isEditable">
+              <div class="input-group">
+
+                <span class="input-group-text" id="basic-addon1"
+                  style="color: rgb(188, 188, 188); font-size: 150%; ">Nombre corto</span>
+
+                <input type="text" class="form-control" value="{{projectSelected.shortName}}" aria-label="nombre corto"
+                  aria-describedby="basic-addon1" disabled readonly
+                  style="font-size: 150%;border-color:   rgb(59, 59, 59);   background-color: rgba(33, 33, 33, 0.4); color: white;" />
+              </div>
+
+            </div>
+
+            <div class="" *ngIf="isEditable">
+              <div class="input-group">
+
+                <span class="input-group-text" id="basic-addon1"
+                  style="color: rgb(188, 188, 188); font-size: 150%; ">Nombre corto</span>
+
+                <input type="text" class="form-control" value="{{projectSelected.shortName}}"
+                  formControlName="shortName" aria-label="nombre corto" aria-describedby="basic-addon1"
+                  style="font-size: 150%; border-color:   rgb(59, 59, 59); background-color: rgba(11, 11, 11, 0.9); color: white;" />
+              </div>
+              <span class="form-text text-danger" *ngIf="campoEsValido('shortName')">
+                Este campo es obligatorio
+              </span>
+
+            </div>
 
 
 
-<form
-class="login100-form"
-autocomplete="off"
-[formGroup]="miFormulario"
-(ngSubmit)="addProject()"
->
-
-<span class="login200-form-title p-b-105"> PROYECTO: {{projectSelected.name}} </span>
 
 
+            <br />
+            <br />
+            <div class="" *ngIf="isEditable">
+              <div class="input-group">
+                <span class="input-group-text" id="basic-addon1"
+                  style="color: rgb(188, 188, 188); font-size: 150%; ">Nombre extendido</span>
+                <input type="text" class="form-control" placeholder="Escribir nombre" aria-label="name"
+                  aria-describedby="basic-addon1" formControlName="name"
+                  style="font-size: 150%; border-color:   rgb(59, 59, 59); background-color: rgba(11, 11, 11, 0.9); color: white;" />
+              </div>
+              <span class="form-text text-danger" *ngIf="campoEsValido('name')">
+                Este campo es obligatorio
+              </span>
+            </div>
+            <div class="" *ngIf="!isEditable">
+              <div class="input-group">
+                <span class="input-group-text" id="basic-addon1"
+                  style="color: rgb(188, 188, 188); font-size: 150%; ">Nombre extendido</span>
+                <input type="text" class="form-control" value="{{projectSelected.name}}" aria-label="nombre corto"
+                  aria-describedby="basic-addon1" disabled readonly
+                  style="font-size: 150%;border-color:   rgb(59, 59, 59); background-color: rgba(33, 33, 33, 0.4); color: white;" />
+
+              </div>
+
+            </div>
 
 
-<div class="wrap-input100 m-b-23">
-  <span class="label-input100">Nombre</span>
-  <input
-    class="input100"
-    type="text"
-    formControlName="name"
-    placeholder="Ingrese un nombre"
-  />
-  <span class="focus-input100"></span>
-</div>
+            <br />
+            <br />
 
-<div class="wrap-input100">
-  <span class="label-input100">Descripción</span>
-  <input
-    class="input100"
-    type="text"
-    formControlName="description"
-    placeholder="Ingrese una descripción"
-  />
-  <span class="focus-input100"></span>
-</div>
+            <div class="" *ngIf="isEditable">
+              <span class="input-group-text" id="basic-addon1"
+                style="color: rgb(188, 188, 188); font-size: 150%; ">Descripción</span>
+
+              <textarea mdbInput aria-label="name" aria-describedby="basic-addon1"
+                style="font-size: 150%; border-color:   rgb(59, 59, 59); background-color: rgba(11, 11, 11, 0.9); color: white;"
+                placeholder="Escribir descripción" formControlName="description" class="form-control"
+                id="textAreaExample" rows="2"></textarea>
+            </div>
+
+            <div class="" *ngIf="!isEditable">
+
+              <span class="input-group-text" id="basic-addon1"
+                style="color: rgb(188, 188, 188); font-size: 150%; ">Descripción</span>
 
 
-<div class="text-right p-t-8 p-b-31"></div>
-<div class="row">
-    <div class="col">
-      <span class="label-input100 flex-col-c p-t-10">Fecha de inicio</span>
 
-      <input
-        class="input100 flex-col-c p-t-10"
-        type="date"
-        formControlName="fechaI"
-        placeholder="Ingrese una fecha de inicio"
-      />
-    </div>
-    <div class="col">
-      <span class="label-input100 flex-col-c p-t-10">Fecha de Termino</span>
 
-      <input
-        class="input100 flex-col-c p-t-10"
-        type="date"
-        formControlName="fechaT"
-        placeholder="Ingrese una fecha de inicio"
-      />
+              <textarea mdbInput type="text" class="form-control" value="{{projectSelected.description}}"
+                aria-label="nombre corto" aria-describedby="basic-addon1" disabled readonly
+                style="font-size: 150%;border-color:   rgb(59, 59, 59); background-color: rgba(33, 33, 33, 0.4); color: white;"></textarea>
+            </div>
+
+            <!-- <input
+              type="text"
+              class="form-control"
+              placeholder="Escribir descripción"
+              aria-label="name"
+              aria-describedby="basic-addon1"
+              formControlName="description"
+              style="font-size: 150%; "
+            /> -->
+
+            <br />
+
+            <div class="text-right p-t-8 p-b-31"></div>
+
+            <div class="" *ngIf="isEditable">
+              <div class="row">
+                <div class="col">
+                  <br />
+
+                  <span class="input-group-text" id="basic-addon1"
+                    style="color: rgb(188, 188, 188); font-size: 150%; ">Fecha de inicio
+                  </span>
+
+                  <input type="text" class="form-control" placeholder={{projectSelected.projectDateI}} aria-label="name"
+                    aria-describedby="basic-addon1" formControlName="fechaI" style="font-size: 150%; "
+                    onfocus="(this.type='date')"
+                    style="font-size: 150%; border-color:   rgb(59, 59, 59); background-color: rgba(11, 11, 11, 0.9); color: white;" />
+
+                </div>
+                <br />
+                <div class="col">
+                  <br />
+                  <span class="input-group-text" id="basic-addon1"
+                    style="color: rgb(188, 188, 188); font-size: 150%; ">Fecha de Término
+                  </span>
+                  <input type="text" class="form-control" placeholder={{projectSelected.projectDateT}} aria-label="name"
+                    aria-describedby="basic-addon1" formControlName="fechaT" style="font-size: 150%; "
+                    onfocus="(this.type='date')"
+                    style="font-size: 150%; border-color:   rgb(59, 59, 59); background-color: rgba(11, 11, 11, 0.9); color: white;" />
+                </div>
+                <br />
+
+
+              </div>
+            </div>
+
+            <div class="" *ngIf="!isEditable">
+              <div class="row">
+                <div class="col">
+                  <br />
+
+                  <span class="input-group-text" id="basic-addon1"
+                    style="color: rgb(188, 188, 188); font-size: 150%; ">Fecha de inicio
+                  </span>
+
+                  <input type="text" class="form-control" value="{{projectSelected.projectDateI}}"
+                    aria-label="nombre corto" aria-describedby="basic-addon1" disabled readonly
+                    style="font-size: 150%;border-color:   rgb(59, 59, 59);  background-color: rgba(33, 33, 33, 0.4); color: white;" />
+
+                </div>
+                <br />
+                <div class="col">
+                  <br />
+                  <span class="input-group-text" id="basic-addon1"
+                    style="color: rgb(188, 188, 188); font-size: 150%; ">Fecha de Término
+                  </span>
+                  <input type="text" class="form-control" value="{{projectSelected.projectDateT}}"
+                    aria-label="nombre corto" aria-describedby="basic-addon1" disabled readonly
+                    style="font-size: 150%;border-color:   rgb(59, 59, 59);  background-color: rgba(33, 33, 33, 0.4); color: white;" />
+                </div>
+                <br />
+
+
+              </div>
+            </div>
+
+
+
+
+            <br />
+            <form>
+              <span class="login200-form-title p-b-00">
+                <div class="">
+                  <h3>
+                    <span class="badge badge-secundary">
+                      Miembros
+                      <button *ngIf="isOwner && isEditable" class="button1" (click)="addMember()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" style="
+                          fill: rgba(255, 255, 255, 1);
+                          transform: 
+                          msfilter
+                        ">
+                          <path
+                            d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z">
+                          </path>
+                        </svg>
+                      </button>
+                    </span>
+                  </h3>
+                </div>
+
+
+                <div class="">
+                  <ul class="nav-list">
+                    <div class="scrollinging">
+
+                      <li class="nav-list-item" *ngFor="let member of projectSelected.userMembers">
+                        <!--  <i> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(206, 13, 13, 1);transform: msFilter"><path d="M19.023 16.977a35.13 35.13 0 0 1-1.367-1.384c-.372-.378-.596-.653-.596-.653l-2.8-1.337A6.962 6.962 0 0 0 16 9c0-3.859-3.14-7-7-7S2 5.141 2 9s3.14 7 7 7c1.763 0 3.37-.66 4.603-1.739l1.337 2.8s.275.224.653.596c.387.363.896.854 1.384 1.367l1.358 1.392.604.646 2.121-2.121-.646-.604c-.379-.372-.885-.866-1.391-1.36zM9 14c-2.757 0-5-2.243-5-5s2.243-5 5-5 5 2.243 5 5-2.243 5-5 5z"></path></svg></i> -->
+                        <!--         <input type="radio" class="btn-check" name="{{ meeting.name }}" id="{{ meeting.name }}" autocomplete="off" checked /> -->
+                        <div class="" role="group" aria-label="" style="color: white; position: center">
+                          <!--   <div *ngIf="project.name === ">
+              
+                  </div> -->
+
+                          <input type="radio" class="btn-check active" name="member" [id]="member" autocomplete="off"
+                            value="meeting 1" />
+
+                          <label class="btn btn-outline" for="{{ member }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                              class="bi bi-archive" viewBox="0 0 16 16">
+                              <path
+                                d="M0 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v7.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 12.5V5a1 1 0 0 1-1-1V2zm2 3v7.5A1.5 1.5 0 0 0 3.5 14h9a1.5 1.5 0 0 0 1.5-1.5V5H2zm13-3H1v2h14V2zM5 7.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z" />
+                            </svg>
+                            <span (click)="modificarMember(member)">{{ member }}</span>
+                          </label>
+                        </div>
+                      </li>
+
+
+                    </div>
+                  </ul>
+
+                </div>
+
+              </span>
+
+
+              <span class="login200-form-title p-b-00">
+                <div class="">
+                  <h3>
+                    <span class="badge badge-secundary">
+                      Lideres
+
+                    </span>
+                  </h3>
+                </div>
+
+
+                <div class="">
+                  <ul class="nav-list">
+                    <div class="scrollinging">
+
+                      <li class="nav-list-item" *ngFor="let member of projectSelected.userOwner">
+                        <!--  <i> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(206, 13, 13, 1);transform: msFilter"><path d="M19.023 16.977a35.13 35.13 0 0 1-1.367-1.384c-.372-.378-.596-.653-.596-.653l-2.8-1.337A6.962 6.962 0 0 0 16 9c0-3.859-3.14-7-7-7S2 5.141 2 9s3.14 7 7 7c1.763 0 3.37-.66 4.603-1.739l1.337 2.8s.275.224.653.596c.387.363.896.854 1.384 1.367l1.358 1.392.604.646 2.121-2.121-.646-.604c-.379-.372-.885-.866-1.391-1.36zM9 14c-2.757 0-5-2.243-5-5s2.243-5 5-5 5 2.243 5 5-2.243 5-5 5z"></path></svg></i> -->
+                        <!--         <input type="radio" class="btn-check" name="{{ meeting.name }}" id="{{ meeting.name }}" autocomplete="off" checked /> -->
+                        <div class="" role="group" aria-label="" style="color: white; position: center">
+                          <!--   <div *ngIf="project.name === ">
+              
+                  </div> -->
+
+                          <input type="radio" class="btn-check active" name="member" [id]="member" autocomplete="off"
+                            value="meeting 1" />
+
+                          <label class="btn btn-outline" for="{{ member }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                              class="bi bi-archive" viewBox="0 0 16 16">
+                              <path
+                                d="M0 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v7.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 12.5V5a1 1 0 0 1-1-1V2zm2 3v7.5A1.5 1.5 0 0 0 3.5 14h9a1.5 1.5 0 0 0 1.5-1.5V5H2zm13-3H1v2h14V2zM5 7.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z" />
+                            </svg>
+                            <span (click)="modificarMember(member)">{{ member }}</span>
+                          </label>
+                        </div>
+                      </li>
+
+
+                    </div>
+                  </ul>
+
+                </div>
+
+              </span>
+
+
+            </form>
+
+            <br>
+
+            <div class="" *ngIf="isEditable">
+
+              <button type="submit"
+                style="   width:30%;
+            height: 50px; border-radius: 5px; color: rgb(0, 0, 0); font-size: 120%; background-color: rgb(202, 226, 255); "
+                class="btn btn-light btn-rounded" mdbRipple>
+                Guardar proyecto
+              </button>
+
+            </div>
+            <br>
+
+            <div class="flex-col-r p-t-8 p-b-31"></div>
+            <!-- <span class="txt1 p-b-17"> ¿No tienes cuenta? </span> -->
+            <!--     <form>
+            <div class="login100-form-btn flex-col-l">
+              <button
+                class="btn flex-col-l"
+                style="background-color: rgb(255, 104, 104); color: #ffffff"
+                type="submit"
+                (click)="borrarP(projectSelected._id)"
+              >
+                Eliminar
+              </button>
+            </div>
+          </form> -->
+
+            <div class="text-right p-t-8 p-b-31"></div>
+
+            <!-- <a routerLink="/auth/registro" class="txt2"> Crear una cuenta aquí </a> -->
+          </form>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="text-right p-t-8 p-b-31"></div>
-<div class="login100-form-btn flex-col-r">
-   
-        <button class="btn" type="submit">Guardar</button>
-        
-   
-    
-
-</div>
-
-
-<div class="flex-col-r p-t-8 p-b-31"></div>
-  <!-- <span class="txt1 p-b-17"> ¿No tienes cuenta? </span> -->
-  <div class="login100-form-btn flex-col-r">
-   
-    <button class="btn flex-col-r" style="background-color: red" type="submit" (click)="borrarP(projectSelected._id)">Borrar </button>
-    
-
 
 
 </div>
-<div class="text-right p-t-8 p-b-31"></div>
-
-  <!-- <a routerLink="/auth/registro" class="txt2"> Crear una cuenta aquí </a> -->
-
-</form>

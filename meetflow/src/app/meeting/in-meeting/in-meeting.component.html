@@ -1,0 +1,59 @@
+<div>
+    <div>
+      <section class="step-wizard">
+        <ul class="step-wizard-list">
+          <li class="step-wizard-item">
+            <span class="progress-count"> </span>
+  
+            <span class="progress-label" style="color: rgb(34, 34, 34)">Creada</span>
+          </li>
+  
+          <li class="step-wizard-item">
+            <span class="progress-count">1 </span>
+            <span class="progress-label" style="color: rgb(34, 34, 34)">Pre-Reunión</span>
+      
+  
+            <!--   <button class="btn2"> Preparar reunión </button> -->
+          </li>
+  
+          <li class="step-wizard-item current-item ">
+            <span class="progress-count">2 </span>
+            <span class="progress-label" style="color: rgb(255, 255, 255)">En-Reunión</span>
+            <br />
+         
+          </li>
+          <li class="step-wizard-item ">
+            <span class="progress-count">3 </span>
+            <span class="progress-label" style="color: rgb(223, 223, 223)">Post-Reunión</span>
+      <!--       <button (click)="addPostMeeting()" type="submit" style=" border-radius: 5px; color: rgb(0, 0, 0);  background-color: rgb(202, 226, 255); " class="btn btn-light btn-rounded" mdbRipple>
+              Terminar
+            </button> -->
+  <!--           <button class="btn" disabled>Terminar</button> -->
+          </li>
+        </ul>
+        <br />
+  
+  
+      </section>
+      <br />
+      
+    </div>
+  
+<!--     <br />
+    <button (click)="pomg()" type="submit" style=" border-radius: 5px; color: rgb(0, 0, 0);  background-color: rgb(202, 226, 255); " class="btn btn-light btn-rounded" mdbRipple>
+      Acta Dialogica
+    </button> -->
+  
+    <div *ngIf="isMeetingMinute" class="col-8">
+      <br>
+      <div class="card"><app-meeting-minute></app-meeting-minute></div>
+    </div>
+  
+    <br />
+<!--     <button class="btn2">Encuesta</button> -->
+    <!--   <br />
+    <button class="btn">Crear grafica</button>
+    <br />
+    <button class="btn">Crear borrador</button> -->
+  </div>
+  

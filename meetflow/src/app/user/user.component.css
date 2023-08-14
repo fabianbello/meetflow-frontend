@@ -1,0 +1,80 @@
+/* 
+button{
+    font-family: Poppins-regular;
+    font-weight: 600;
+    color: #ffffff;
+    padding: 10px 20px;
+    background: #208fd8;
+    border-radius: 10px;
+    cursor: pinter;
+    transition: all 0.3;
+    justify-content: center;
+    margin: 10px;
+}
+
+button:hover{
+    background-color: #208fd8;
+    color: #ffffff;
+    transform: scale(1.2);
+    justify-content: center;
+} */
+
+/* .form-white{
+    width: 500px;
+    position: fixed;
+
+
+} */
+/* .label-group{
+    padding: 500px;
+    background-color: white;
+} */
+.button1{
+
+    font-weight: 300;
+    color: rgba(132, 131, 131, 0);
+    padding: 10px 10px;
+    background: rgba(41, 41, 41, 0);
+
+    cursor: pointer;
+    transition: all 0.3;
+    justify-content: center;
+    border: none;
+
+}
+.card{
+    background-color: rgba(33,37,41,1);
+    box-shadow: 4px 4px 4px 3px rgba(13, 13, 13, 0.428);
+    border-radius: 20px;
+    top: 50%;
+    bottom:50%;
+    left: 28%;
+    width: 90%;
+    height: 100%;
+/*     padding-top: 500px; */
+    transform: translate(-27%, 3.5%);
+    position: flex;
+/*     justify-content: center; */
+}
+
+.card2{
+    background-color: rgba(33,37,41,0.5);
+    box-shadow: 4px 4px 4px 3px rgba(21, 21, 21, 0.428);
+    border-radius: 20px;
+    top: 50%;
+    left: 80%;
+    width: 110%;
+    height: 1300px;;
+/*     padding-top: 500px; */
+
+ /*    justify-content: fixed; */
+    overflow-y: auto;
+    height: calc(90vh - 6rem);
+}
+
+.button1:hover{
+    background-color: rgba(41, 41, 41, 0);
+    color: rgba(255, 255, 255, 0);
+    transform: scale(1.2);
+    justify-content: center;
+}
