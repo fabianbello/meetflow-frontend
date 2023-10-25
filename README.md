@@ -1,5 +1,5 @@
-# meetflow-frontend
-Tech demo D-Meetflow creada utilizando framework meetflow-backend https://github.com/fabianbello/meetflow-backend
+# D-Meetflow-frontend
+Tech demo D-Meetflow creada utilizando framework D-Meetflow-backend https://github.com/fabianbello/meetflow-backend
 
 # Requisitos:
 1. Node v20
