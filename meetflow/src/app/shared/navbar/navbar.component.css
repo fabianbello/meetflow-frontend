@@ -4,12 +4,48 @@
 }
  */
 
-button{
+.switch {
+    --false: rgb(239, 223, 176);
+    --true: #6b6b69;
+}
+
+input[type=checkbox] {
+    appearance: none;
+    height: 2rem;
+    width: 3.5rem;
+    background-color: #bbb3b3;
+    position: relative;
+    border-radius: .2em;
+    cursor: pointer;
+}
+
+input[type=checkbox]::before {
+    content: '';
+    display: block;
+    height: 1.9em;
+    width: 1.9em;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    top: 50%;
+    left: calc(1.9em/2 + .3em);
+    background-color: var(--false);
+    border-radius: .2em;
+    transition: .3s ease;
+}
+
+input[type=checkbox]:checked::before {
+    background-color: var(--true);
+    left: calc(100% - (1.9em/2 + .3em));
+}
+
+/* ------------------------- */
+
+button {
     margin-left: 10px;
     background-color: transparent;
 }
 
-.btn{
+.btn {
     background-color: transparent;
 }
 
@@ -17,25 +53,25 @@ button{
 
 }
  */
- .btn-group{
+.btn-group {
     background: transparent;
- }
- 
+}
 
-.navbar-brand{
+
+.navbar-brand {
     margin-left: 20px;
 }
 
-.navbar-toggler2{
+.navbar-toggler2 {
 
     justify-content: left;
     display: left;
     align-items: left;
- 
+
 
 }
 
-.navbar-toggler2{
+.navbar-toggler2 {
     border-radius: 20px;
     justify-content: right;
     display: right;
@@ -43,15 +79,15 @@ button{
 
 }
 
-.navbar-toggler3{
+.navbar-toggler3 {
     border-radius: 20px;
 
-    position:right;
+    position: right;
     display: right;
 
 }
 
-.button1{
+.button1 {
 
     font-weight: 300;
     color: rgba(132, 131, 131, 0);
@@ -76,8 +112,7 @@ button{
     
 } */
 
-.card{
+.card {
     background-color: rgba(41, 41, 41, 0);
     border: none;
 }
-

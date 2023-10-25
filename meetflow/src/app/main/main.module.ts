@@ -6,6 +6,7 @@ import { MenuComponent } from './menu/menu.component';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from '../shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 /* import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { SidebarjsModule } from 'ng-sidebarjs';
 
@@ -44,6 +45,7 @@ import { LyImageCropperModule } from '@alyle/ui/image-cropper';
     // ...
     // Gestures
     HammerModule, */
+    DragDropModule
     
   ],
   providers: [ ],

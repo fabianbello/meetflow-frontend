@@ -7,197 +7,195 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css" rel="stylesheet" />
 
 
-<div class="" style="padding-left: 10px;">
-
-  <div class="" style="padding-bottom: 15px; padding-top: 15px;">
-    <!--     <button  style=" border-radius: 5px; color: rgb(0, 0, 0);  background-color: rgb(202, 226, 255); " class="btn btn-light btn-rounded" mdbRipple>
-      Editar perfil de usuario
-      <br>
-    </button>
-    <br> -->
-  </div>
-
-
+<div class="" style="padding-left: 0px;">
   <div class="card2">
-    <div class="card2-body">
 
-      <div class="card">
-        <div class="card-body">
-          <form autocomplete="off" [formGroup]="userEditForm" (ngSubmit)="saveUser()">
-            <div class="d-grid gap-2 d-md-flex ">
-              <div class="col-8">
-                <h1><span class="" style="color: white;">{{userSelected.name}}</span></h1>
+    <div class="card">
+      <div class="card-body">
+        <h1>
+          &nbsp;
+          <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" style="fill: rgba(255, 255, 255, 1);transform: ;msFilter:;"><path d="M7.5 6.5C7.5 8.981 9.519 11 12 11s4.5-2.019 4.5-4.5S14.481 2 12 2 7.5 4.019 7.5 6.5zM20 21h1v-1c0-3.859-3.141-7-7-7h-4c-3.86 0-7 3.141-7 7v1h17z"></path></svg>
+          <span class="" style="color: white;"> Perfil de {{userSelected.name}} </span>
+
+          <!--  TOOLTIP  -->
+          <button (click)="editable()" type="button" class="button1 btn-default" data-toggle="tooltip"
+            data-placement="right" title="Editar"><svg *ngIf="!isEditable" xmlns="http://www.w3.org/2000/svg" width="24"
+              height="24" viewBox="0 0 24 24" style="fill: rgba(251, 247, 247, 1) ;transform: msFilter; ">
+              <path d="m16 2.012 3 3L16.713 7.3l-3-3zM4 14v3h3l8.299-8.287-3-3zm0 6h16v2H4z"></path>
+            </svg>
+          </button>
+
+          <button (click)="editable()" type="button" class="button1 btn-default" data-toggle="tooltip"
+            data-placement="right" title="Editar">
+
+            <svg *ngIf="isEditable" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+              style="fill: rgb(163, 81, 81) ;transform: msFilter; ">
+              <path d="m16 2.012 3 3L16.713 7.3l-3-3zM4 14v3h3l8.299-8.287-3-3zm0 6h16v2H4z"></path>
+            </svg>
+          </button>
+
+
+          <br>
+          <hr style="color: white;">
+        </h1>
+        <form autocomplete="off" [formGroup]="userEditForm" (ngSubmit)="saveUser()">
+          <div class="d-grid gap-2 d-md-flex ">
+
+            <div class="col-3">
+              <div class="" *ngIf="isEditable">
+                <h1> Editando...</h1>
               </div>
-
-              <div class="col-3">
-                <div class="" *ngIf="isEditable">
-                  <h1> Editando...</h1>
-                </div>
-              </div>
-
-              <div class="col-1">
-
-                <!--  TOOLTIP  -->
-                <button (click)="editable()" type="button" class="button1 btn-default" data-toggle="tooltip"
-                  data-placement="right" title="Editar"><svg *ngIf="!isEditable" xmlns="http://www.w3.org/2000/svg" width="50" height="50"
-                    viewBox="0 0 24 24" style="fill: rgba(251, 247, 247, 1) ;transform: msFilter; ">
-                    <path d="m16 2.012 3 3L16.713 7.3l-3-3zM4 14v3h3l8.299-8.287-3-3zm0 6h16v2H4z"></path>
-                  </svg>
-                </button>
-
-                <button (click)="editable()" type="button" class="button1 btn-default" data-toggle="tooltip"
-                  data-placement="right" title="Editar">
-
-                  <svg *ngIf="isEditable" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24"
-                    style="fill: rgb(163, 81, 81) ;transform: msFilter; ">
-                    <path d="m16 2.012 3 3L16.713 7.3l-3-3zM4 14v3h3l8.299-8.287-3-3zm0 6h16v2H4z"></path>
-                  </svg>
-                </button>
-
-              </div>
-
             </div>
 
 
 
-            <hr />
-            <br />
+          </div>
 
-            <div class="" *ngIf="isEditable">
-              <div class="input-group">
 
-                <span class="input-group-text" id="basic-addon1"
-                  style="color: rgb(188, 188, 188); font-size: 150%; ">Nombre completo</span>
-                <input type="text" class="form-control" placeholder="Escribir nombre" aria-label="name"
-                  aria-describedby="basic-addon1" formControlName="name" style="font-size: 150%; border-color:   rgb(59, 59, 59); background-color: rgba(11, 11, 11, 0.9); color: white;"/>
 
-              </div>
-              <span class="form-text text-danger" *ngIf="campoEsValido('name')">
-                Este campo es obligatorio
-              </span>
+
+          <br />
+
+          <div class="" *ngIf="isEditable">
+            <div class="input-group">
+
+              <span class="input-group-text" id="basic-addon1"
+                style="color: rgb(188, 188, 188); font-size: 150%; ">Nombre completo</span>
+              <input type="text" class="form-control" placeholder="Escribir nombre" aria-label="name"
+                aria-describedby="basic-addon1" formControlName="name"
+                style="font-size: 150%; border-color:   rgb(59, 59, 59); background-color: rgba(11, 11, 11, 0.9); color: white;" />
+
             </div>
+            <span class="form-text text-danger" *ngIf="campoEsValido('name')">
+              Este campo es obligatorio
+            </span>
+          </div>
 
-            <div class="" *ngIf="!isEditable">
-              <div class="input-group">
+          <div class="" *ngIf="!isEditable">
+            <div class="input-group">
 
-                <span class="input-group-text" id="basic-addon1"
-                  style="color: rgb(188, 188, 188); font-size: 150%; ">Nombre completo</span>
-                <input type="text" class="form-control" value="{{userSelected.name}}" aria-label="name" disabled
-                  readonly aria-describedby="basic-addon1"
-                  style="font-size: 150%;border-color:   rgb(59, 59, 59);   background-color: rgba(33, 33, 33, 0.4); color: white;" />
+              <span class="input-group-text" id="basic-addon1"
+                style="color: rgb(188, 188, 188); font-size: 150%; ">Nombre completo</span>
+              <input type="text" class="form-control" value="{{userSelected.name}}" aria-label="name" disabled readonly
+                aria-describedby="basic-addon1"
+                style="font-size: 150%;border-color:   rgb(59, 59, 59);   background-color: rgba(33, 33, 33, 0.4); color: white;" />
 
-              </div>
-              <span class="form-text text-danger" *ngIf="campoEsValido('name')">
-                Este campo es obligatorio
-              </span>
             </div>
+            <span class="form-text text-danger" *ngIf="campoEsValido('name')">
+              Este campo es obligatorio
+            </span>
+          </div>
 
 
 
 
 
 
-            <br />
-            <br />
+          <br />
+          <br />
 
-            <div class="" *ngIf="isEditable">
-              <div class="input-group">
+          <div class="" *ngIf="isEditable">
+            <div class="input-group">
 
-                <span class="input-group-text" id="basic-addon1"
-                  style="color: rgb(188, 188, 188); font-size: 150%; ">Siglas desplegadas</span>
-                <input type="text" class="form-control" placeholder="Escribir siglas" aria-label="name"
-                  aria-describedby="basic-addon1" formControlName="tagName" style="font-size: 150%; border-color:   rgb(59, 59, 59); background-color: rgba(11, 11, 11, 0.9); color: white;" maxLength="3" />
+              <span class="input-group-text" id="basic-addon1"
+                style="color: rgb(188, 188, 188); font-size: 150%; ">Siglas desplegadas</span>
+              <input type="text" class="form-control" placeholder="Escribir siglas" aria-label="name"
+                aria-describedby="basic-addon1" formControlName="tagName"
+                style="font-size: 150%; border-color:   rgb(59, 59, 59); background-color: rgba(11, 11, 11, 0.9); color: white;"
+                maxLength="3" />
 
-              </div>
-              <span class="form-text text-danger" *ngIf="campoEsValido('tagName')">
-                Este campo es obligatorio y debe tener un maximo de 3 caracteres.
-              </span>
             </div>
+            <span class="form-text text-danger" *ngIf="campoEsValido('tagName')">
+              Este campo es obligatorio y debe tener un maximo de 3 caracteres.
+            </span>
+          </div>
 
-            <div class="" *ngIf="!isEditable">
-              <div class="input-group">
+          <div class="" *ngIf="!isEditable">
+            <div class="input-group">
 
-                <span class="input-group-text" id="basic-addon1"
-                  style="color: rgb(188, 188, 188); font-size: 150%; ">Siglas desplegadas</span>
-                <input type="text" class="form-control" value="{{userSelected.tagName}}" aria-label="name" disabled
-                  readonly aria-describedby="basic-addon1"
-                  style="font-size: 150%;border-color:   rgb(59, 59, 59);   background-color: rgba(33, 33, 33, 0.4); color: white;" />
+              <span class="input-group-text" id="basic-addon1"
+                style="color: rgb(188, 188, 188); font-size: 150%; ">Siglas desplegadas</span>
+              <input type="text" class="form-control" value="{{userSelected.tagName}}" aria-label="name" disabled
+                readonly aria-describedby="basic-addon1"
+                style="font-size: 150%;border-color:   rgb(59, 59, 59);   background-color: rgba(33, 33, 33, 0.4); color: white;" />
 
 
-              </div>
-              <span class="form-text text-danger" *ngIf="campoEsValido('tagName')">
-                Este campo es obligatorio y debe tener un maximo de 3 caracteres.
-              </span>
             </div>
-            <br />
-            <br />
+            <span class="form-text text-danger" *ngIf="campoEsValido('tagName')">
+              Este campo es obligatorio y debe tener un maximo de 3 caracteres.
+            </span>
+          </div>
+          <br />
+          <br />
 
 
-            <div class="" *ngIf="isEditable">
-              <div class="input-group">
+          <div class="" *ngIf="isEditable">
+            <div class="input-group">
 
-                <span class="input-group-text" id="basic-addon1"
-                  style="color: rgb(188, 188, 188); font-size: 150%; ">Institución</span>
-                <input type="text" class="form-control" placeholder="Escribir siglas" aria-label="name"
-                  aria-describedby="basic-addon1" formControlName="institution" style="font-size: 150%; border-color:   rgb(59, 59, 59); background-color: rgba(11, 11, 11, 0.9); color: white;" />
+              <span class="input-group-text" id="basic-addon1"
+                style="color: rgb(188, 188, 188); font-size: 150%; ">Institución</span>
+              <input type="text" class="form-control" placeholder="Escribir siglas" aria-label="name"
+                aria-describedby="basic-addon1" formControlName="institution"
+                style="font-size: 150%; border-color:   rgb(59, 59, 59); background-color: rgba(11, 11, 11, 0.9); color: white;" />
 
-              </div>
-              <span class="form-text text-danger" *ngIf="campoEsValido('institution')">
-                Este campo es obligatorio y debe tener un maximo de 3 caracteres.
-              </span>
             </div>
+            <span class="form-text text-danger" *ngIf="campoEsValido('institution')">
+              Este campo es obligatorio y debe tener un maximo de 3 caracteres.
+            </span>
+          </div>
 
-            <div class="" *ngIf="!isEditable">
-              <div class="input-group">
+          <div class="" *ngIf="!isEditable">
+            <div class="input-group">
 
-                <span class="input-group-text" id="basic-addon1"
-                  style="color: rgb(188, 188, 188); font-size: 150%; ">Institución</span>
-                <input type="text" class="form-control" value="{{userSelected.institution}}" aria-label="name" disabled
-                  readonly aria-describedby="basic-addon1"
-                  style="font-size: 150%;border-color:   rgb(59, 59, 59);   background-color: rgba(33, 33, 33, 0.4); color: white;" />
+              <span class="input-group-text" id="basic-addon1"
+                style="color: rgb(188, 188, 188); font-size: 150%; ">Institución</span>
+              <input type="text" class="form-control" value="{{userSelected.institution}}" aria-label="name" disabled
+                readonly aria-describedby="basic-addon1"
+                style="font-size: 150%;border-color:   rgb(59, 59, 59);   background-color: rgba(33, 33, 33, 0.4); color: white;" />
 
 
-              </div>
-              <span class="form-text text-danger" *ngIf="campoEsValido('institution')">
-                Este campo es obligatorio y debe tener un maximo de 3 caracteres.
-              </span>
             </div>
-            <br />
-            <br />
+            <span class="form-text text-danger" *ngIf="campoEsValido('institution')">
+              Este campo es obligatorio y debe tener un maximo de 3 caracteres.
+            </span>
+          </div>
+          <br />
+          <br />
 
-            <div class="" *ngIf="isEditable">
-              <div class="input-group">
+          <div class="" *ngIf="isEditable">
+            <div class="input-group">
 
-                <span class="input-group-text" id="basic-addon1"
-                  style="color: rgb(188, 188, 188); font-size: 150%; ">Correo electrónico</span>
-                <input type="text" class="form-control" placeholder="Escribir correo electrónico" aria-label="name"
-                  aria-describedby="basic-addon1" formControlName="email" style="font-size: 150%; border-color:   rgb(59, 59, 59); background-color: rgba(11, 11, 11, 0.9); color: white;" />
+              <span class="input-group-text" id="basic-addon1"
+                style="color: rgb(188, 188, 188); font-size: 150%; ">Correo electrónico</span>
+              <input type="text" class="form-control" placeholder="Escribir correo electrónico" aria-label="name"
+                aria-describedby="basic-addon1" formControlName="email"
+                style="font-size: 150%; border-color:   rgb(59, 59, 59); background-color: rgba(11, 11, 11, 0.9); color: white;" />
 
-              </div>
-              <span class="form-text text-danger" *ngIf="campoEsValido('institution')">
-                Este campo es obligatorio y debe ser un correo electrónico.
-              </span>
             </div>
+            <span class="form-text text-danger" *ngIf="campoEsValido('institution')">
+              Este campo es obligatorio y debe ser un correo electrónico.
+            </span>
+          </div>
 
-            <div class="" *ngIf="!isEditable">
-              <div class="input-group">
+          <div class="" *ngIf="!isEditable">
+            <div class="input-group">
 
-                <span class="input-group-text" id="basic-addon1"
-                  style="color: rgb(188, 188, 188); font-size: 150%; ">Correo electrónico</span>
-                <input type="text" class="form-control" value="{{userSelected.email}}" aria-label="name" disabled
-                  readonly aria-describedby="basic-addon1"
-                  style="font-size: 150%;border-color:   rgb(59, 59, 59);   background-color: rgba(33, 33, 33, 0.4); color: white;" />
+              <span class="input-group-text" id="basic-addon1"
+                style="color: rgb(188, 188, 188); font-size: 150%; ">Correo electrónico</span>
+              <input type="text" class="form-control" value="{{userSelected.email}}" aria-label="name" disabled readonly
+                aria-describedby="basic-addon1"
+                style="font-size: 150%;border-color:   rgb(59, 59, 59);   background-color: rgba(33, 33, 33, 0.4); color: white;" />
 
 
-              </div>
-              <span class="form-text text-danger" *ngIf="campoEsValido('email')">
-                Este campo es obligatorio y debe ser un correo electrónico.
-              </span>
             </div>
-            <br />
-            <br />
+            <span class="form-text text-danger" *ngIf="campoEsValido('email')">
+              Este campo es obligatorio y debe ser un correo electrónico.
+            </span>
+          </div>
+          <br />
+          <br />
 
-            <!--       <div class="input-group col-11">
+          <!--       <div class="input-group col-11">
               <span class="label-input100"></span>
               <span class="input-group-text" id="basic-addon1"
                 style="color: rgb(188, 188, 188); font-size: 150%; ">Contraseña</span>
@@ -209,33 +207,33 @@
               Este campo es obligatorio y debe tener al menos 6 caracteres.
             </span> -->
 
-            <button type="button" (click)="changePassword()" *ngIf="isEditable" style="   width:30%;
+          <button type="button" (click)="changePassword()" *ngIf="isEditable" style="   width:30%;
             height: 50px; border-radius: 5px; color: rgb(255, 255, 255);  background-color: rgba(11, 11, 11, 0.9); "
+            class="btn btn-light btn-rounded" mdbRipple>
+
+
+
+            Cambiar contraseña
+          </button>
+
+          <br />
+          <br />
+          <br>
+
+          <div class="">
+
+            <button type="submit" *ngIf="isEditable" style="   width:30%;
+        height: 50px; border-radius: 5px; color: rgb(0, 0, 0);  background-color: rgb(202, 226, 255); "
               class="btn btn-light btn-rounded" mdbRipple>
 
-     
-
-              Cambiar contraseña
+              Guardar
             </button>
 
-            <br />
-            <br />
-            <br>
-
-            <div class="">
-
-              <button type="submit" *ngIf="isEditable" style="   width:30%;
-        height: 50px; border-radius: 5px; color: rgb(0, 0, 0);  background-color: rgb(202, 226, 255); "
-                class="btn btn-light btn-rounded" mdbRipple>
-
-                Guardar
-              </button>
-
-            </div>
-            <br>
-          </form>
-        </div>
+          </div>
+          <br>
+        </form>
       </div>
     </div>
   </div>
+
 </div>

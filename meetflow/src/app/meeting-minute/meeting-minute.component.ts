@@ -1,4 +1,5 @@
 import { Component, ViewEncapsulation } from '@angular/core';
+import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import {
   FormBuilder,
   FormGroup,
@@ -11,6 +12,7 @@ import { AuthService } from '../auth/services/auth.service';
 import Swal from 'sweetalert2';
 import { Socket } from 'ngx-socket-io';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { jsPDF } from 'jspdf';
 
 @Component({
   selector: 'app-meeting-minute',
@@ -18,13 +20,31 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./meeting-minute.component.css'],
 })
 export class MeetingMinuteComponent {
-  /*   artifact = {
-    specification: '',
-    mode: '',
-    responsible: '',
-  };
 
-  topics: string[] = []; */
+  isDarkMode = true;
+
+  // Variables de edicion
+  isEditableObjetivo = false;
+  isEditableLugar = false;
+  isEditableUser = false;
+  isDateError = true;
+  isTimeMeet = 'X';
+
+  // Variables dedespliegue
+  isAsistentesColapse = true;
+  isTemarioColapse = false;
+  isDesarrolloColapse = false;
+  isAdjuntoColapse = true;
+
+  // elemento seleccionado
+  selectType = '';
+  isEditableFecha = false;
+  isEditableInicio = false;
+  isEditableTermino = false;
+  isCompromisosPreviosColapse = true;
+
+  durationRealMeeting = 0;
+
   vacio: string = '         ';
   first: boolean = true;
   links = [' '];
@@ -33,21 +53,34 @@ export class MeetingMinuteComponent {
     time: new Date()
   }
 
-  desplega = false;
+  desplega = true;
 
   listaCantForTopic = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+  listaCantForTopic2 = [0, 0, 0, 0, 0, 0, 0, 0, 0];
   isEditable = false;
   projectSelectedId: string = '';
+
+  // PROYECTO
   projectSelected: any = '';
   meetingSelectedId: string = '';
+
+
+  dateInitialDay = 'día';
+  dateInitialMonth = 'mes';
+  dateInitialYear = 'año';
+
   meetingSelectedStatus: string = '';
   isAvailableDialog: boolean = false;
   state: string = 'instancia';
   isSecretary = false;
+  isLeader = false;
   isParticipant = false;
   selectTopic = -1;
   selectElementId = '';
   numerExperimental = 0;
+
+  cantElements = 0;
+  cantElementsThis = 0;
 
   closeResult: string | undefined;
 
@@ -56,7 +89,7 @@ export class MeetingMinuteComponent {
     id: '',
     name: '',
     place: '',
-    fechaI: new Date(),
+    fechaI: '',
     fechaT: new Date(),
     startHour: '00:00',
     endHour: '00:00',
@@ -64,14 +97,41 @@ export class MeetingMinuteComponent {
     realEndTime: '',
     meeting: '',
     topics: [],
-    participants: [''],
-    assistants: [''],
-    secretaries: [''],
-    leaders: [''],
+
+
+    dateInitialDay: '',
+    dateInitialMonth: '',
+    dateInitialYear: '',
+
+    timeInitialHour: '',
+    timeInitialMinute: '',
+    timeFinalHour: '',
+    timeFinalMinute: '',
+
+    dateRealInitialDay: '',
+    dateRealInitialMonth: '',
+    dateRealInitialYear: '',
+    dateRealFinalDay: '',
+    dateRealFinalMonth: '',
+    dateRealFinalYear: '',
+    // USUARIOS
+
+    // invitados
+    participants: [''], // todos invitados
+
+    assistants: [''], // si asistieron 
+
+    externals: [''], // los externos
+
+    // organizadores
+    secretaries: [''],  // secretario
+    leaders: [''],     // anfitrion
+
     number: 0,
     links: [],
-
+    absents: ['']
   };
+
   isAvailableCreate: boolean = false;
   isAvailableSave: boolean = false;
   meetingMinuteForm!: FormGroup;
@@ -103,12 +163,12 @@ export class MeetingMinuteComponent {
     },
   ];
   stateMeet = '';
-  typesElements = ['compromiso', 'duda', 'acuerdo', 'desacuerdo', 'texto libre'];
+  typesElements = ['compromiso', 'duda', 'acuerdo', 'desacuerdo'];
   user: any;
   isNew = false;
   elementsPreviews: any[] = [''];
 
-  colapseArrayBol: any[] = [false, false, false, false, false, false, false, false, false, false];
+  colapseArrayBol: any[] = [true, true, true, true, true, true, true, true, true, true];
   // _________________________________________________________
   // CONSTRUCTOR!
   // _________________________________________________________
@@ -120,15 +180,13 @@ export class MeetingMinuteComponent {
     private socket: Socket,
     private modalService: NgbModal
   ) {
-    this.resetNumberExperimenta(0);
 
     //! AQUI VAMOS SUMANDO A LOS NUEVOS
-
     socket.fromEvent('new_save').subscribe(async (user: any) => {
       if (user.email === this.user.email) {
-        console.log('USUARIO SOY YO GUARDANDO: ', user);
+
       } else {
-        console.log('USUARIO GUARDANDO: ', user);
+
         this.getMeetingMinute(this.meetingSelectedId);
         let stringAux2 = user.email
         const Toast = Swal.mixin({
@@ -151,12 +209,11 @@ export class MeetingMinuteComponent {
     });
 
     //! AQUI VAMOS SUMANDO A LOS NUEVOS
-
     socket.fromEvent('new_topic').subscribe(async (user: any) => {
       if (user.email === this.user.email) {
-        console.log('USUARIO SOY YO GUARDANDO: ', user);
+       
       } else {
-        console.log('USUARIO NUEVO TEMA: ', user);
+       
         this.topicArr.push(
           new FormControl(this.newTopics.value, Validators.required)
         );
@@ -179,9 +236,7 @@ export class MeetingMinuteComponent {
           title: 'Usuario:' + user.email + ' creando un nuevo tema.',
         })
 
-
       }
-
 
     });
 
@@ -189,12 +244,12 @@ export class MeetingMinuteComponent {
 
     socket.fromEvent('new_element').subscribe(async (user: any) => {
       if (user.email === this.user.email) {
-        console.log('USUARIO SOY YO GUARDANDO: ', user);
+       
       } else {
-        console.log('USUARIO GUARDANDO: ', user);
+      
         this.getMeetingMinute(this.meetingSelectedId);
         let stringAux2 = user.email
-        this.getCompromises();
+        this.getCompromises('noneSoft');
         const Toast = Swal.mixin({
           toast: true,
           position: 'bottom-end',
@@ -222,12 +277,12 @@ export class MeetingMinuteComponent {
         setTimeout(() => {
           location.reload();
         }, 4000);
-        console.log('USUARIO SOY YO GUARDANDO: ', user);
+      
       } else {
         setTimeout(() => {
           location.reload();
         }, 10000);
-        console.log('USUARIO RECARGANDO: ', user);
+      
 
         let stringAux2 = user.email
 
@@ -245,17 +300,16 @@ export class MeetingMinuteComponent {
 
         Toast.fire({
           icon: 'success',
-          title: 'Usuario:' + user.email + ' cambiando opciones de sesión. Se reiniciará la pagina web.',
+          title: 'Usuario:' + user.email + ' cambiando opciones de sesión. Se reiniciará la página web.',
         })
-
-
-
       }
     });
 
     this.authService.userLogin().subscribe(
       async (resp) => {
         this.user = resp;
+
+        this.getUserProfile(this.user.id);
         this.route.params.subscribe((params: Params) => {
           this.projectSelectedId = params['idP'];
           this.meetingSelectedId = params['idM'];
@@ -291,9 +345,6 @@ export class MeetingMinuteComponent {
                 }
               );
 
-
-              /*               console.log('ESTADO? : ', resp);
-              console.log('ESTADO', resp.state); */
 
               // _________________________________________________________
               // DEPENDIENDO DEL ESTASDO ES QUE SE HABILITAN ALGUNOS BOTONES O NO
@@ -354,7 +405,7 @@ export class MeetingMinuteComponent {
               // _________________________________________________________
               this.getCompromisesPreviews();
               setTimeout(() => {
-                this.getCompromises();
+                this.getCompromises('noneSoft');
               }, 1000);
 
 
@@ -374,28 +425,27 @@ export class MeetingMinuteComponent {
           this.user = 'noLogin';
           this.router.navigateByUrl('auth/login');
 
-          Swal.fire(
-            'Error',
-            'Usuario no autorizado para ver el acta dialógica',
-            'error'
-          );
+          Swal.fire({
+            title: 'Autentificarse en la plataforma antes de ingresar a la reunión.',
+            text: "",
+            icon: 'info',
+
+          }
+
+          )
         }
       }
     );
-
-
-
-
-
-
-
 
   }
   // _________________________________________________________
   // NG ON
   // _________________________________________________________
   ngOnInit(): void {
-    this.resetNumberExperimenta(0);
+    this.rellenarListasPrueba();
+
+
+
     // _________________________________________________________
     // PRIMERO SABEMOS CUAL ES EL USUARIO?
     // _________________________________________________________
@@ -406,14 +456,22 @@ export class MeetingMinuteComponent {
 
     // _________________________________________________________
     // EL FORMULARIO
+
     // _________________________________________________________
     this.meetingMinuteForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(6)]],
       place: ['', [Validators.required, Validators.minLength(6)]],
       fechaI: ['', []],
+      dateInitialDay: ['', []],
+      dateInitialMonth: ['', []],
+      dateInitialYear: ['', []],
       fechaT: ['', []],
       startHour: ['', []],
+      timeInitialHour: ['', []],
+      timeInitialMinute: ['', []],
       endHour: ['', []],
+      timeFinalHour: ['', []],
+      timeFinalMinute: ['', []],
       topics: this.fb.array([], Validators.required),
       participants: this.fb.array([], Validators.required),
       secretaries: this.fb.array([], Validators.required),
@@ -422,11 +480,12 @@ export class MeetingMinuteComponent {
 
     this.elementForm = this.fb.group({
       description: ['', [Validators.required, Validators.minLength(6)]],
-      type: ['', [Validators.required, Validators.minLength(6)]],
+      type: ['compromiso', [Validators.required, Validators.minLength(6)]],
       participants: ['', []],
       topic: ['', []],
       number: ['', []],
       dateLimit: ['', []],
+      timeLimit: ['', []],
     });
 
     this.elementEditForm = this.fb.group({
@@ -436,6 +495,7 @@ export class MeetingMinuteComponent {
       topic: ['', []],
       number: ['', []],
       dateLimit: ['', []],
+      timeLimit: ['', []],
     });
 
 
@@ -454,7 +514,7 @@ export class MeetingMinuteComponent {
 
 
   campoEsValido(campo: string) {
-    if (this.meetingMinuteForm.controls[campo].touched && this.meetingMinuteForm.controls[campo].dirty) {
+    if (this.meetingMinuteForm.controls[campo].touched) {
       this.meetingMinuteForm.markAsUntouched();
       setTimeout(() => {
         this.saveMeetingMinute();
@@ -484,35 +544,38 @@ export class MeetingMinuteComponent {
 
   async agregarParticipant2() {
     await Swal.fire({
-      title: 'Agregar un nuevo usuario',
+      title: 'Agregar un nuevo invitado',
       input: 'select',
       inputOptions: {
         'Miembros del proyecto': this.projectSelected.userMembers,
       },
-      inputPlaceholder: 'Seleccionar un nuevo participante',
+      inputPlaceholder: 'Seleccionar un nuevo invitado',
       showCancelButton: true,
-      confirmButtonText: 'Añadir como Participante',
+      confirmButtonText: 'Añadir como invitado',
       showDenyButton: true,
-      denyButtonText: `Manual`,
+      denyButtonText: `Añadir invitado externo`,
+      denyButtonColor: 'rgb(105, 152, 92)',
       preConfirm: (emailMember) => {
         this.addSecretaryMember = emailMember;
         console.log('EMAIL: ', emailMember);
+
         this.createParticipant(this.projectSelected.userMembers[emailMember]);
         /*         this.createMember(emailMember, this.projectSelected._id); */
       },
     }).then((result) => {
       if (result.isConfirmed) {
+
       } else if (result.isDenied) {
         Swal.fire({
-          title: 'Equipo de proyecto',
-          text: '¿Email del usuario?',
+          title: 'Añadir un nuevo invitado externo',
+          text: '¿Email de la persona para invitar?',
           input: 'email',
           inputAttributes: {
             autocapitalize: 'off',
           },
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
-          confirmButtonText: 'Añadir como Participante',
+          confirmButtonText: 'Añadir como invitado externo',
 
           showLoaderOnConfirm: true,
           showDenyButton: false,
@@ -525,13 +588,12 @@ export class MeetingMinuteComponent {
         }).then((result) => {
           if (result.isConfirmed) {
           } else if (result.isDenied) {
+
             console.log('RESULTADO ROJO', result);
           }
         });
       }
     });
-
-
   }
 
   async agregarSecretary2() {
@@ -545,7 +607,8 @@ export class MeetingMinuteComponent {
       showCancelButton: true,
       confirmButtonText: 'Añadir como Secretario',
       showDenyButton: true,
-      denyButtonText: `Manual`,
+      denyButtonColor: 'rgb(105, 152, 92)',
+      denyButtonText: `Ingresar usuario secretario manualmente`,
       preConfirm: (emailMember) => {
         this.addSecretaryMember = emailMember;
         console.log('EMAIL: ', emailMember);
@@ -582,7 +645,6 @@ export class MeetingMinuteComponent {
         });
       }
     });
-
 
   }
 
@@ -641,6 +703,7 @@ export class MeetingMinuteComponent {
 
         } else {
           this.secretaryArr.push(new FormControl(emailMember));
+          this.MeetingMinuteSelected.secretaries = [emailMember];
           this.saveMeetingMinute();
           setTimeout(() => {
 
@@ -671,19 +734,82 @@ export class MeetingMinuteComponent {
           'EDIT_PROYECT respuesta de si es que hay un email con eso',
           resp
         );
+
         /*         this.listProjectsInicial(); */
         if (resp === null) {
+
           Swal.fire({
             title:
-              'El correo electrónico ingresado no pertenece a ningún usuario de la plataforma.',
-            icon: 'error',
+              'Se ha enviado una invitación al correo: ' + emailMember,
+            icon: 'success',
           });
 
+          this.MeetingMinuteSelected.externals.push(emailMember);
+
+
+          setTimeout(() => {
+            this.notificarInvitadosExternos('pre-meeting', emailMember);
+            this.saveMeetingMinute();
+          }, 2000);
+
+
         } else {
-          this.participantArr.push(new FormControl(emailMember));
+          this.MeetingMinuteSelected.participants.push(emailMember);
           this.saveMeetingMinute();
           setTimeout(() => {
+            let payloadSave = {
+              room: this.meetingSelectedId,
+              user: this.user
+            }
+            this.socket.emit('event_reload', payloadSave);
+            location.reload();
+          }, 2000);
 
+        }
+      },
+      (err: any) => {
+        /*    console.log(err); */
+        Swal.fire('Error NO HAY USUARIO', err.message, 'error');
+      }
+    );
+    /*     this.favoritosArr.push(
+      this.fb.control(this.nuevoFavorito.value, Validators.required)
+    ); */
+  }
+
+  createParticipantExternal(emailMember: string) {
+    this.authService.getUserByEmail(emailMember).subscribe(
+      (resp) => {
+        console.log(
+          'EDIT_PROYECT respuesta de si es que hay un email con eso',
+          resp
+        );
+        /*         this.listProjectsInicial(); */
+        if (resp === null) {
+
+          Swal.fire({
+            title:
+              'Se ha enviado una invitación al correo: ' + emailMember,
+            icon: 'success',
+          });
+
+          this.MeetingMinuteSelected.externals.push(emailMember);
+          this.saveMeetingMinute();
+
+          /*       setTimeout(() => {
+                  let payloadSave = {
+                    room: this.meetingSelectedId,
+                    user: this.user
+                  }
+                  this.socket.emit('event_reload', payloadSave);
+                  location.reload();
+                }, 2000); */
+
+
+        } else {
+          this.MeetingMinuteSelected.externals.push(emailMember);
+          this.saveMeetingMinute();
+          setTimeout(() => {
             let payloadSave = {
               room: this.meetingSelectedId,
               user: this.user
@@ -711,6 +837,7 @@ export class MeetingMinuteComponent {
     /*     this.favoritosArr.push(
       this.fb.control(this.nuevoFavorito.value, Validators.required)
     ); */
+
     this.secretaryArr.push(
       new FormControl(this.newSecretaries.value, Validators.required)
     );
@@ -791,7 +918,7 @@ export class MeetingMinuteComponent {
       Swal.fire({
         position: 'center',
         icon: 'error',
-        title: 'Debe haber al menos un lider en la reunión',
+        title: 'Debe haber al menos un anfitrón en la reunión',
         showConfirmButton: false,
         timer: 2000,
       });
@@ -816,21 +943,31 @@ export class MeetingMinuteComponent {
 
   async setModification(id: number, user: any, roleUser: string) {
     const { value: modification } = await Swal.fire({
-      title: 'Modificar usuario',
+      title: 'Asignar rol del usuario',
       input: 'select',
       inputOptions: {
-        Rol: {
-          secretario: 'Secretario',
-          participante: 'Participante',
-          lider: 'Lider'
+        Permisos: {
+          secretario: 'Asignar rol de secretario',
+          /*   participante: 'Asignar rol de participante', */
+          lider: 'Asignar rol de anfitrion',
+          eliminar: 'Desvincular de la reunión',
         },
       },
-      inputPlaceholder: 'Seleccionar la modificación al usuario',
+      inputPlaceholder: 'Seleccionar nivel de permisos del usuario',
       showCancelButton: true,
     });
 
-    if (modification) {
-      this.setRoleUser(id, user.value, modification, roleUser);
+    if (modification != 'eliminar') {
+      this.setRoleUser(id, user, modification, roleUser);
+    }
+    if (modification === 'eliminar') {
+      let pos = this.MeetingMinuteSelected.participants.indexOf(user.email);
+      this.MeetingMinuteSelected.participants.splice(pos, 1);
+      setTimeout(() => {
+        this.saveMeetingMinute();
+        /*  this.socket.emit('event_reload', payloadSave); */
+        /* location.reload(); */
+      }, 2000);
     }
   }
 
@@ -843,24 +980,30 @@ export class MeetingMinuteComponent {
     if (roleUser === modification) {
       Swal.fire(`Usuario ${user}  ya tiene el rol de ${modification}`);
     } else {
-      if (modification == 'secretario') {
-        this.secretaryArr.push(
-          new FormControl(user)
-        );
-        if (roleUser === 'participante') {
-          this.participantArr.removeAt(id);
-        }
-        if (roleUser === 'lider') {
-          this.leaderArr.removeAt(id);
-        }
+      if (modification === 'secretario') {
+        /*     this.secretaryArr.push(
+              new FormControl(user)
+            ); */
+
+        /*    this.MeetingMinuteSelected.secretaries = [' ']; */
+        /*      this.leaderArr.push(new FormControl(user)); */
+        this.MeetingMinuteSelected.secretaries = [user];
+        this.saveMeetingMinute();
+        /*       if (roleUser === 'participante') {
+                this.participantArr.removeAt(id);
+              }
+              if (roleUser === 'lider') {
+                this.leaderArr.removeAt(id);
+              } */
+        /*     if (this.isSecretary && !this.isLeader) {
+              this.MeetingMinuteSelected.participants.push(this.user.email);
+            } */
         let payloadSave = {
           room: this.meetingSelectedId,
           user: this.user
         }
-        this.saveMeetingMinute();
 
         setTimeout(() => {
-
 
           this.socket.emit('event_reload', payloadSave);
           location.reload();
@@ -889,20 +1032,22 @@ export class MeetingMinuteComponent {
         }, 2000);
       }
       if (modification == 'lider') {
-        this.leaderArr.push(
-          new FormControl(user)
-        );
-        if (roleUser === 'secretario') {
-          this.secretaryArr.removeAt(id);
-        }
-        if (roleUser === 'participante') {
-          this.participantArr.removeAt(id);
-        }
+        this.MeetingMinuteSelected.leaders = [user];
+        this.saveMeetingMinute();
+        /*     this.leaderArr.push(
+              new FormControl(user)
+            ); */
+        /*       if (roleUser === 'secretario') {
+                this.secretaryArr.removeAt(id);
+              }
+              if (roleUser === 'participante') {
+                this.participantArr.removeAt(id);
+              } */
         let payloadSave = {
           room: this.meetingSelectedId,
           user: this.user
         }
-        this.saveMeetingMinute();
+
         setTimeout(() => {
 
 
@@ -920,9 +1065,9 @@ export class MeetingMinuteComponent {
     this.authService.getMeetingMinute(this.meetingSelectedId).subscribe(
       async (resp) => {
         console.log('[MEETING MINUTE] FUNCION getMeetingMinute() : ', resp);
+
         if (resp.length === 0) {
-          /* this.isAvailableCreate = true; */
-          /*  console.log('ENTRAMSO AQUI?', resp); */
+          console.log("[CONTROLLER MEETINGMINUTE: GET_MEETINGMINUTE] repusta SI largo === 0 : ", resp);
           this.authService
             .addMeetingMinute(
               this.meetingSelectedId,
@@ -975,6 +1120,7 @@ export class MeetingMinuteComponent {
               (err: { message: string | undefined }) => { }
             );
         } else {
+          console.log("[CONTROLLER MEETINGMINUTE: GET_MEETINGMINUTE] repusta SI largo != 0 : ", resp);
           const { name, place, fechaI, fechaT, topics } = resp;
           /* console.log('RESPUESTA', resp); */
           this.MeetingMinuteSelected.name = resp[0].title;
@@ -990,8 +1136,35 @@ export class MeetingMinuteComponent {
           this.MeetingMinuteSelected.links = resp[0].links;
           this.MeetingMinuteSelected.realEndTime = resp[0].realEndTime;
           this.MeetingMinuteSelected.realStartTime = resp[0].realStartTime;
-          console.log("FECHA REAL", this.MeetingMinuteSelected.realEndTime);
-          console.log("ESTA ES EL ACTA OBTENIDA: ", resp);
+          this.MeetingMinuteSelected.externals = resp[0].externals;
+
+
+          // FECHA INGRESADA ES SUBDIVIDIDA EN DIA MES Y AÑO POR SEPARADO
+
+          let dateInitial = this.MeetingMinuteSelected.fechaI;
+          this.MeetingMinuteSelected.dateInitialDay = dateInitial.split('-')[0] + '';
+          this.MeetingMinuteSelected.dateInitialMonth = dateInitial.split('-')[1] + '';
+          this.MeetingMinuteSelected.dateInitialYear = dateInitial.split('-')[2] + '';
+
+
+
+
+          // HORA INGRESADA ES SUBDIVIDIDA EN HORAS Y MINUTOS
+
+          let timeInitial = this.MeetingMinuteSelected.startHour;
+          this.MeetingMinuteSelected.timeInitialHour = timeInitial.split(':')[0] + '';
+          this.MeetingMinuteSelected.timeInitialMinute = timeInitial.split(':')[1] + '';
+
+          let timeFinal = this.MeetingMinuteSelected.endHour;
+          this.MeetingMinuteSelected.timeFinalHour = timeFinal.split(':')[0] + '';
+          this.MeetingMinuteSelected.timeFinalMinute = timeFinal.split(':')[1] + '';
+
+
+
+          console.log("[CONTROLLER MEETINGMINUTE: getMeetingMinute2] ESTA ES EL ACTA OBTENIDA: ", resp);
+          console.log("[CONTROLLER MEETINGMINUTE: getMeetingMinute2] dia: ", this.MeetingMinuteSelected.dateInitialDay);
+          console.log("[CONTROLLER MEETINGMINUTE: getMeetingMinute2] dia: ", this.MeetingMinuteSelected.dateInitialMonth);
+          console.log("[CONTROLLER MEETINGMINUTE: getMeetingMinute2] dia: ", this.MeetingMinuteSelected.dateInitialYear);
           this.links = resp[0].links;
 
 
@@ -1093,10 +1266,21 @@ export class MeetingMinuteComponent {
           );
 
           /*  console.log("RESULTADO!", result.length); */
-          if (result.length > 0 || result2.length > 0) {
+
+          // Es secretario
+          if (result.length > 0) {
             this.isSecretary = true;
+            this.isLeader = false;
             this.isParticipant = true;
-          } else if (result3.length > 0) {
+          }
+          // ES lider
+          else if (result2.length > 0) {
+            this.isSecretary = true;
+            this.isLeader = true;
+            this.isParticipant = true;
+          }
+          // ES solo participante
+          else if (result3.length > 0) {
             this.isParticipant = true;
             this.isSecretary = false;
           } else {
@@ -1113,78 +1297,127 @@ export class MeetingMinuteComponent {
   // |||| NUMERACION  1  ||||| -> ESTO ES LO PRIMERO QUE HACE LA WEA PARA OBTENER ACTA
   // _________________________________________________________
   getMeetingMinute2(meetingSelectedId: string) {
-    /*  console.log('MEETING MINUTE', meetingSelectedId); */
-
     // _________________________________________________________
     //  BUSCAMOS EL ACTA EN BASE A LA REUNION SELECCIONADA
     // _________________________________________________________
     this.authService.getMeetingMinute(this.meetingSelectedId).subscribe(
       async (resp) => {
         console.log('[MEETING MINUTE] FUNCION getMeetingMinute2() : ', resp);
-        /*     console.log('RESPUESTAAAAAAAAA', resp); */
-        /* console.log(
-          'ESTO ES PARA SABER SI DEBERIA CREARSE DESDE 0 UNA NUEVA ACTA DIALOGICA',
-          resp
-        ); */
-
         // _________________________________________________________
         // SI NO HAY ACTA DIALOGICA ASOCIADA A LA REUNION ENTONCES LA CREAMOS
         // _________________________________________________________
-        /* console.log('REALMENTE EL LARGO ES 0?', resp.length);
-        console.log(
-          'SE ENCONTRO ESA ACTA DIAGOLICA BUSCANDO A PARTIR DE ESTA REUNION: ',
-          this.meetingSelectedId
-        ); */
+
         if (resp.length === 0) {
-          /* this.isAvailableCreate = true; */
-          /*  console.log(
-            'EFECTIVAMENTE HAY QUE CREAR UNA NUEVA ACTA DIALOGICA',
-            resp.length
-          ); */
 
-          this.authService
-            .addMeetingMinute(
-              this.meetingSelectedId,
-              '',
-              '',
-              '',
-              this.MeetingMinuteSelected.number
-            )
-            .subscribe(
-              async (resp) => {
-                /*   console.log('RESPUESTA', resp);
-                console.log('RESPUESTA id', resp.id); */
-                /* this.router.navigateByUrl('/main/add-project'); */
-                this.isAvailableCreate = false;
-                this.isAvailableSave = true;
+          // SI NO ES LA PRIMERA REUNION, ENTONCES OBTENEMOS LOS ANTERIORES JEFES
+          if (this.MeetingMinuteSelected.number > 0) {
+            // EL NUMERO DE LA REUNION ES 1 O SUPERIOR, 
+            // ENTONCFES TENEMOS QUE BUSCAR LA ACTA DE LA REUNION 1 o SUPERIOR - 1
 
-                /*            Swal.fire({
-                  position: 'center',
-                  icon: 'success',
-                  title: 'Se ha creado el acta dialogica: ',
-                  text: resp.title,
-                  showConfirmButton: false,
-                  timer: 2000,
-                }); */
-                /*         this.meetingMinuteForm.reset(); */
+            this.authService
+              .getMeetByProjectNumber(
+                this.projectSelectedId,
+                this.MeetingMinuteSelected.number - 1
+              )
+              .subscribe(
+                async (resp) => {
 
-                /*   console.log("SE CREO EL ACTA DIALOGICA NUEVA?", resp); */
-                setTimeout(() => {
-                  this.getMeetingMinute2(this.meetingSelectedId);
-                }, 2000);
-              },
-              (err: { message: string | undefined }) => {
-                console.log('NO SE PUDO CREAR EL ACTA DIALOGICA');
-              }
-            );
+                  // LA REUNION PASADA ES: 
+
+                  console.log("[CONTROLLER MEETINGMINUTE: GET_MEETINGMINUTE2] obtenemos una reunion segun idProject y number: ", resp);
+                  console.log("[CONTROLLER MEETINGMINUTE: GET_MEETINGMINUTE2] id meet: ", resp[0]._id);
+                  // AHORA QUE YA TENEMOS LA REUNION PASADA, 
+                  // PODEMOS OBTENER LA MEETING MINUTE PASADA,
+                  // Y ASI OBTENER LOS JEFES
+                  await this.authService
+                    .getMeetingMinute(
+                      resp[0]._id
+                    )
+                    .subscribe(
+                      async (meetingMinuteAnterior) => {
+
+                        console.log("[CONTROLLER MEETINGMINUTE: GET_MEETINGMINUTE2] obtenemos la meeting minute pasada: ", meetingMinuteAnterior);
+
+                        this.authService
+                          .addMeetingMinuteLastConfig(
+                            this.meetingSelectedId,
+                            '',
+                            '',
+                            '',
+                            this.MeetingMinuteSelected.number,
+                            meetingMinuteAnterior[0].secretaries,
+                            meetingMinuteAnterior[0].leaders,
+                            meetingMinuteAnterior[0].participants
+                          )
+                          .subscribe(
+                            async (resp) => {
+                              this.isAvailableCreate = false;
+                              this.isAvailableSave = true;
+                              setTimeout(() => {
+                                this.getMeetingMinute2(this.meetingSelectedId);
+                              }, 2000);
+                            },
+                            (err: { message: string | undefined }) => {
+                              console.log('NO SE PUDO CREAR EL ACTA DIALOGICA');
+                            }
+                          );
+
+
+
+                      },
+                      (err: { message: string | undefined }) => {
+                        console.log('NO SE PUDO CREAR EL ACTA DIALOGICA');
+                      }
+                    );
+
+
+                },
+                (err: { message: string | undefined }) => {
+                  console.log('NO SE PUDO CREAR EL ACTA DIALOGICA');
+                }
+              );
+
+
+
+
+          } else {
+            console.log("[CONTROLLER MEETINGMINUTE: GET_MEETINGMINUTE_2] repusta SI largo === 0 : ", resp);
+
+            this.authService
+              .addMeetingMinuteLastConfig(
+                this.meetingSelectedId,
+                '',
+                '',
+                '',
+                this.MeetingMinuteSelected.number,
+                [this.user.email],
+                [this.user.email],
+                this.projectSelected.members
+              )
+              .subscribe(
+                async (resp) => {
+                  this.isAvailableCreate = false;
+                  this.isAvailableSave = true;
+                  setTimeout(() => {
+                    this.getMeetingMinute2(this.meetingSelectedId);
+                  }, 2000);
+                },
+                (err: { message: string | undefined }) => {
+                  console.log('NO SE PUDO CREAR EL ACTA DIALOGICA');
+                }
+              );
+
+          }
+
+
         } else {
-          /*       const { name, place, fechaI, fechaT, topics } = resp; */
-          /*  console.log('RESPUESTA', resp); */
+          console.log("[CONTROLLER MEETINGMINUTE: GET_MEETINGMINUTE_2] repusta SI largo != 0 : ", resp);
           this.MeetingMinuteSelected.name = resp[0].title;
           this.MeetingMinuteSelected.place = resp[0].place;
           this.MeetingMinuteSelected.fechaI = resp[0].startTime;
           this.MeetingMinuteSelected.fechaT = resp[0].endTime;
           this.MeetingMinuteSelected.startHour = resp[0].startHour;
+
           this.MeetingMinuteSelected.endHour = resp[0].endHour;
           this.MeetingMinuteSelected.topics = resp[0].topics;
           this.MeetingMinuteSelected.participants = resp[0].participants;
@@ -1193,24 +1426,71 @@ export class MeetingMinuteComponent {
           this.MeetingMinuteSelected.id = resp[0]._id;
           this.MeetingMinuteSelected.realEndTime = resp[0].realEndTime;
           this.MeetingMinuteSelected.realStartTime = resp[0].realStartTime;
-          console.log("FECHA REAL", this.MeetingMinuteSelected.realEndTime);
+
+          this.MeetingMinuteSelected.externals = resp[0].externals;
+          /* this.MeetingMinuteSelected.externals.push(resp[0].externals); */
+
+          this.MeetingMinuteSelected.assistants = resp[0].assistants;
+
+          // FECHA INGRESADA ES SUBDIVIDIDA EN DIA MES Y AÑO POR SEPARADO
+
+          let dateInitial = this.MeetingMinuteSelected.fechaI;
+          this.MeetingMinuteSelected.dateInitialDay = dateInitial.split('-')[0] + '';
+          this.MeetingMinuteSelected.dateInitialMonth = dateInitial.split('-')[1] + '';
+          this.MeetingMinuteSelected.dateInitialYear = dateInitial.split('-')[2] + '';
+
+
+          /* let dateRealInitial = this.MeetingMinuteSelected.realStartTime;
+          this.MeetingMinuteSelected.dateRealInitialDay = dateRealInitial.split('-')[1] + '';
+          this.MeetingMinuteSelected.dateRealInitialMonth = dateRealInitial.split('-')[0] + '';
+          this.MeetingMinuteSelected.dateRealInitialYear = dateRealInitial.split('-')[2] + '';
+
+          let dateRealFinal = this.MeetingMinuteSelected.realEndTime;
+          this.MeetingMinuteSelected.dateRealFinalDay = dateRealFinal.split('-')[1] + '';
+          this.MeetingMinuteSelected.dateRealFinalMonth = dateRealFinal.split('-')[0] + '';
+          this.MeetingMinuteSelected.dateRealFinalYear = dateRealFinal.split('-')[2] + ''; */
+
+          // HORA INGRESADA ES SUBDIVIDIDA EN HORAS Y MINUTOS
+
+          let timeInitial = this.MeetingMinuteSelected.startHour;
+          this.MeetingMinuteSelected.timeInitialHour = timeInitial.split(':')[0] + '';
+          this.MeetingMinuteSelected.timeInitialMinute = timeInitial.split(':')[1] + '';
+
+          let timeFinal = this.MeetingMinuteSelected.endHour;
+          this.MeetingMinuteSelected.timeFinalHour = timeFinal.split(':')[0] + '';
+          this.MeetingMinuteSelected.timeFinalMinute = timeFinal.split(':')[1] + '';
+
 
           this.links = resp[0].links;
-
-          /* console.log(
-            'RESPUESTA DE MEETING MINUTE',
-            this.MeetingMinuteSelected
-          ); */
-          /*  console.log('PARTICIPANTES', this.MeetingMinuteSelected.participants); */
           this.isAvailableCreate = false;
           this.isAvailableSave = true;
           this.meetingMinuteForm.patchValue(this.MeetingMinuteSelected);
-          let i = 0;
-          /* console.log(
-            'CUENTA TOPICOS:',
-            this.MeetingMinuteSelected.topics.length
-          ); */
 
+
+          let time1: Date;
+          let time2: Date;
+          time1 = new Date(this.MeetingMinuteSelected.realEndTime);
+          time2 = new Date(this.MeetingMinuteSelected.realStartTime);
+          let time1Number = time1[Symbol.toPrimitive]('number');
+          let time2Number = time2[Symbol.toPrimitive]('number');
+
+          let restaTime1Time2 = time1Number - time2Number;
+          let horas1 = restaTime1Time2 / 60;
+          let minutos1 = (restaTime1Time2 / 60000);
+
+          console.log("TIEMPO START ", time1);
+          console.log("TIEMPO END ", time2);
+          console.log("TIEMPO START NUMERICO", time1Number);
+          console.log("TIEMPO END NUMERICO", time2Number);
+          console.log("TIEMPO RESTA ", restaTime1Time2);
+          console.log("TIEMPO DURACION HORAS ", horas1);
+          this.durationRealMeeting = Math.round(minutos1);
+
+          /*    console.log("TIEMPO STARTHOUR ", this.MeetingMinuteSelected.startHour );
+             console.log("TIEMPO ENDHOUR ", this.MeetingMinuteSelected.endHour ); */
+          console.log("ESTA ES EL ACTA OBTENIDA: ", resp);
+          // ENLISTAMOS LOS TEMAS
+          let i = 0;
           while (i < this.MeetingMinuteSelected.topics.length) {
             this.topicArr.push(
               new FormControl(
@@ -1221,75 +1501,13 @@ export class MeetingMinuteComponent {
             i++;
           }
 
-          let x = 0;
 
-          while (x < this.MeetingMinuteSelected.participants.length) {
-            this.participantArr.push(
-              new FormControl(
-                this.MeetingMinuteSelected.participants[x],
-                Validators.required
-              )
-            );
-            x++;
-          }
-          let f = 0;
-
-          while (f < this.MeetingMinuteSelected.secretaries.length) {
-            this.secretaryArr.push(
-              new FormControl(
-                this.MeetingMinuteSelected.secretaries[f],
-                Validators.required
-              )
-            );
-            f++;
-          }
-
-          let l = 0;
-          while (l < this.MeetingMinuteSelected.leaders.length) {
-            this.leaderArr.push(
-              new FormControl(
-                this.MeetingMinuteSelected.leaders[l],
-                Validators.required
-              )
-            );
-            l++;
-          }
         }
-
-        /* this.router.navigateByUrl('/main/add-project'); */
-
-        /*         Swal.fire({
-          position: 'center',
-          icon: 'success',
-          title: 'Visualizando acta: ',
-          showConfirmButton: false,
-          timer: 2000,
-        }); */
-        /*     this.meetingMinuteForm.reset(); */
+        // ESPERAMOS 1 segundo
         setTimeout(() => {
-          /*     location.reload(); */
+          // PARA LA PRIMERA VEZ QUE SE OBTIENE EL ACTA DIALOGICA
 
-          /*           if(this.MeetingMinuteSelected.participants.length === 0){
-            this.participantArr.push(
-              new FormControl(
-                this.MeetingMinuteSelected.participants[0],
-                Validators.required
-              )
-            );
-
-          } */
-          if (
-            this.MeetingMinuteSelected.secretaries.length === 0 &&
-            this.first
-          ) {
-            this.first = false;
-            this.secretaryArr.push(
-              new FormControl(
-                this.MeetingMinuteSelected.secretaries[0],
-                Validators.required
-              )
-            );
-          }
+          // ASIGNAMOS LOS NIVELES DE ACCESO SEGUN EL ROL
           let result = this.MeetingMinuteSelected.secretaries.filter((role) =>
             role.includes(this.user.email)
           );
@@ -1300,11 +1518,69 @@ export class MeetingMinuteComponent {
             role.includes(this.user.email)
           );
 
-          /*  console.log("RESULTADO!", result.length); */
-          if (result.length > 0 || result2.length > 0) {
+
+          // SECTOR DE ASISTENTES
+          let result4 = this.MeetingMinuteSelected.assistants.filter((role) =>
+            role.includes(this.user.email)
+          );
+
+          // SI ESTAMOS EN LA FASE DE IN-MEETING SIGNIFICA QUE YA SOMOS ASISTENTES
+          if (this.stateMeet === 'in-meeting') {
+            // SI ESTOY EN ASISTENTES
+            if (result4.length > 0) {
+              // NO HACEMOS NADA
+            }
+            // SI NO ESTOY EN ASISTENTES
+            else {
+              // NOS AÑADIMOS COMO ASISNTENTE
+              this.MeetingMinuteSelected.assistants.push(this.user.email);
+
+              // ESPERAMOS A QUE SE AÑADA Y LUEGO PUM ACTUALIZAMOS LA BASE DE DATOS
+              setTimeout(() => {
+                this.saveMeetingMinute();
+              }, 4000);
+            }
+          }
+
+          // AQUI CALCULAMOS QUIENES FUERON Y QUIENES FALTARON
+          if (this.stateMeet === 'post-meeting' || this.stateMeet === 'finish') {
+
+            let auxe1 = 0;
+            const cantParticipants = this.MeetingMinuteSelected.participants.length
+            while (auxe1 < cantParticipants) {
+              let participant = this.MeetingMinuteSelected.participants[auxe1];
+
+              // PARTICIPANTE ESTA INCLUIDO EN ASISTENTE?
+              let result5 = this.MeetingMinuteSelected.assistants.filter((role) =>
+                role.includes(participant)
+              );
+
+
+              console.log("PARTICIPANTE AUSENTE1 : ", participant);
+              if (result5.length === 0) {
+                console.log("PARTICIPANTE AUSENTE: ", participant);
+                this.MeetingMinuteSelected.absents.push(participant);
+              }
+              auxe1++;
+            }
+          }
+
+
+
+          // Es secretario
+          if (result.length > 0) {
             this.isSecretary = true;
+            this.isLeader = false;
             this.isParticipant = true;
-          } else if (result3.length > 0) {
+          }
+          // ES lider
+          else if (result2.length > 0) {
+            this.isSecretary = true;
+            this.isLeader = true;
+            this.isParticipant = true;
+          }
+          // ES solo participante
+          else if (result3.length > 0) {
             this.isParticipant = true;
             this.isSecretary = false;
           } else {
@@ -1369,14 +1645,20 @@ export class MeetingMinuteComponent {
   }
 
   saveMeetingMinute() {
-    this.getMeetingMinute(this.meetingSelectedId);
-    let { name, place, fechaI, fechaT, startHour, endHour, topics, participants, secretaries, leaders } =
+    /* this.getMeetingMinute(this.meetingSelectedId); */
+
+
+    let { name, place, fechaI, dateInitialDay, dateInitialMonth, dateInitialYear, timeInitialHour, timeInitialMinute, timeFinalHour, timeFinalMinute, fechaT, startHour, endHour, topics, } =
       this.meetingMinuteForm.value;
     /* console.log(name);
     console.log(place);
     console.log(fechaI);
     console.log(fechaT);
     console.log('TEMAS', topics); */
+
+    fechaI = dateInitialDay + '-' + dateInitialMonth + '-' + dateInitialYear;
+    startHour = timeInitialHour + ':' + timeInitialMinute;
+    endHour = timeFinalHour + ':' + timeFinalMinute;
     console.log("this.MeetingMinuteSelected.realStartTime", this.MeetingMinuteSelected.realStartTime);
     this.authService
       .saveMeetingMinute(
@@ -1389,12 +1671,14 @@ export class MeetingMinuteComponent {
         startHour,
         endHour,
         topics,
-        participants,
-        secretaries,
-        leaders,
+        this.MeetingMinuteSelected.participants,
+        this.MeetingMinuteSelected.secretaries,
+        this.MeetingMinuteSelected.leaders,
         this.links,
         this.MeetingMinuteSelected.realStartTime,
-        this.MeetingMinuteSelected.realEndTime
+        this.MeetingMinuteSelected.realEndTime,
+        this.MeetingMinuteSelected.assistants,
+        this.MeetingMinuteSelected.externals
       )
       .subscribe(
         async (resp) => {
@@ -1430,6 +1714,12 @@ export class MeetingMinuteComponent {
           setTimeout(() => {
             /* this.meetingMinuteForm.reset(); */
             this.getMeetingMinute(this.meetingSelectedId);
+            this.isEditable = false;
+            this.isEditableObjetivo = false;
+            this.isEditableLugar = false;
+            this.isEditableFecha = false;
+            this.isEditableInicio = false;
+            this.isEditableTermino = false;
           }, 1000);
         },
         (err: { message: string | undefined }) => { }
@@ -1454,23 +1744,21 @@ export class MeetingMinuteComponent {
 
       showLoaderOnConfirm: true,
       showDenyButton: true,
-      /*       denyButtonText: `Avanzado`, */
+
       preConfirm: (description) => {
         this.crearCompromiso(description, id);
       },
       allowOutsideClick: () => !Swal.isLoading(),
     }).then((result) => {
-      /* Read more about isConfirmed, isDenied below */
+
       if (result.isConfirmed) {
       } else if (result.isDenied) {
-        /*         this.router.navigateByUrl('/main/add-project'); */
+
       }
     });
   }
 
   crearCompromiso(description: string, id: number) {
-
-
 
     this.authService
       .addCompromise(
@@ -1485,8 +1773,7 @@ export class MeetingMinuteComponent {
       )
       .subscribe(
         (resp) => {
-          /*   console.log(resp); */
-          /*  this.listProjectsInicial(); */
+
           const Toast = Swal.mixin({
             toast: true,
             position: 'bottom-end',
@@ -1521,188 +1808,365 @@ export class MeetingMinuteComponent {
           }
           this.socket.emit('event_element', payloadSave);
 
-
-
-          /*  console.log('RESPUESTAAAAAAA DE CREACION DE COMPROMISO', resp);
-          console.log('ID DE COMPROMISO: ', resp._id); */
         },
         (err: any) => {
-          /*   console.log(err); */
-          /* Swal.fire('Error', err.message, 'error'); */
+
         }
       );
   }
 
   crearElemento() {
 
-    let { description, type, participants, topic, number, dateLimit } =
+    let { description, type, participants, topic, number, dateLimit, timeLimit } =
       this.elementForm.value;
-    /*     let newTopic; */
-    /*     console.log( "ELEMENTO DESCIRIPCION: ", description);
-        console.log( "ELEMENTO type: ", type);
-        console.log( "ELEMENTO participants: ", participants);
-        console.log( "ELEMENTO topic: ", topic);
-        console.log( "ELEMENTO dateLimit: ", dateLimit); */
-
-    if (topic === '' || topic === null) {
-
-      let newTopic = this.selectTopic;
-
-      console.log("NUEVO TOPIC: ", newTopic);
-      this.authService
-        .addCompromise(
-          description,
-          newTopic,
-          this.meetingSelectedId,
-          type,
-          this.projectSelectedId,
-          this.MeetingMinuteSelected.number,
-          participants,
-          dateLimit
-        )
-        .subscribe(
-          (resp) => {
-            /*   console.log(resp); */
-            /*  this.listProjectsInicial(); */
-            const Toast = Swal.mixin({
-              toast: true,
-              position: 'bottom-end',
-              showConfirmButton: false,
-              timer: 3000,
-              timerProgressBar: true,
-              didOpen: (toast) => {
-                toast.addEventListener('mouseenter', Swal.stopTimer)
-                toast.addEventListener('mouseleave', Swal.resumeTimer)
-              }
-            })
-
-            Toast.fire({
-              icon: 'success',
-              title: 'Se ha creado el elemento exitosamente.'
-            });
-            this.elementForm.reset();
-            /*   this.elements.push({
-                topic: topic,
-                description: description,
-                type: type,
-                participants: participants,
-                id: ' ',
-                _id: resp._id,
-                dateLimit: dateLimit,
-                number: this.MeetingMinuteSelected.number
-              }); */
-
-            let payloadSave = {
-              room: this.meetingSelectedId,
-              user: this.user
-            }
-            this.getMeetingMinute(this.meetingSelectedId);
-
-            /*     this.elements = [
-                  {
-                    topic: -1,
-                    description: ' ',
-                    type: ' ',
-                    participants: [' ', ' '],
-                    id: ' ',
-                    _id: ' ',
-                    dateLimit: ' ',
-                    number: 5,
-                    position: 0
-                  },
-                ]; */
-
-            this.listaCantForTopic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            this.getCompromises();
 
 
 
-            this.socket.emit('event_element', payloadSave);
 
+    if (dateLimit != null && timeLimit != null && dateLimit != '' && timeLimit != '') {
+      let dateLimitAux = dateLimit.split("-")[2] + '-'+ dateLimit.split("-")[1] + '-'+ dateLimit.split("-")[0]; 
+      dateLimit = dateLimitAux + ' ' + timeLimit;
 
+    } else if (dateLimit === null && timeLimit != null) {
+      dateLimit = ' ' + timeLimit;
 
-            /*  console.log('RESPUESTAAAAAAA DE CREACION DE COMPROMISO', resp);
-            console.log('ID DE COMPROMISO: ', resp._id); */
-          },
-          (err: any) => {
-            /*   console.log(err); */
-            /* Swal.fire('Error', err.message, 'error'); */
-          }
-        );
-
-    } else if (topic != '' && topic != null) {
-
-      console.log("NUEVO TOPIC: ", topic);
-      this.authService
-        .addCompromise(
-          description,
-          topic,
-          this.meetingSelectedId,
-          type,
-          this.projectSelectedId,
-          this.MeetingMinuteSelected.number,
-          participants,
-          dateLimit
-        )
-        .subscribe(
-          (resp) => {
-            /*   console.log(resp); */
-            /*  this.listProjectsInicial(); */
-            const Toast = Swal.mixin({
-              toast: true,
-              position: 'bottom-end',
-              showConfirmButton: false,
-              timer: 3000,
-              timerProgressBar: true,
-              didOpen: (toast) => {
-                toast.addEventListener('mouseenter', Swal.stopTimer)
-                toast.addEventListener('mouseleave', Swal.resumeTimer)
-              }
-            })
-
-            Toast.fire({
-              icon: 'success',
-              title: 'Se ha creado el elemento exitosamente.'
-            });
-            this.elementForm.reset();
-            /*   this.elements.push({
-                topic: topic,
-                description: description,
-                type: type,
-                participants: participants,
-                id: ' ',
-                _id: resp._id,
-                dateLimit: dateLimit,
-                number: this.MeetingMinuteSelected.number
-              }); */
-
-            let payloadSave = {
-              room: this.meetingSelectedId,
-              user: this.user
-            }
-            this.getMeetingMinute(this.meetingSelectedId);
-            this.getCompromises();
-            this.socket.emit('event_element', payloadSave);
-
-
-
-            /*  console.log('RESPUESTAAAAAAA DE CREACION DE COMPROMISO', resp);
-            console.log('ID DE COMPROMISO: ', resp._id); */
-          },
-          (err: any) => {
-            /*   console.log(err); */
-            /* Swal.fire('Error', err.message, 'error'); */
-          }
-        );
-
-
-
-      /*  console.log( "ELEMENTO number: ", number); */
-
+    } else if (dateLimit != null && timeLimit === null) {
+      let dateLimitAux = dateLimit.split("-")[2] + '-'+ dateLimit.split("-")[1] + '-'+ dateLimit.split("-")[0];
+      dateLimit = dateLimitAux + ' ';
+    } else if (dateLimit === null && timeLimit === null || dateLimit === '' && timeLimit === '') {
+      dateLimit = "Sin fecha";
     }
 
 
+    if (topic === '' || topic === null) {
+      let newTopic = this.selectTopic;
 
+      if (this.selectType === 'textolibre') {
+
+        console.log("TEXTO LIBRO CREANDO");
+        console.log("NUEVO TOPIC: ", topic);
+        this.authService
+          .addCompromise(
+            description,
+            newTopic,
+            this.meetingSelectedId,
+            'texto libre',
+            this.projectSelectedId,
+            this.MeetingMinuteSelected.number,
+            this.user.email,
+            'Sin fecha limite'
+          )
+          .subscribe(
+            (resp) => {
+              this.elementForm.reset();
+              this.getCompromisesPreviews();
+
+              const Toast = Swal.mixin({
+                toast: true,
+                position: 'bottom-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                  toast.addEventListener('mouseenter', Swal.stopTimer)
+                  toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+              })
+
+              Toast.fire({
+                icon: 'success',
+                title: 'Se ha creado el texto libre exitosamente.'
+              });
+              this.elementForm.reset();
+
+              let payloadSave = {
+                room: this.meetingSelectedId,
+                user: this.user
+              }
+              this.getMeetingMinute(this.meetingSelectedId);
+              this.getCompromises('noSoft');
+              this.socket.emit('event_element', payloadSave);
+
+            },
+            (err: any) => {
+
+            }
+          );
+
+
+      } else if (this.selectType === 'elementodialogico') {
+
+        if(type==='compromiso'){
+          console.log("NUEVO TOPIC: ", newTopic);
+          this.authService
+            .addCompromise(
+              description,
+              newTopic,
+              this.meetingSelectedId,
+              type,
+              this.projectSelectedId,
+              this.MeetingMinuteSelected.number,
+              participants,
+              dateLimit
+            )
+            .subscribe(
+              (resp) => {
+  
+                const Toast = Swal.mixin({
+                  toast: true,
+                  position: 'bottom-end',
+                  showConfirmButton: false,
+                  timer: 3000,
+                  timerProgressBar: true,
+                  didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                  }
+                })
+  
+                Toast.fire({
+                  icon: 'success',
+                  title: 'Se ha creado el elemento exitosamente.'
+                });
+                this.elementForm.reset();
+  
+                let payloadSave = {
+                  room: this.meetingSelectedId,
+                  user: this.user
+                }
+                this.getMeetingMinute(this.meetingSelectedId);
+  
+                this.listaCantForTopic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  
+                this.getCompromises('noSoft');
+  
+                this.socket.emit('event_element', payloadSave);
+  
+              },
+              (err: any) => {
+                /*   console.log(err); */
+                /* Swal.fire('Error', err.message, 'error'); */
+              }
+            );
+
+        }else{
+          console.log("NUEVO TOPIC: ", newTopic);
+
+          dateLimit = new Date().toLocaleDateString() + ' '+ new Date().toLocaleTimeString();
+          this.authService
+            .addCompromise(
+              description,
+              newTopic,
+              this.meetingSelectedId,
+              type,
+              this.projectSelectedId,
+              this.MeetingMinuteSelected.number,
+              participants,
+              dateLimit
+            )
+            .subscribe(
+              (resp) => {
+  
+                const Toast = Swal.mixin({
+                  toast: true,
+                  position: 'bottom-end',
+                  showConfirmButton: false,
+                  timer: 3000,
+                  timerProgressBar: true,
+                  didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                  }
+                })
+  
+                Toast.fire({
+                  icon: 'success',
+                  title: 'Se ha creado el elemento exitosamente.'
+                });
+                this.elementForm.reset();
+  
+                let payloadSave = {
+                  room: this.meetingSelectedId,
+                  user: this.user
+                }
+                this.getMeetingMinute(this.meetingSelectedId);
+  
+                this.listaCantForTopic = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  
+                this.getCompromises('noSoft');
+  
+                this.socket.emit('event_element', payloadSave);
+  
+              },
+              (err: any) => {
+                /*   console.log(err); */
+                /* Swal.fire('Error', err.message, 'error'); */
+              }
+            );
+
+        }
+
+
+      }
+
+    } else if (topic != '' && topic != null) {
+
+      if (this.selectType === 'textolibre') {
+        console.log("TEXTO LIBRO CREANDO");
+        console.log("NUEVO TOPIC: ", topic);
+        this.authService
+          .addCompromise(
+            description,
+            topic,
+            this.meetingSelectedId,
+            'texto libre',
+            this.projectSelectedId,
+            this.MeetingMinuteSelected.number,
+            this.user.email,
+            'Sin fecha limite'
+          )
+          .subscribe(
+            (resp) => {
+
+              const Toast = Swal.mixin({
+                toast: true,
+                position: 'bottom-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                  toast.addEventListener('mouseenter', Swal.stopTimer)
+                  toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+              })
+
+              Toast.fire({
+                icon: 'success',
+                title: 'Se ha creado el texto libre exitosamente.'
+              });
+              this.elementForm.reset();
+
+              let payloadSave = {
+                room: this.meetingSelectedId,
+                user: this.user
+              }
+              this.getMeetingMinute(this.meetingSelectedId);
+              this.getCompromises('noSoft');
+              this.socket.emit('event_element', payloadSave);
+
+            },
+            (err: any) => {
+
+            }
+          );
+
+
+      } else if (this.selectType === 'elementodialogico') {
+
+
+        if(type=== 'compromiso'){
+          console.log("NUEVO TOPIC: ", topic);
+          this.authService
+            .addCompromise(
+              description,
+              topic,
+              this.meetingSelectedId,
+              type,
+              this.projectSelectedId,
+              this.MeetingMinuteSelected.number,
+              participants,
+              dateLimit
+            )
+            .subscribe(
+              (resp) => {
+  
+                const Toast = Swal.mixin({
+                  toast: true,
+                  position: 'bottom-end',
+                  showConfirmButton: false,
+                  timer: 3000,
+                  timerProgressBar: true,
+                  didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                  }
+                })
+  
+                Toast.fire({
+                  icon: 'success',
+                  title: 'Se ha creado el elemento dialógico exitosamente.'
+                });
+                this.elementForm.reset();
+  
+                let payloadSave = {
+                  room: this.meetingSelectedId,
+                  user: this.user
+                }
+                this.getMeetingMinute(this.meetingSelectedId);
+                this.getCompromises('noSoft');
+                this.socket.emit('event_element', payloadSave);
+  
+              },
+              (err: any) => {
+  
+              }
+            );
+
+        }else{
+          dateLimit = new Date().toLocaleDateString() + ' '+ new Date().toLocaleTimeString();
+          console.log("NUEVO TOPIC: ", topic);
+          this.authService
+            .addCompromise(
+              description,
+              topic,
+              this.meetingSelectedId,
+              type,
+              this.projectSelectedId,
+              this.MeetingMinuteSelected.number,
+              participants,
+              dateLimit
+            )
+            .subscribe(
+              (resp) => {
+  
+                const Toast = Swal.mixin({
+                  toast: true,
+                  position: 'bottom-end',
+                  showConfirmButton: false,
+                  timer: 3000,
+                  timerProgressBar: true,
+                  didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                  }
+                })
+  
+                Toast.fire({
+                  icon: 'success',
+                  title: 'Se ha creado el elemento dialógico exitosamente.'
+                });
+                this.elementForm.reset();
+  
+                let payloadSave = {
+                  room: this.meetingSelectedId,
+                  user: this.user
+                }
+                this.getMeetingMinute(this.meetingSelectedId);
+                this.getCompromises('noSoft');
+                this.socket.emit('event_element', payloadSave);
+  
+              },
+              (err: any) => {
+  
+              }
+            );
+
+        }
+
+      
+      }
+
+    }
 
 
   }
@@ -1727,6 +2191,8 @@ export class MeetingMinuteComponent {
     }
 
     console.log("NUEVO TOPIC: ", topic);
+
+
     this.authService
       .updateElement(
         description,
@@ -1737,7 +2203,9 @@ export class MeetingMinuteComponent {
         this.MeetingMinuteSelected.number,
         participants,
         dateLimit,
-        this.selectElementId
+        this.selectElementId,
+        this.selectElementPosition,
+        'noSort'
       )
       .subscribe(
         (resp) => {
@@ -1774,8 +2242,9 @@ export class MeetingMinuteComponent {
             room: this.meetingSelectedId,
             user: this.user
           }
+
           this.getMeetingMinute(this.meetingSelectedId);
-          this.getCompromises();
+          this.getCompromises('noSoft');
           this.socket.emit('event_element', payloadSave);
 
           /*  console.log('RESPUESTAAAAAAA DE CREACION DE COMPROMISO', resp);
@@ -1787,17 +2256,11 @@ export class MeetingMinuteComponent {
         }
       );
 
-
-
     /*  console.log( "ELEMENTO number: ", number); */
-
-
-
   }
 
 
-
-  getCompromises() {
+  getCompromises(isSoft2: string) {
     /*  this.resetNumberExperimenta(0); */
     this.authService.getCompromises(this.meetingSelectedId).subscribe(
       (resp: any[]) => {
@@ -1808,80 +2271,160 @@ export class MeetingMinuteComponent {
         let relativ = 0;
         let numTopics = 0;
         // CREAMOS UN ARREGLO CON LA CANTIDAD POR TEMA
+        /*     this.elements = resp; */
+        this.listNumbers1 = [];
 
-        this.elements = resp;
+        if (resp[0].isSort === 'yesSort' && isSoft2 != 'noSoft') {
 
-        for (let z = 0; z < resp.length; z++) {
-          for (let topic = 0; topic < this.MeetingMinuteSelected.topics.length; topic++) {
-            if (resp[z].topic === topic) {
-              this.elements[z].position = this.listaCantForTopic[topic];
+          console.log("CANTIDAD DE ELEMENTOS RESP: ", resp.length)
 
-              /*   if(resp[z].topic===1){
-                  this.elements[z].position = this.elements[z].position + this.listaCantForTopic[0];
-  
-                }
-                if(resp[z].topic===2){
-                  this.elements[z].position = this.elements[z].position + this.listaCantForTopic[0] + this.listaCantForTopic[1];
-  
-                }
-                if(resp[z].topic===3){
-                  this.elements[z].position = this.elements[z].position + this.listaCantForTopic[0] + this.listaCantForTopic[1] + this.listaCantForTopic[2] ;
-                  
-                }
-                if(resp[z].topic===4){
-                  this.elements[z].position = this.elements[z].position + this.listaCantForTopic[0] + this.listaCantForTopic[1] + this.listaCantForTopic[2] + this.listaCantForTopic[3];
-                  
-                }  */
-
-
-
-              this.listaCantForTopic[topic] = this.listaCantForTopic[topic] + 1;
+          for (let z = 0; z < resp.length + 1; z++) {
+            for (let y = 0; y < resp.length; y++) {
+              if (resp[y].position === '' + z) {
+                this.elements.push(resp[y]);
+              }
             }
           }
-        }
 
-        // RECORREMOS NUEVAMENTE Y ASIGNAMOS POSICION
-        for (let oo = 0; oo < resp.length; oo++) {
-          for (let topico = 0; topico < this.listaCantForTopic.length; topico++) {
+          // RECORREMOS TODOS LOS ELEMENTOS DE AQUI
 
-            if (resp[oo].topic === topico) {
+          // POR CADA ELEMENTO VAMOS GUARDANDO SU POSICION
+          /*  this.actualizarElemento2(this.elements[agh]); */
 
-              /*    this.elements[oo].position = this.listaCantForTopic[topico]; */
+          // ACTUALIZAR LOS ELEMENTOS 
 
-              if (resp[oo].topic === 1) {
-                this.elements[oo].position = this.elements[oo].position + this.listaCantForTopic[0];
+        } else if (resp[0].isSort === 'noSort' || isSoft2 === 'noSoft') {
+          this.elements = resp;
+          for (let z = 0; z < resp.length; z++) {
+            for (let topic = 0; topic < this.MeetingMinuteSelected.topics.length; topic++) {
+              if (resp[z].topic === topic && resp[z].type != 'texto libre') {
+                this.elements[z].position = this.listaCantForTopic[topic];
 
+                /*   if(resp[z].topic===1){
+                    this.elements[z].position = this.elements[z].position + this.listaCantForTopic[0];
+    
+                  }
+                  if(resp[z].topic===2){
+                    this.elements[z].position = this.elements[z].position + this.listaCantForTopic[0] + this.listaCantForTopic[1];
+    
+                  }
+                  if(resp[z].topic===3){
+                    this.elements[z].position = this.elements[z].position + this.listaCantForTopic[0] + this.listaCantForTopic[1] + this.listaCantForTopic[2] ;
+                    
+                  }
+                  if(resp[z].topic===4){
+                    this.elements[z].position = this.elements[z].position + this.listaCantForTopic[0] + this.listaCantForTopic[1] + this.listaCantForTopic[2] + this.listaCantForTopic[3];
+                    
+                  }  */
+
+                this.listaCantForTopic[topic] = this.listaCantForTopic[topic] + 1;
+                this.cantElementsThis = this.cantElementsThis + 1;
               }
-              if (resp[oo].topic === 2) {
-                this.elements[oo].position = this.elements[oo].position + this.listaCantForTopic[0] + this.listaCantForTopic[1];
+            }
 
-              }
-              if (resp[oo].topic === 3) {
-                this.elements[oo].position = this.elements[oo].position + this.listaCantForTopic[0] + this.listaCantForTopic[1] + this.listaCantForTopic[2];
+          }
+          // RECORREMOS NUEVAMENTE Y ASIGNAMOS POSICION
+          for (let oo = 0; oo < resp.length; oo++) {
+            for (let topico = 0; topico < this.listaCantForTopic.length; topico++) {
 
-              }
-              if (resp[oo].topic === 4) {
-                this.elements[oo].position = this.elements[oo].position + this.listaCantForTopic[0] + this.listaCantForTopic[1] + this.listaCantForTopic[2] + this.listaCantForTopic[3];
+              if (resp[oo].topic === topico && resp[oo].type != 'texto libre') {
 
-              }
-              if (resp[oo].topic === 5) {
-                this.elements[oo].position = this.elements[oo].position + this.listaCantForTopic[0] + this.listaCantForTopic[1] + this.listaCantForTopic[2] + this.listaCantForTopic[3] + this.listaCantForTopic[4];
+                /*    this.elements[oo].position = this.listaCantForTopic[topico]; */
+                if (resp[oo].topic === 0) {
+                  this.elements[oo].position = 1 + this.elements[oo].position;
+                  this.listNumbers1.push(' ' + this.elements[oo].description[0] + this.elements[oo].description[1] + this.elements[oo].description[2] + this.elements[oo].description[3] + this.elements[oo].description[4] + ', ' + this.elements[oo].participants + this.elements[oo].dateLimit + '[' + this.elements[oo].number + '.' + this.elements[oo].position + '] ' + 'topic: ' + resp[oo].topic);
+
+                }
+
+                if (resp[oo].topic === 1) {
+                  this.elements[oo].position = 1 + this.elements[oo].position + this.listaCantForTopic[0];
+                  this.listNumbers1.push(' ' + this.elements[oo].description[0] + this.elements[oo].description[1] + this.elements[oo].description[2] + this.elements[oo].description[3] + this.elements[oo].description[4] + ', ' + this.elements[oo].participants + this.elements[oo].dateLimit + '[' + this.elements[oo].number + '.' + this.elements[oo].position + '] ' + 'topic: ' + resp[oo].topic);
+                  /*      this.actualizarElemento2(this.elements[oo]); */
+                }
+                if (resp[oo].topic === 2) {
+                  this.elements[oo].position = 1 + this.elements[oo].position + this.listaCantForTopic[0] + this.listaCantForTopic[1];
+                  this.listNumbers1.push(' ' + this.elements[oo].description[0] + this.elements[oo].description[1] + this.elements[oo].description[2] + this.elements[oo].description[3] + this.elements[oo].description[4] + ', ' + this.elements[oo].participants + this.elements[oo].dateLimit + '[' + this.elements[oo].number + '.' + this.elements[oo].position + '] ' + 'topic: ' + resp[oo].topic);
+                  /*   this.actualizarElemento2(this.elements[oo]); */
+                }
+                if (resp[oo].topic === 3) {
+                  this.elements[oo].position = 1 + this.elements[oo].position + this.listaCantForTopic[0] + this.listaCantForTopic[1] + this.listaCantForTopic[2];
+
+                  this.listNumbers1.push(' ' + this.elements[oo].description[0] + this.elements[oo].description[1] + this.elements[oo].description[2] + this.elements[oo].description[3] + this.elements[oo].description[4] + ', ' + this.elements[oo].participants + this.elements[oo].dateLimit + '[' + this.elements[oo].number + '.' + this.elements[oo].position + '] ' + 'topic: ' + resp[oo].topic);
+                  /*    this.actualizarElemento2(this.elements[oo]); */
+                }
+                if (resp[oo].topic === 4) {
+                  this.elements[oo].position = 1 + this.elements[oo].position + this.listaCantForTopic[0] + this.listaCantForTopic[1] + this.listaCantForTopic[2] + this.listaCantForTopic[3];
+                  this.listNumbers1.push(' ' + this.elements[oo].description[0] + this.elements[oo].description[1] + this.elements[oo].description[2] + this.elements[oo].description[3] + this.elements[oo].description[4] + ', ' + this.elements[oo].participants + this.elements[oo].dateLimit + '[' + this.elements[oo].number + '.' + this.elements[oo].position + '] ' + 'topic: ' + resp[oo].topic);
+                  /*    this.actualizarElemento2(this.elements[oo]); */
+                }
+                if (resp[oo].topic === 5) {
+                  this.elements[oo].position = 1 + this.elements[oo].position + this.listaCantForTopic[0] + this.listaCantForTopic[1] + this.listaCantForTopic[2] + this.listaCantForTopic[3] + this.listaCantForTopic[4];
+                  this.listNumbers1.push(' ' + this.elements[oo].description[0] + this.elements[oo].description[1] + this.elements[oo].description[2] + this.elements[oo].description[3] + this.elements[oo].description[4] + ', ' + this.elements[oo].participants + this.elements[oo].dateLimit + '[' + this.elements[oo].number + '.' + this.elements[oo].position + '] ' + 'topic: ' + resp[oo].topic);
+                  /*  this.actualizarElemento2(this.elements[oo]); */
+                }
 
               }
 
             }
 
 
-          }
-        }
 
+            // RECORREMOS TODOS LOS ELEMENTOS DE AQUI
+            for (let agh = 0; agh < this.elements.length; agh++) {
+              console.log(" ELEMENT " + agh, this.elements[agh])
+              // POR CADA ELEMENTO VAMOS GUARDANDO SU POSICION
+              /*  this.actualizarElemento2(this.elements[agh]); */
+
+              // ACTUALIZAR LOS ELEMENTOS 
+              console.log("ACTUALIZANDO LA POSICION DEL ELEMENTO", this.elements[agh]);
+              this.authService
+                .updateElement(
+                  this.elements[agh].description,
+                  this.elements[agh].topic,
+                  this.meetingSelectedId,
+                  this.elements[agh].type,
+                  this.projectSelectedId,
+                  this.MeetingMinuteSelected.number,
+                  this.elements[agh].participants,
+                  this.elements[agh].dateLimit,
+                  this.elements[agh]._id,
+                  agh,
+                  'noSort'
+                )
+                .subscribe(
+                  (resp) => {
+
+                    /* this.elements[agh].position = agh -   this.elements[agh].number + 1 */
+
+
+                    /*                  let payloadSave = {
+                                       room: this.meetingSelectedId,
+                                       user: this.user
+                                     }
+                                     this.socket.emit('event_element', payloadSave); */
+                    /*  console.log('RESPUESTAAAAAAA DE CREACION DE COMPROMISO', resp);
+                    console.log('ID DE COMPROMISO: ', resp._id); */
+                  },
+                  (err: any) => {
+                    /*   console.log(err); */
+                    /* Swal.fire('Error', err.message, 'error'); */
+                  }
+                );
+
+              /*  console.log( "ELEMENTO number: ", number); */
+
+
+            }
+
+
+          }
+
+        }
 
 
 
 
         console.log("LISTA CON CANTIDAD DE ELEMENTOS POR TEMA: ", this.listaCantForTopic);
-
-
 
         console.log("ELEMENTOS: ", this.elements);
         /*         Swal.fire({
@@ -1903,19 +2446,9 @@ export class MeetingMinuteComponent {
     this.resetNumberExperimenta(0);
     this.authService.getCompromisesPreview(this.projectSelectedId).subscribe(
       (resp: any[]) => {
-        /*      console.log('AQUI ESTAN LOS COMPROMISOS ANTERIORES', resp); */
-        /*  this.listProjectsInicial(); */
         this.elementsPreviews = resp;
-        if (resp.length === 0) {
-          this.elementsPreviews = ['no hay'];
-        }
-        /*         Swal.fire({
-          position: 'center',
-          icon: 'success',
-          title: 'se han cargado los elementos ',
-          showConfirmButton: false,
-          timer: 2000,
-        }); */
+        console.log("ELEMENTOS PREVIOS: ", resp);
+
       },
       (err: any) => {
         /*    console.log(err); */
@@ -1930,16 +2463,17 @@ export class MeetingMinuteComponent {
     /*  this.elements.push({uno: id, dos: "adios"}); */
 
     await Swal.fire({
-      title: 'Agregar un responsable',
+      title: 'Agregar un encargado',
       input: 'select',
       inputOptions: {
-        'Participantes': this.MeetingMinuteSelected.participants,
+        'Asistentes': this.MeetingMinuteSelected.participants,
       },
-      inputPlaceholder: 'Seleccionar un responsable',
+      inputPlaceholder: 'Seleccionar un encargado',
       showCancelButton: true,
-      confirmButtonText: 'Asignar como responsable',
+      confirmButtonText: 'Asignar como encargado',
       showDenyButton: true,
-      denyButtonText: `Manual`,
+      denyButtonColor: 'rgb(105, 152, 92)',
+      denyButtonText: `Ingresar usuario manualmente`,
       preConfirm: (user) => {
         this.crearResponsbile(this.MeetingMinuteSelected.participants[user], numberOrder);
         /*         this.createMember(emailMember, this.projectSelected._id); */
@@ -1948,7 +2482,7 @@ export class MeetingMinuteComponent {
       if (result.isConfirmed) {
       } else if (result.isDenied) {
         Swal.fire({
-          title: 'Añadir responsable',
+          title: 'Añadir encargado',
           text: '¿Email del usuario?',
           input: 'email',
           inputAttributes: {
@@ -1956,7 +2490,7 @@ export class MeetingMinuteComponent {
           },
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
-          confirmButtonText: 'Asignar responsable',
+          confirmButtonText: 'Asignar encargado',
 
           showLoaderOnConfirm: true,
           preConfirm: (user) => {
@@ -1972,12 +2506,9 @@ export class MeetingMinuteComponent {
       }
     });
 
-
-
   }
 
   crearResponsbile(user: string, numberOrder: number) {
-
     this.authService.getUserByEmail(user).subscribe(
       (resp) => {
         console.log(
@@ -2014,7 +2545,7 @@ export class MeetingMinuteComponent {
 
                 Toast.fire({
                   icon: 'success',
-                  title: 'Se ha añadido el responsable ' + user + ' exitosamente.'
+                  title: 'Se ha añadido el encargado ' + user + ' exitosamente.'
                 })
                 let payload = {
                   room: this.meetingSelectedId,
@@ -2136,13 +2667,13 @@ export class MeetingMinuteComponent {
 
   async addURL() {
     const { value: url } = await Swal.fire({
-      input: 'url',
-      title: 'Ingresar un link de pagina web valido',
+      input: 'text',
+      title: 'Ingresar un enlace de pagina web valido',
       inputPlaceholder: 'Escribir URL completa',
     });
 
+
     if (url) {
-      Swal.fire(`URL añadida: ${url}`);
       this.links.push(url);
       setTimeout(() => {
         this.saveMeetingMinute();
@@ -2153,7 +2684,7 @@ export class MeetingMinuteComponent {
 
   notificarParticipantes(fase: string) {
     this.authService
-      .notifyParticipants(this.MeetingMinuteSelected, this.meetingSelectedId, fase, this.user.lastLink)
+      .notifyParticipants(this.MeetingMinuteSelected, this.meetingSelectedId, fase, 'http://70.35.204.110:4200/#' + this.userSelected.lastLink)
       .subscribe(
         (resp) => {
           /*    console.log(resp); */
@@ -2172,7 +2703,7 @@ export class MeetingMinuteComponent {
 
           Toast.fire({
             icon: 'success',
-            title: 'Se ha modificado el participante exitosamente.'
+            title: 'Se ha modificado el invitado exitosamente.'
           })
         },
         (err: any) => {
@@ -2186,7 +2717,7 @@ export class MeetingMinuteComponent {
 
   addInMeeting() {
     /*     console.log('addpremeeting'); */
-    this.MeetingMinuteSelected.realStartTime = new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString();
+    /*   this.MeetingMinuteSelected.realStartTime = new Date().getFullYear + '-' + new Date().getMonth() + '-' + new Date().getDay + ' ' + new Date().toLocaleTimeString(); */
     console.log("REAL TIME COMIENZO: ", this.MeetingMinuteSelected.realStartTime);
     this.authService.addInMeeting(this.meetingSelectedId).subscribe(
       (resp: any) => {
@@ -2227,7 +2758,7 @@ export class MeetingMinuteComponent {
   }
 
   addPostMeeting() {
-    this.MeetingMinuteSelected.realEndTime = new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString();
+    /*  this.MeetingMinuteSelected.realEndTime =  this.MeetingMinuteSelected.realStartTime = new Date().getFullYear + '-' + new Date().getMonth() + '-' + new Date().getDay + ' ' + new Date().toLocaleTimeString(); */
     this.authService.addInMeeting(this.meetingSelectedId).subscribe(
       (resp: any) => {
         const url2 =
@@ -2313,15 +2844,15 @@ export class MeetingMinuteComponent {
 
 
   async nextFasePre() {
-    this.MeetingMinuteSelected.realStartTime = new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString();
+    /*     this.MeetingMinuteSelected.realStartTime =  new Date().getFullYear() + '-' + new Date().getMonth() + '-' + new Date().getDay() + ' ' + new Date().toLocaleTimeString(); */
     const { value: accept } = await Swal.fire({
       title: 'Concluyendo creación de reunión',
       input: 'checkbox',
       inputValue: 1,
       inputPlaceholder:
-        '¿Enviar notificación a participantes?',
+        '¿Enviar notificación a secretario y Anfitrion?',
       confirmButtonText:
-        'Continuar a Pre-Reunión <i class="fa fa-arrow-right"></i>',
+        'Continuar a preparar la reunión <i class="fa fa-arrow-right"></i>',
 
     })
 
@@ -2349,53 +2880,89 @@ export class MeetingMinuteComponent {
   }
 
   async nextFaseIn() {
-    this.MeetingMinuteSelected.realStartTime = new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString();
-    console.log("real start time", this.MeetingMinuteSelected.realStartTime);
-    /*  Swal.fire({ html: `You selected:` }) */
-    const { value: accept } = await Swal.fire({
-      title: 'Concluyendo Pre-Reunión',
-      input: 'checkbox',
-      inputValue: 1,
-      inputPlaceholder:
-        '¿Enviar notificación a participantes?',
-      confirmButtonText:
-        'Continuar a En-Reunión <i class="fa fa-arrow-right"></i>',
-    })
+    if (!this.isDateError) {
+      let fecha = new Date().toLocaleDateString();
 
-    if (accept) {
-      this.notificarParticipantes('en-reunión');
-      this.saveMeetingMinute();
-      setTimeout(() => {
-        this.addInMeeting();
-      }, 2000);
-    }
-    else {
-      this.saveMeetingMinute();
-      setTimeout(() => {
-        this.addInMeeting();
-      }, 2000);
+      if (fecha.split("-").length > 1) {
+        Swal.fire({title: 'EDGE'});
+        this.MeetingMinuteSelected.realStartTime = fecha.split('-')[1] + '-' + fecha.split('-')[0] + '-' + fecha.split('-')[2] + ' ' + new Date().toLocaleTimeString();
+      }
+      else {
+        let startTime = fecha.split('/')[1] + '-' + fecha.split('/')[0] + '-' + fecha.split('/')[2];
+        this.MeetingMinuteSelected.realStartTime = startTime.split('-')[0] + '-' + startTime.split('-')[1] + '-' + startTime.split('-')[2] + ' ' + new Date().toLocaleTimeString();
+      }
 
+
+      console.log("TIEMPO START ANTES", this.MeetingMinuteSelected.realStartTime);
+
+
+      /*  Swal.fire({ html: `You selected:` }) */
+      const { value: accept } = await Swal.fire({
+        title: 'Concluyendo la preparación de la reunión',
+        input: 'checkbox',
+        inputValue: 1,
+        inputPlaceholder:
+          '¿Enviar notificación a invitados?',
+        confirmButtonText:
+          'Iniciar la sesión de reunión <i class="fa fa-arrow-right"></i>',
+      })
+
+      if (accept) {
+        this.notificarParticipantes('en-reunión');
+        this.saveMeetingMinute();
+        setTimeout(() => {
+          this.addInMeeting();
+        }, 2000);
+      }
+      else {
+        this.saveMeetingMinute();
+        setTimeout(() => {
+          this.addInMeeting();
+        }, 2000);
+
+      }
+
+    } else if (this.isDateError) {
+
+      Swal.fire({
+        icon: 'warning',
+        title: 'Verificar el horario de la reunión.',
+        confirmButtonText: 'Entendido!',
+
+      })
     }
   }
 
   async nextFasePost() {
-    this.MeetingMinuteSelected.realEndTime = new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString();
-    console.log("real end time", this.MeetingMinuteSelected.realEndTime);
+    /*  this.createTasks(); */
+    let fecha = new Date().toLocaleDateString();
+
+    if (fecha.split("-").length > 1) {
+      Swal.fire({title: 'EDGE'});
+      this.MeetingMinuteSelected.realEndTime = fecha.split('-')[1] + '-' + fecha.split('-')[0] + '-' + fecha.split('-')[2] + ' ' + new Date().toLocaleTimeString();
+    }
+    else {
+      let startTime = fecha.split('/')[1] + '-' + fecha.split('/')[0] + '-' + fecha.split('/')[2];
+      this.MeetingMinuteSelected.realEndTime = startTime.split('-')[0] + '-' + startTime.split('-')[1] + '-' + startTime.split('-')[2] + ' ' + new Date().toLocaleTimeString();
+    }
 
     const { value: accept } = await Swal.fire({
-      title: 'Concluyendo En-Reunión',
+      title: 'Concluyendo la sesión de reunión',
       input: 'checkbox',
       inputValue: 1,
       inputPlaceholder:
-        '¿Enviar notificación a participantes?',
+        '¿Enviar notificación a asistentes?',
       confirmButtonText:
-        'Continuar a Post-Reunión <i class="fa fa-arrow-right"></i>',
+        'Revisar detalles finales <i class="fa fa-arrow-right"></i>',
 
     })
 
+
     if (accept) {
+
       this.notificarParticipantes('post-reunión');
       this.saveMeetingMinute();
+
       setTimeout(() => {
         this.addPostMeeting();
       }, 2000);
@@ -2407,6 +2974,20 @@ export class MeetingMinuteComponent {
       }, 2000);
 
     }
+
+  }
+  async createTasks() {
+    console.log('[TASK] ACTIVADO LA CREACION');
+    this.authService.createTasks(this.meetingSelectedId).subscribe(
+      (resp: any) => {
+        console.log('[TASK] CREATE TASKS FOR CCOMPROMISES repuesta:', resp);
+
+      },
+      (err: string | undefined) => {
+        Swal.fire('Error', err, 'error');
+      }
+    );
+
 
   }
 
@@ -2414,38 +2995,96 @@ export class MeetingMinuteComponent {
   async nextFasePostCreate() {
 
     const { value: accept } = await Swal.fire({
-      title: 'Concluyendo En-Reunión',
+      title: 'Archivando la reunión',
       input: 'checkbox',
       inputValue: 1,
       inputPlaceholder:
-        '¿Enviar notificación a participantes?',
+        '¿Enviar notificación a invitados?',
       confirmButtonText:
-        'Continuar a crear nueva reunión <i class="fa fa-arrow-right"></i>',
+        'Archivar la reunión <i class="fa fa-arrow-right"></i>',
 
     })
 
     if (accept) {
-      this.notificarParticipantes('creación de reunión');
+      this.notificarParticipantes('finish-reunión');
       this.saveMeetingMinute();
       setTimeout(() => {
-        this.addMeeting();
+
+        this.finish();
 
       }, 2000);
     }
     else {
       this.saveMeetingMinute();
       setTimeout(() => {
-        this.addMeeting();
+
+        this.finish();
+
       }, 2000);
 
     }
 
   }
 
+  finish() {
+    this.authService.setStateMeeting('finish', this.meetingSelectedId).subscribe(
+      (resp: any) => {
+        const url2 =
+          '/main/' +
+          this.projectSelectedId +
+          '/meeting/' +
+          this.meetingSelectedId +
+          '/post-meeting';
+        console.log(this.projectSelectedId);
+        this.router.navigateByUrl(url2);
+        let payloadSave = {
+          room: this.meetingSelectedId,
+          user: this.user
+        }
+        location.reload();
+        this.socket.emit('event_reload', payloadSave);
+      },
+      (err: string | undefined) => {
+        Swal.fire('Error', err, 'error');
+      }
+    );
+  }
+
 
   editable() {
     this.isEditable = !this.isEditable;
   }
+  editableObjetivo() {
+    this.isEditable = !this.isEditable;
+    this.isEditableObjetivo = !this.isEditableObjetivo;
+
+  }
+
+  editableLugar() {
+    this.isEditable = !this.isEditable;
+    this.isEditableLugar = !this.isEditableLugar;
+
+  }
+
+  editableFecha() {
+    this.isEditable = !this.isEditable;
+    this.isEditableFecha = !this.isEditableFecha;
+
+  }
+
+  editableInicio() {
+
+    this.isEditable = !this.isEditable;
+    this.isEditableInicio = !this.isEditableInicio;
+  }
+
+  editableTermino() {
+    this.isEditable = !this.isEditable;
+    this.isEditableTermino = !this.isEditableTermino;
+    this.isDateError = false;
+  }
+
+
 
   colapseArray(i: any) {
     this.numerExperimental = 0;
@@ -2492,11 +3131,102 @@ export class MeetingMinuteComponent {
     this.modalService.open(content, { centered: true });
   }
 
-  openScrollableContent(longContent: any, numTopic: number) {
+  openScrollableContent(longContent: any, numTopic: number, type: any) {
+    if (type === 'textolibre') {
+      this.selectType = 'textolibre';
+
+    } else if (type === 'elementodialogico') {
+      this.selectType = 'elementodialogico';
+
+    }
     this.selectTopic = numTopic;
-    /*     this.resetNumberExperimenta(this.numerExperimental); */
-    this.modalService.open(longContent, { scrollable: true, modalDialogClass: 'dark-modal' });
+
+    let nowTime2 = new Date().toLocaleDateString();
+    
+    if(nowTime2.split("-").length > 1){
+
+      let nowTime3 = nowTime2.split('-')[1] + '-' + nowTime2.split('-')[0] + '-' + nowTime2.split('-')[2] + ' ' + new Date().toLocaleTimeString();
+      let nowTime4 = nowTime2.split('-')[1] + '/' + nowTime2.split('-')[0] + '/' + nowTime2.split('-')[2] + ' ' + new Date().toLocaleTimeString();
+
+      
+      let meetTime2 = this.MeetingMinuteSelected.fechaI;
+      let meetTime3 = meetTime2.split('-')[1] + '-' + meetTime2.split('-')[0] + '-' + meetTime2.split('-')[2] + ' ' + this.MeetingMinuteSelected.startHour
+      let meetTime4 = meetTime2.split('-')[1] + '/' + meetTime2.split('-')[0] + '/' + meetTime2.split('-')[2] + ' ' + this.MeetingMinuteSelected.startHour
+  
+
+      let nowTime = new Date(nowTime3).getTime();
+      let nowTimeFirefox = new Date(nowTime4).getTime();
+
+      let meetTime = new Date(meetTime3).getTime();
+      let meetTimeFirefox = new Date(meetTime4).getTime();
+
+      console.log("NowTime con split = ", nowTime3);
+      console.log("NowTime con split = ", nowTime);
+      console.log("NowTime 2 = ", nowTime2);
+      console.log("meetTime 3 = ", meetTime);
+      console.log("meetTime 4 = ", meetTime2);
+
+      console.log("NowTime con meetTimeFirefox = ", meetTimeFirefox);
+      console.log("NowTime con nowTimeFirefox = ", nowTimeFirefox);
+
+      console.log("FECHA DE HOY: ", new Date().toLocaleDateString())
+  
+      if (nowTime > meetTime || nowTimeFirefox > meetTimeFirefox) {
+  
+        this.isTimeMeet = 'ZZZZZZZZZZZZ';
+        this.modalService.open(longContent, { scrollable: true, modalDialogClass: 'dark-modal' });
+  
+      } else {
+  
+        this.isTimeMeet = 'BBBBBBBBBB';
+        Swal.fire({
+          icon: 'warning',
+          title: 'Horario de reunión no valido para realizar esta acción.',
+          confirmButtonText: 'Entendido!',
+  
+        })
+      }
+
+
+
+    }else{
+      let nowTime3Aux = nowTime2.split('/')[1] + '-' + nowTime2.split('/')[0] + '-' + nowTime2.split('/')[2];
+      let nowTime3 = nowTime3Aux.split('-')[0] + '-' + nowTime3Aux.split('-')[1] + '-' + nowTime3Aux.split('-')[2] + ' ' + new Date().toLocaleTimeString();
+      let meetTime2 = this.MeetingMinuteSelected.fechaI;
+      let meetTime3 = meetTime2.split('-')[1] + '-' + meetTime2.split('-')[0] + '-' + meetTime2.split('-')[2] + ' ' + this.MeetingMinuteSelected.startHour
+  
+      let nowTime = new Date(nowTime3).getTime();
+      let meetTime = new Date(meetTime3).getTime();
+      console.log("NowTime con split = ", nowTime3);
+      console.log("NowTime con split = ", nowTime);
+      console.log("NowTime 2 = ", nowTime2);
+      console.log("meetTime 3 = ", meetTime);
+      console.log("meetTime 4 = ", meetTime2);
+  
+      console.log("FECHA DE HOY: ", new Date().toLocaleDateString())
+  
+      if (nowTime > meetTime) {
+  
+        this.isTimeMeet = 'ZZZZZZZZZZZZ';
+        this.modalService.open(longContent, { scrollable: true, modalDialogClass: 'dark-modal' });
+  
+      } else {
+  
+        this.isTimeMeet = 'BBBBBBBBBB';
+        Swal.fire({
+          icon: 'warning',
+          title: 'Horario de reunión no valido para realizar esta acción.',
+          confirmButtonText: 'Entendido!',
+  
+        })
+      }
+      
+    }
+
+
+
   }
+  elementSelected: any
 
   openScrollableContent2(longContent2: any, numTopic: number, element: any) {
     /*     this.resetNumberExperimenta(this.numerExperimental); */
@@ -2504,8 +3234,11 @@ export class MeetingMinuteComponent {
     console.log("ELEMNTO PARA ACTUALIZAR: ", element)
     this.selectTopic = numTopic;
     this.selectResponsable = element.participants;
+    this.selectType = element.type;
     this.selectElementId = element._id;
+    this.selectElementPosition = element.position;
     this.elementEditForm.patchValue(element);
+    this.elementSelected = element;
     this.modalService.open(longContent2, { scrollable: true, modalDialogClass: 'dark-modal' });
   }
 
@@ -2548,18 +3281,12 @@ export class MeetingMinuteComponent {
 
 
   addMeeting() {
-    /*     const url2 = '/main/' + this.projectSelectedId + '/add-meeting'; */
-    /*     console.log(this.projectSelectedId); */
-    /*     this.router.navigateByUrl(url2); */
-    /*     console.log(this.countMeetings); */
-
-
 
     this.authService
       .addMeeting(this.projectSelectedId, this.MeetingMinuteSelected.number)
       .subscribe(
         (resp: any) => {
-          /*       console.log('RESP 1:', resp); */
+
           const Toast = Swal.mixin({
             toast: true,
             position: 'bottom-end',
@@ -2664,9 +3391,9 @@ export class MeetingMinuteComponent {
 
         Toast.fire({
           icon: 'success',
-          title: 'Visualización Microservice-tasks estado:',
-          text: 'en desarrollo'
+          title: 'Redirigiendo a tareas:',
         })
+        this.router.navigateByUrl('/main/task');
 
 
       },
@@ -2695,5 +3422,508 @@ export class MeetingMinuteComponent {
 
   }
 
+  isAsistentesColapseFuncion() {
+    this.isAsistentesColapse = !this.isAsistentesColapse;
+  }
+
+  isCompromisosPreviosColapseFuncion() {
+    this.isCompromisosPreviosColapse = !this.isCompromisosPreviosColapse;
+  }
+
+  isTablaDeTemasColapseFuncion() {
+    this.isTemarioColapse = !this.isTemarioColapse;
+  }
+
+  isDesarrolloColapseFuncion() {
+
+    this.isDesarrolloColapse = !this.isDesarrolloColapse;
+    this.colapseAll();
+  }
+
+  isAdjuntosColapseFuncion() {
+    this.isAdjuntoColapse = !this.isAdjuntoColapse;
+  }
+
+
+  descargarPDF() {
+    let ausentes = '';
+    for(let ausentesCount=0;  ausentesCount < this.MeetingMinuteSelected.absents.length; ausentesCount++){
+      ausentes = ausentes + this.MeetingMinuteSelected.absents[ausentesCount] + ' ';
+    }
+    const doc = new jsPDF();
+    let desarrollo = '';
+    let links = '';
+    let descriptionAux = '';
+    let compromisesPrevies = '';
+
+    if (this.MeetingMinuteSelected.number != 0) {
+
+      for (let ep = 0; ep < this.elementsPreviews.length; ep++) {
+        if (this.elementsPreviews[ep].type === 'compromiso' && this.elementsPreviews[ep].number != this.MeetingMinuteSelected.number) {
+
+          if (this.elementsPreviews[ep].description.split(' ').length > 18) {
+
+            compromisesPrevies = compromisesPrevies + '\n    ' + this.elementsPreviews[ep].number + '.' + this.elementsPreviews[ep].position + ': ';
+            for (let s = 0; s < this.elementsPreviews[ep].description.split(' ').length; s++) {
+              compromisesPrevies = compromisesPrevies + ' ' + this.elementsPreviews[ep].description.split(' ')[s] + ' ';
+              if (s === 18 || s === 36 || s === 54 || s === 72 || s === 90 || s === 108) {
+                compromisesPrevies = compromisesPrevies + ' \n   ';
+              }
+            }
+            compromisesPrevies = compromisesPrevies + ', ' + this.elementsPreviews[ep].participants + ', ' + this.elementsPreviews[ep].dateLimit + ". ";
+            if (this.elementsPreviews[ep].state === 'new') {
+              compromisesPrevies = compromisesPrevies + ' No atendido.';
+            }
+            if (this.elementsPreviews[ep].state === 'desarrollo') {
+              compromisesPrevies = compromisesPrevies + ' En desarrollo.';
+            }
+            if (this.elementsPreviews[ep].state === 'pausada') {
+              compromisesPrevies = compromisesPrevies + ' En pausa.';
+            }
+            if (this.elementsPreviews[ep].state === 'evaluando') {
+              compromisesPrevies = compromisesPrevies + ' En evaluación.';
+            }
+            if (this.elementsPreviews[ep].state === 'finalizado') {
+              compromisesPrevies = compromisesPrevies + ' Finalizado.';
+            }
+            if (this.elementsPreviews[ep].state === 'borrada') {
+              compromisesPrevies = compromisesPrevies + ' Eliminada.';
+            }
+
+          } else {
+            compromisesPrevies = compromisesPrevies + '\n    ' + this.elementsPreviews[ep].number + '.' + this.elementsPreviews[ep].position + ': ' + this.elementsPreviews[ep].description + ', ' + this.elementsPreviews[ep].participants + ', ' + this.elementsPreviews[ep].dateLimit + ". ";
+            if (this.elementsPreviews[ep].state === 'new') {
+              compromisesPrevies = compromisesPrevies + ' No atendido.';
+            }
+            if (this.elementsPreviews[ep].state === 'new') {
+              compromisesPrevies = compromisesPrevies + ' No atendido.';
+            }
+            if (this.elementsPreviews[ep].state === 'desarrollo') {
+              compromisesPrevies = compromisesPrevies + ' En desarrollo.';
+            }
+            if (this.elementsPreviews[ep].state === 'pausada') {
+              compromisesPrevies = compromisesPrevies + ' En pausa.';
+            }
+            if (this.elementsPreviews[ep].state === 'evaluando') {
+              compromisesPrevies = compromisesPrevies + ' En evaluación.';
+            }
+            if (this.elementsPreviews[ep].state === 'finalizado') {
+              compromisesPrevies = compromisesPrevies + ' Finalizado.';
+            }
+            if (this.elementsPreviews[ep].state === 'borrada') {
+              compromisesPrevies = compromisesPrevies + ' Eliminada.';
+            }
+          }
+
+        }
+
+      }
+
+    } else {
+      compromisesPrevies = '\n       No existen compromisos previos.' + '\n\n'
+    }
+
+
+    for (let i = 0; i < this.MeetingMinuteSelected.topics.length; i++) {
+
+      desarrollo = desarrollo + '\n\n     Tema ' + (i + 1) + ' ' + this.MeetingMinuteSelected.topics[i] + '\n\n';
+
+      for (let z = 0; z < this.elements.length; z++) {
+
+        if (this.elements[z].type === 'texto libre' && this.elements[z].topic === i) {
+          if (this.elements[z].description.split(' ').length > 20) {
+            desarrollo = desarrollo + '          ';
+            for (let s = 0; s < this.elements[z].description.split(' ').length; s++) {
+              desarrollo = desarrollo + ' ' + this.elements[z].description.split(' ')[s] + ' ';
+              if (s === 20 || s === 40 || s === 60 || s === 80 || s === 100 || s === 120) {
+                desarrollo = desarrollo + ' \n          ';
+              }
+            }
+            desarrollo = desarrollo + '\n';
+          }
+          else {
+            desarrollo = desarrollo + '          ' + '' + ' ' + this.elements[z].description + '\n';
+          }
+        }
+
+        else if (this.elements[z].topic === i && this.elements[z].dateLimit != null && this.elements[z].dateLimit != '') {
+
+          if (this.elements[z].type === 'compromiso') {
+            if (this.elements[z].description.split(' ').length > 18) {
+              desarrollo = desarrollo + '           ' + 'CO' + ' ' + this.elements[z].number + '.' + this.elements[z].position + ': ';
+              for (let s = 0; s < this.elements[z].description.split(' ').length; s++) {
+                desarrollo = desarrollo + ' ' + this.elements[z].description.split(' ')[s] + ' ';
+                if (s === 18 || s === 36 || s === 54 || s === 72 || s === 90 || s === 108) {
+                  desarrollo = desarrollo + ' \n                         ';
+                }
+              }
+              desarrollo = desarrollo + ', ' + this.elements[z].participants + ', ' + this.elements[z].dateLimit + '\n';
+
+            } else {
+              desarrollo = desarrollo + '           ' + 'CO' + ' ' + this.elements[z].number + '.' + this.elements[z].position + ': ' + this.elements[z].description + ', ' + this.elements[z].participants + ', ' + this.elements[z].dateLimit + '\n';
+            }
+          }
+          if (this.elements[z].type === 'duda') {
+            if (this.elements[z].description.split(' ').length > 18) {
+              desarrollo = desarrollo + '           ' + 'DU' + ' ' + this.elements[z].number + '.' + this.elements[z].position + ': ';
+              for (let s = 0; s < this.elements[z].description.split(' ').length; s++) {
+                desarrollo = desarrollo + ' ' + this.elements[z].description.split(' ')[s] + ' ';
+                if (s === 18 || s === 36 || s === 54 || s === 72 || s === 90 || s === 108) {
+                  desarrollo = desarrollo + ' \n                         ';
+                }
+              }
+              desarrollo = desarrollo + ', ' + this.elements[z].participants + ', ' + this.elements[z].dateLimit + '\n';
+
+            } else {
+              desarrollo = desarrollo + '           ' + 'DU' + ' ' + this.elements[z].number + '.' + this.elements[z].position + ': ' + this.elements[z].description + ', ' + this.elements[z].participants + ', ' + this.elements[z].dateLimit + '\n';
+            }
+          }
+          if (this.elements[z].type === 'acuerdo') {
+            if (this.elements[z].description.split(' ').length > 18) {
+              desarrollo = desarrollo + '           ' + 'AC' + ' ' + this.elements[z].number + '.' + this.elements[z].position + ': ';
+              for (let s = 0; s < this.elements[z].description.split(' ').length; s++) {
+                desarrollo = desarrollo + ' ' + this.elements[z].description.split(' ')[s] + ' ';
+                if (s === 18 || s === 36 || s === 54 || s === 72 || s === 90 || s === 108) {
+                  desarrollo = desarrollo + ' \n                         ';
+                }
+              }
+              desarrollo = desarrollo + ', ' + this.elements[z].participants + ', ' + this.elements[z].dateLimit + '\n';
+            } else {
+              desarrollo = desarrollo + '           ' + 'AC' + ' ' + this.elements[z].number + '.' + this.elements[z].position + ': ' + this.elements[z].description + ', ' + this.elements[z].participants + ', ' + this.elements[z].dateLimit + '\n';
+            }
+          }
+          if (this.elements[z].type === 'desacuerdo') {
+            if (this.elements[z].description.split(' ').length > 18) {
+              desarrollo = desarrollo + '           ' + 'DE' + ' ' + this.elements[z].number + '.' + this.elements[z].position + ': ';
+              for (let s = 0; s < this.elements[z].description.split(' ').length; s++) {
+                desarrollo = desarrollo + ' ' + this.elements[z].description.split(' ')[s] + ' ';
+                if (s === 18 || s === 36 || s === 54 || s === 72 || s === 90 || s === 108) {
+                  desarrollo = desarrollo + ' \n                         ';
+                }
+              }
+              desarrollo = desarrollo + ', ' + this.elements[z].participants + ', ' + this.elements[z].dateLimit + '\n';
+
+            } else {
+              desarrollo = desarrollo + '           ' + 'DE' + ' ' + this.elements[z].number + '.' + this.elements[z].position + ': ' + this.elements[z].description + ', ' + this.elements[z].participants + ', ' + this.elements[z].dateLimit + '\n';
+            }
+          }
+          console.log("[CONTROLLER MEETINGMINUTE: PDF] elements " + z + " tiene la siguiente fecha: ", this.elements[z].dateLimit);
+          console.log("[CONTROLLER MEETINGMINUTE: PDF] elements " + z + " tiene la siguiente fecha SPLIT 0 ", this.elements[z].dateLimit.split(' ')[0]);
+          console.log("[CONTROLLER MEETINGMINUTE: PDF] elements " + z + " tiene la siguiente fecha SPLIT 1 ", this.elements[z].dateLimit.split(' ')[1]);
+
+        } else if (this.elements[z].topic === i && this.elements[z].dateLimit.split(' ')[1] === ' ' ||
+          this.elements[z].topic === i && this.elements[z].dateLimit.split(' ')[0] === ' ') {
+
+          if (this.elements[z].type === 'compromiso') {
+            desarrollo = desarrollo + '           ' + 'CO' + ' ' + this.elements[z].number + '.' + this.elements[z].position + ': ' + this.elements[z].description + ', ' + this.elements[z].participants + ', ' + 'sin fecha.' + '\n';
+          }
+          if (this.elements[z].type === 'duda') {
+            desarrollo = desarrollo + '           ' + 'DU' + ' ' + this.elements[z].number + '.' + this.elements[z].position + ': ' + this.elements[z].description + ', ' + this.elements[z].participants + ', ' + 'sin fecha.' + '\n';
+          }
+          if (this.elements[z].type === 'acuerdo') {
+            desarrollo = desarrollo + '           ' + 'AC' + ' ' + this.elements[z].number + '.' + this.elements[z].position + ': ' + this.elements[z].description + ', ' + this.elements[z].participants + ', ' + 'sin fecha.' + '\n';
+          }
+          if (this.elements[z].type === 'desacuerdo') {
+            desarrollo = desarrollo + '           ' + 'DE' + ' ' + this.elements[z].number + '.' + this.elements[z].position + ': ' + this.elements[z].description + ', ' + this.elements[z].participants + ', ' + 'sin fecha.' + '\n';
+          }
+
+
+        }
+
+      }
+
+    }
+    if (this.links.length === 0) {
+      links = '     No hay adjuntos para esta acta.'
+    }
+    for (let i = 0; i < this.links.length; i++) {
+      links = links + '     Link ' + i + ': ' + this.links[i] + '\n';
+    }
+
+    if (this.MeetingMinuteSelected.absents.length > 1) {
+      
+      const texto = this.projectSelected.shortName + ' - Reunion ' + this.MeetingMinuteSelected.number + '\n\n' + 'Objetivo: ' + this.MeetingMinuteSelected.name + '\n\n' + 'Lugar: ' + this.MeetingMinuteSelected.place + '\n\n' + 'Fecha y hora de llamado: ' + this.MeetingMinuteSelected.fechaI + ' Desde las ' + this.MeetingMinuteSelected.startHour + ' Hasta las ' + this.MeetingMinuteSelected.endHour + '\n\n' + 'Fecha y hora de inicio: ' + this.MeetingMinuteSelected.realStartTime + '\n\n' + 'Fecha y hora de término: ' + this.MeetingMinuteSelected.realEndTime + '\n\n' + 'Duración: ' + this.durationRealMeeting + ' minutos' + '\n\n' + 'Asistentes: ' + this.MeetingMinuteSelected.assistants + '\n\n' + 'Ausentes: '  + ausentes + '\n\n' + 'Compromisos previos: ' + '\n' + compromisesPrevies + '\n\n' + 'Desarrollo: ' + desarrollo + '\n' + 'Adjuntos: ' + '\n\n' + links + '\n\n';
+      doc.setFont('arial');
+      doc.setFontSize(8);
+      doc.text(texto, 10, 10);
+      doc.save(this.projectSelected.name + ' reunión ' + this.MeetingMinuteSelected.number + ' - meetflow.pdf');
+
+    }
+    else {
+      const texto = this.projectSelected.shortName + ' - Reunion ' + this.MeetingMinuteSelected.number + '\n\n' + 'Objetivo: ' + this.MeetingMinuteSelected.name + '\n\n' + 'Lugar: ' + this.MeetingMinuteSelected.place + '\n\n' + 'Fecha y hora de llamado: ' + this.MeetingMinuteSelected.fechaI + ' Desde las ' + this.MeetingMinuteSelected.startHour + ' Hasta las ' + this.MeetingMinuteSelected.endHour + '\n\n' + 'Fecha y hora de inicio: ' + this.MeetingMinuteSelected.realStartTime + '\n\n' + 'Fecha y hora de término: ' + this.MeetingMinuteSelected.realEndTime + '\n\n' + 'Duración: ' + this.durationRealMeeting + ' minutos' + '\n\n' + 'Asistentes: ' + this.MeetingMinuteSelected.assistants + '\n\n' + 'Ausentes: ' + 'No hay ausentes' + '\n\n' + 'Compromisos previos: ' + '\n' + compromisesPrevies + '\n\n' + 'Desarrollo: ' + desarrollo + '\n' + 'Adjuntos: ' + '\n\n' + links + '\n\n';
+      doc.setFont('arial');
+      doc.setFontSize(8);
+      doc.text(texto, 10, 10);
+      doc.save(this.projectSelected.name + ' reunión ' + this.MeetingMinuteSelected.number + ' - meetflow.pdf');
+    }
+
+
+  }
+
+  getUserProfile(userId: string) {
+    this.authService.getUserProfile(userId).subscribe(
+      async (resp) => {
+        /*         console.log('RESPUESTA CUAL ES EL PERFIL DESLDE NAVBAR', resp); */
+
+        this.userSelected = resp;
+
+      },
+      (err: { message: string | undefined }) => { }
+    );
+  }
+
+  userSelected: any;
+
+
+  switchModeDark() {
+    this.isDarkMode = !this.isDarkMode;
+
+    if (this.iconColor === "white" || this.cardColor === "rgb(39, 44, 49)" || this.titleColor === "white" || this.textColor === "rgb(194, 194, 194)") {
+      this.titleColor = "black";
+      this.cardColor = "white";
+      this.textColor = "black";
+      this.iconColor = "grey";
+    }
+    else {
+      this.cardColor = "rgb(39, 44, 49)";
+      this.titleColor = "white";
+      this.textColor = "rgb(194, 194, 194)";
+      this.iconColor = "white";
+    }
+
+    console.log('COLOR:', this.cardColor);
+  }
+
+  cardColor = "rgb(39, 44, 49)";
+  titleColor = "white";
+
+  textColor = "rgb(194, 194, 194)";
+  iconColor = "white";
+
+  public listNumbers1 = [''];
+  public listNumbers2 = [''];
+
+  rellenarListasPrueba() {
+    this.listNumbers1 = [];
+    this.listNumbers2 = [];
+
+    /*    for(let index = 0; index<10; index++){
+         this.listNumbers1.push(' ' + index );
+   
+       } */
+    for (let index = 10; index < 20; index++) {
+      this.listNumbers2.push(' ' + index);
+    }
+
+
+  }
+
+  drop($event: CdkDragDrop<any[]>) {
+
+    if ($event.previousContainer === $event.container) {
+      moveItemInArray(
+        $event.container.data,
+        $event.previousIndex,
+        $event.currentIndex
+      )
+      // RECORREMOS TODOS LOS ELEMENTOS DE AQUI
+      for (let agh = 0; agh < this.elements.length; agh++) {
+
+        this.elements[agh].position = agh;
+        /*    console.log(" ELEMENT " + agh, this.elements[agh]) */
+        // POR CADA ELEMENTO VAMOS GUARDANDO SU POSICION
+        // ACTUALIZAR LOS ELEMENTOS 
+        /*      console.log("ACTUALIZANDO LA POSICION DEL ELEMENTO", this.elements[agh]); */
+        this.authService
+          .updateElement(
+            this.elements[agh].description,
+            this.elements[agh].topic,
+            this.meetingSelectedId,
+            this.elements[agh].type,
+            this.projectSelectedId,
+            this.MeetingMinuteSelected.number,
+            this.elements[agh].participants,
+            this.elements[agh].dateLimit,
+            this.elements[agh]._id,
+            agh,
+            'yesSort'
+          )
+          .subscribe(
+            (resp) => {
+
+            },
+            (err: any) => {
+
+            }
+          );
+      }
+
+
+
+
+    } else {
+      transferArrayItem(
+        $event.previousContainer.data,
+        $event.container.data,
+        $event.previousIndex,
+        $event.currentIndex
+
+      );
+      /*  this.getCompromises(); */
+    }
+  }
+
+  agregarAllMemeber() {
+
+    this.MeetingMinuteSelected.participants = this.projectSelected.userMembers;
+
+    this.saveMeetingMinute();
+    setTimeout(() => {
+
+      let payloadSave = {
+        room: this.meetingSelectedId,
+        user: this.user
+      }
+      this.socket.emit('event_reload', payloadSave);
+      location.reload();
+    }, 2000);
+  }
+
+
+
+  notificarInvitadosExternos(fase: string, emailExternal: string) {
+    this.authService
+      .notifyExternal(this.MeetingMinuteSelected, this.meetingSelectedId, fase, 'http://70.35.204.110:4200/#' + this.userSelected.lastLink, emailExternal)
+      .subscribe(
+        (resp) => {
+
+          const Toast = Swal.mixin({
+            toast: true,
+            position: 'bottom-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.addEventListener('mouseenter', Swal.stopTimer)
+              toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+          })
+
+          Toast.fire({
+            icon: 'success',
+            title: 'Se ha modificado el invitado exitosamente.'
+          })
+        },
+        (err: any) => {
+          console.log(err);
+          Swal.fire('Error', err.message, 'error');
+        }
+      );
+  }
+
+  selectElementPosition: any;
+
+  textPrueba = '';
+
+  prueba1() {
+
+  }
+  private _opened: boolean = false;
+
+  private _toggleSidebar() {
+    this._opened = !this._opened;
+  }
+
+  deleteElement(idElement: string) {
+    this.authService
+      .deleteElement(idElement)
+      .subscribe(
+        (resp) => {
+
+          const Toast = Swal.mixin({
+            toast: true,
+            position: 'bottom-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.addEventListener('mouseenter', Swal.stopTimer)
+              toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+          })
+
+          Toast.fire({
+            icon: 'success',
+            title: 'Se ha eliminado el elemento exitosamente.'
+          })
+
+          let payloadSave = {
+            room: this.meetingSelectedId,
+            user: this.user
+          }
+
+          this.getMeetingMinute(this.meetingSelectedId);
+          setTimeout(() => {
+            this.getCompromises('noSoft');
+          }, 2000);
+
+          this.socket.emit('event_element', payloadSave);
+        },
+        (err: any) => {
+          console.log(err);
+          Swal.fire('Error', err.message, 'error');
+        }
+      );
+  }
+  deleteAdjunto(position: number) {
+    this.links.splice(position, 1);
+    /* this.links[position] = ' '; */
+    setTimeout(() => {
+      this.saveMeetingMinute();
+    }, 1000);
+
+
+  }
+
+  updateAdjuntoQuest(position: number) {
+    Swal.fire({
+      title: 'Modificación de adjunto',
+      /*   text: 'Seleccionar un tipo de recordatorio.', */
+      inputPlaceholder: 'Escribe el nuevo adjunto',
+      input: 'text',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'Actualizar url',
+
+      showLoaderOnConfirm: true,
+      showDenyButton: false,
+      denyButtonText: `Avanzado`,
+      preConfirm: (nameAdjunto) => {
+        if (nameAdjunto != '') {
+          this.updateAdjunto(position, nameAdjunto);
+
+        }
+      },
+      allowOutsideClick: () => !Swal.isLoading(),
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+      } else if (result.isDenied) {
+
+      }
+    });
+
+
+
+
+  }
+
+  updateAdjunto(position: number, newAdjunto: string) {
+    this.links[position] = newAdjunto;
+    setTimeout(() => {
+      this.saveMeetingMinute();
+    }, 1000);
+
+  }
 
 }

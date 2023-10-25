@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { catchError, map, Observable, of, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { AuthResponse, Usuario } from '../interfaces/interfaces';
@@ -8,6 +8,13 @@ import { AuthResponse, Usuario } from '../interfaces/interfaces';
   providedIn: 'root',
 })
 export class AuthService {
+
+  $emitter = new EventEmitter();
+
+  emitirEvento() {
+    this.$emitter.emit();
+}   
+  
   private baseUrl: string = environment.baseUrl;
 
   private _usuario!: Usuario;
@@ -16,8 +23,11 @@ export class AuthService {
     return { ...this._usuario };
   }
 
+  allUsers() {
+
+  }
+
   constructor(private http: HttpClient) { }
-  /*   headers2 = new Headers(); */
 
   headers2 = new HttpHeaders({
     Authorization: 'Bearer ' + localStorage.getItem('token'),
@@ -38,41 +48,22 @@ export class AuthService {
     return this.http.get(url, { headers: this.headers2 });
   }
 
-  login(username: string, password: string) {
-    const url = `${this.baseUrl}/auth/signin`;
-    const body = { username, password };
-
-    return this.http.post<AuthResponse>(url, body).pipe(
-      tap((resp: any) => {
-        if (resp.ok === true) {
-          localStorage.setItem('token', resp.token!);
-          this._usuario = {
-            name: resp.name!,
-            uid: resp.uid!,
-          };
-        }
-      }),
-      map((resp: any) => resp.ok),
-      catchError((err) => of(err.error.msg))
-    );
-  }
-
-  login2(email: string, password: string): Observable<any> {
+  /* 
+  Metodo de ingresar al usuario a la plataforma
+  Entrada: correo electronico y constraseña
+  Salida: Consulta al end-point "/auth/signin" de API-Gateway 
+  */
+  login(email: string, password: string): Observable<any> {
     const url2 = `${this.baseUrl}/auth/signin`;
-
     const httpParams = {
       email: email,
       password: password,
     };
-
     let HttpOptions = new HttpHeaders().set(
       'Authorization',
       'Bearer ' + localStorage.getItem('token')
     );
     HttpOptions.append('Content-Type', 'application/json');
-    /*     this.headers2.append("Content-Type", "application/json");
-    this.headers2.append("Authorization", "Bearer "+ localStorage.getItem("token")); */
-    /*   console.log('HEADERS =', this.headers2); */
     return this.http.post<any>(url2, httpParams, { headers: this.headers2 });
   }
 
@@ -85,8 +76,6 @@ export class AuthService {
 
     return this.http.get<AuthResponse>(url, { headers }).pipe(
       map((resp: any) => {
-        /*    console.log(resp.token); */
-
         localStorage.setItem('token', resp.token!);
         this._usuario = {
           name: resp.name!,
@@ -188,6 +177,14 @@ export class AuthService {
     }
   }
 
+  createTasks(meetingId: string): Observable<any> {
+    const params = {
+      meetingId: meetingId,
+    };
+    console.log("[TASKS SERVICE ] recibimos este id de reunion para crear tareas: ", params);
+    const url = `${this.baseUrl}/task/createTasksForCompromises/meeting/` + meetingId;
+    return this.http.post(url, params, { headers: this.headers2 });
+  }
 
   saveRemember(user: any,
     nameType: string,
@@ -205,11 +202,36 @@ export class AuthService {
     const url = `${this.baseUrl}/reminder/create`;
     return this.http.post(url, params, { headers: this.headers2 });
   }
-
-  saveRemember2(user: any,
+  saveRemember3(user: any,
     nameType: string,
     conditionTime: string,
-    restaTimes: number): Observable<any> {
+    restaTimes: number,
+    compromiso: any): Observable<any> {
+    const params = {
+      name: user.name,
+      email: user.email,
+      oncharge: compromiso.participants,
+      type: nameType,
+      time: conditionTime,
+      remember: true,
+      milisec: restaTimes,
+    };
+    console.log("ESTO ES LO QUE ESTAMOS ENVIANDO AL BACKEND PARA EL REMEMBER: ", params);
+    const url = `${this.baseUrl}/reminder/create`;
+    return this.http.post(url, params, { headers: this.headers2 });
+  }
+
+  deleteRemember(idReminder: string): Observable<any> {
+    const url = `${this.baseUrl}/reminder/` + idReminder;
+    return this.http.delete(url, { headers: this.headers2 });
+  }
+
+  saveRemember2(
+    user: any,
+    nameType: string,
+    conditionTime: string,
+    restaTimes: number,
+    oncharge: string): Observable<any> {
     const params = {
       name: user.name,
       email: user.email,
@@ -217,9 +239,10 @@ export class AuthService {
       time: conditionTime,
       remember: true,
       milisec: restaTimes,
+      oncharge: oncharge
     };
     console.log("ESTO SI ES EL REMEMBER: ", params);
-    const url = `${this.baseUrl}/meeting-minute/notificary/remember/task`;
+    const url = `${this.baseUrl}/meeting-minute/notify/reminder/task`;
     return this.http.post(url, params, { headers: this.headers2 });
   }
 
@@ -245,7 +268,6 @@ export class AuthService {
       state: 'new',
       project: idProject,
     };
-    /*   console.log(params); */
     const url = `${this.baseUrl}/meeting`;
     return this.http.post(url, params, { headers: this.headers2 });
   }
@@ -255,7 +277,6 @@ export class AuthService {
       meeting: idMeeting,
       meetingMinute: null,
     };
-    /*     console.log(params); */
     const url = `${this.baseUrl}/pre-meeting/` + idMeeting;
     return this.http.post(url, params, { headers: this.headers2 });
   }
@@ -265,20 +286,36 @@ export class AuthService {
       meeting: idMeeting,
       meetingMinute: null,
     };
-    /*   console.log(params); */
     const url = `${this.baseUrl}/in-meeting/` + idMeeting;
     return this.http.post(url, params, { headers: this.headers2 });
   }
 
   projectById(ide: string) {
-    const url = `${this.baseUrl}/project/` + ide;
+    console.log("[SERVICE] ESTAMOS CONSULTADO POR EL PROYECTO: ", ide);
+    const url = `${this.baseUrl}/project/getProjectbyID/` + ide;
     return this.http.get(url, { headers: this.headers2 });
+  }
+
+  getAllUser() {
+    const url = `${this.baseUrl}/user/get/allUser`;
+    return this.http.get(url, { headers: this.headers2 });
+  }
+
+  deleteUser(idUser: string) {
+    const url = `${this.baseUrl}/user/` + idUser;
+    return this.http.delete(url, { headers: this.headers2 });
   }
 
   borrarProject(ide: string): Observable<any> {
     const url = `${this.baseUrl}/project/` + ide;
     return this.http.delete(url, { headers: this.headers2 });
   }
+
+  borrarMeet(ide: string): Observable<any> {
+    const url = `${this.baseUrl}/meeting/` + ide;
+    return this.http.delete(url, { headers: this.headers2 });
+  }
+
 
   stateMeeting(idMeeting: string) {
     const url = `${this.baseUrl}/meeting/` + idMeeting;
@@ -287,7 +324,6 @@ export class AuthService {
 
   setStateMeeting(state: string, id: string) {
     const url = `${this.baseUrl}/meeting/edit/` + id + '/state';
-    /*     console.log('ESTADO: ', state); */
     return this.http.post(url, { state });
   }
 
@@ -298,19 +334,93 @@ export class AuthService {
     topics: string,
     number: number
   ): Observable<any> {
-    const params = {
-      title: name,
-      place: place,
-      startTime: new Date().toLocaleDateString(),
-      endTime: new Date().toLocaleDateString(),
-      startHour: '00:00',
-      endHour: '00:00',
-      meeting: idMeeting,
-      number: number,
-    };
-    /*     console.log('PARAMETROS desde addMeetingMinute() es para crear desde 0 y no guardar', params); */
-    const url = `${this.baseUrl}/meeting-minute`;
-    return this.http.post(url, params, { headers: this.headers2 });
+
+    let fecha = new Date().toLocaleDateString();
+    if(fecha.split("-").length > 1){
+      let startTime = fecha.split('-')[1] + '-' + fecha.split('-')[0] + '-' + fecha.split('-')[2] ;
+      const params = {
+        title: name,
+        place: place,
+        startTime: startTime,
+        endTime: new Date().toLocaleDateString(),
+        startHour: '00:00',
+        endHour: '00:00',
+        meeting: idMeeting,
+        number: number,
+      };
+      const url = `${this.baseUrl}/meeting-minute`;
+      return this.http.post(url, params, { headers: this.headers2 });
+    }else{
+   
+      let startTime = fecha.split('/')[0] + '-' + fecha.split('/')[1] + '-' + fecha.split('/')[2] ;
+      let startTime2 = startTime.split('-')[0] + '-' + startTime.split('-')[1] + '-' + startTime.split('-')[2] ;
+      const params = {
+        title: name,
+        place: place,
+        startTime: startTime2,
+        endTime: new Date().toLocaleDateString(),
+        startHour: '00:00',
+        endHour: '00:00',
+        meeting: idMeeting,
+        number: number,
+      };
+      const url = `${this.baseUrl}/meeting-minute`;
+      return this.http.post(url, params, { headers: this.headers2 });
+    }
+   
+  }
+
+  addMeetingMinuteLastConfig(
+    idMeeting: string,
+    name: string,
+    place: string,
+    topics: string,
+    number: number,
+    secretaries: any,
+    hosters: any,
+    participants: any
+  ): Observable<any> {
+    
+    let fecha = new Date().toLocaleDateString();
+    if(fecha.split("/").length === 0){
+      let startTime = fecha.split('-')[0] + '-' + fecha.split('-')[1] + '-' + fecha.split('-')[2] ;
+     
+      const params = {
+        title: name,
+        place: place,
+        startTime: startTime,
+        endTime: new Date().toLocaleDateString(),
+        startHour: '00:00',
+        endHour: '00:00',
+        meeting: idMeeting,
+        number: number,
+        secretaries: secretaries,
+        leaders: hosters,
+        participants: participants
+      };
+      const url = `${this.baseUrl}/meeting-minute`;
+      return this.http.post(url, params, { headers: this.headers2 });
+    }
+    else{
+      let startTime = fecha.split('/')[0] + '-' + fecha.split('/')[1] + '-' + fecha.split('/')[2] ;
+      let startTime2 = startTime.split('-')[0] + '-' + startTime.split('-')[1] + '-' + startTime.split('-')[2] ;
+      const params = {
+        title: name,
+        place: place,
+        startTime: startTime2,
+        endTime: new Date().toLocaleDateString(),
+        startHour: '00:00',
+        endHour: '00:00',
+        meeting: idMeeting,
+        number: number,
+        secretaries: secretaries,
+        leaders: hosters,
+        participants: participants
+      };
+      const url = `${this.baseUrl}/meeting-minute`;
+      return this.http.post(url, params, { headers: this.headers2 });
+    }
+    
   }
 
   saveMeetingMinute(
@@ -328,67 +438,10 @@ export class AuthService {
     leaders: any,
     links: any,
     realStartTime: any,
-    realEndTime: any
+    realEndTime: any,
+    assistants: any,
+    externals: any
   ): Observable<any> {
-
-    /* if (fechaI === '') {
-      if (fechaT === '') {
-        const params = {
-          title: name,
-          place: place,
-          startTime: fechaI,
-          endTime: fechaT,
-          topics: topics,
-          participants: participants,
-          meeting: idMeeting,
-          secretaries: secretaries,
-        };
-        const url = `${this.baseUrl}/meeting-minute/` + idMeetingMinute;
-        return this.http.put(url, params, { headers: this.headers2 });
-      } else {
-        const params = {
-          title: name,
-          place: place,
-          startTime: fechaI,
-          endTime: fechaT,
-          topics: topics,
-          participants: participants,
-          meeting: idMeeting,
-          secretaries: secretaries,
-        };
-        const url = `${this.baseUrl}/meeting-minute/` + idMeetingMinute;
-        return this.http.put(url, params, { headers: this.headers2 });
-      }
-    } else {
-      if (fechaT === '') {
-        const params = {
-          title: name,
-          place: place,
-          startTime: fechaI,
-          endTime: fechaT,
-          topics: topics,
-          participants: participants,
-          meeting: idMeeting,
-          secretaries: secretaries,
-        };
-        const url = `${this.baseUrl}/meeting-minute/` + idMeetingMinute;
-    return this.http.put(url, params, { headers: this.headers2 });
-      } else {
-        const params = {
-          title: name,
-          place: place,
-          startTime: fechaI,
-          endTime: fechaT,
-          topics: topics,
-          participants: participants,
-          meeting: idMeeting,
-          secretaries: secretaries,
-        };
-        const url = `${this.baseUrl}/meeting-minute/` + idMeetingMinute;
-        return this.http.put(url, params, { headers: this.headers2 });
-      }
-    } */
-
     const params = {
       title: name,
       place: place,
@@ -403,25 +456,29 @@ export class AuthService {
       leaders: leaders,
       links: links,
       realStartTime: realStartTime,
-      realEndTime: realEndTime
+      realEndTime: realEndTime,
+      assistants: assistants,
+      externals: externals
 
     };
-
-    /*  console.log('PARAMETROS', params);
-     console.log('ID DE ACTA: ', idMeetingMinute); */
     const url = `${this.baseUrl}/meeting-minute/` + idMeetingMinute;
     return this.http.put(url, params, { headers: this.headers2 });
   }
 
   getMeetingMinute(meetingSelectedId: any): Observable<any> {
-
-    /*     console.log("EL IDE QUEE ESTA LLEGANDO AL SERVICIO: ", meetingSelectedId) */
     const params = {
       meeting: meetingSelectedId,
     };
 
-    /*   console.log("VAMOS A BUSCAR SI TENEMOS UN ACTA DIALOGICA CON LA REUNION SELECCIONADA CON EL ID: ",meetingSelectedId ) */
     const url = `${this.baseUrl}/meeting-minute/` + meetingSelectedId;
+    return this.http.get(url, { headers: this.headers2 });
+  }
+
+  getMeetByProjectNumber(projectSelectedId: string, numberMeet: number): Observable<any> {
+    const params = {
+      idProject: projectSelectedId,
+    };
+    const url = `${this.baseUrl}/meeting/project/` + projectSelectedId + '/number/' + numberMeet;
     return this.http.get(url, { headers: this.headers2 });
   }
 
@@ -456,9 +513,7 @@ export class AuthService {
       email: email,
       password: password,
     };
-
-    /*  console.log('PARAMETROS', params); */
-    const url = `${this.baseUrl}/user/update/` + idUser;
+    const url = `${this.baseUrl}/user/update/` + idUser + '/profile';
     return this.http.put(url, params, { headers: this.headers2 });
   }
 
@@ -473,44 +528,59 @@ export class AuthService {
       lastLink: user.lastLink,
       currentProjectId: user.currentProjectId,
       currentMeetingId: user.currentMeetingId
-
     };
-
-    /* console.log('PARAMETRITOS: ', params); */
-    const url = `${this.baseUrl}/user/update/` + idUser;
+    const url = `${this.baseUrl}/user/update/` + idUser + '/section';
     return this.http.put(url, params, { headers: this.headers2 });
-
-
   }
 
+  saveProjectCurrent2(idUser: string, user: any) {
+    const params = {
+      name: user.name,
+      institution: user.institution,
+      email: user.email,
+      password: ' ',
+      currentProject: user.currentProject,
+      currentMeeting: user.currentMeeting,
+      lastLink: user.lastLink,
+      currentProjectId: user.currentProjectId,
+      currentMeetingId: user.currentMeetingId
+    };
+    const url = `${this.baseUrl}/user/update/` + idUser + '/section';
+    return this.http.put(url, params, { headers: this.headers2 });
+  }
+
+  saveProjectCurrent3(idUser: string, user: any) {
+    const params = {
+      name: user.name,
+      institution: user.institution,
+      email: user.email,
+      password: ' ',
+      currentProject: user.currentProject,
+      currentMeeting: user.currentMeeting,
+      lastLink: "/main/remember",
+      currentProjectId: user.currentProjectId,
+      currentMeetingId: user.currentMeetingId
+    };
+    const url = `${this.baseUrl}/user/update/` + idUser + '/section';
+    return this.http.put(url, params, { headers: this.headers2 });
+  }
 
   setStateElement(idElement: string, state: string) {
-
     const params = {
       state: state
     };
-
     const url = `${this.baseUrl}/element/update/` + idElement;
     return this.http.put(url, params, { headers: this.headers2 });
-
-
   }
 
   saveUserColor(idUser: string, color: string) {
     const params = {
       color: color,
-      password: 'errorcapa9'
+      password: ' '
     };
-    /*     console.log("[SERVICIO] COLOR QUE RECIBO: ", color) */
-
-    /* console.log('PARAMETRITOS: ', params); */
-    const url = `${this.baseUrl}/user/update/` + idUser;
+    const url = `${this.baseUrl}/user/update/` + idUser + '/color';
     return this.http.put(url, params, { headers: this.headers2 });
-
-
   }
-
-
 
 
   addMember(emailMember: string, idProject: string): Observable<any> {
@@ -518,7 +588,7 @@ export class AuthService {
       meeting: emailMember,
     };
     const url =
-      `${this.baseUrl}/project/` + idProject + '/member/' + emailMember;
+      `${this.baseUrl}/project/` + idProject + '/add/member/' + emailMember;
     return this.http.post(url, params, { headers: this.headers2 });
   }
 
@@ -557,7 +627,9 @@ export class AuthService {
     numberMeet: number,
     participants: any,
     dateLimit: any,
-    id: string) {
+    id: any,
+    position: any,
+    isSort: any) {
     const params = {
       description: desc,
       type: type,
@@ -567,7 +639,9 @@ export class AuthService {
       state: 'new',
       number: numberMeet,
       participants,
-      dateLimit
+      dateLimit,
+      position,
+      isSort: isSort
     };
     console.log("ELEMENTO ACTUALIZANDOSE");
     const url = `${this.baseUrl}/element/update/` + id;
@@ -606,6 +680,22 @@ export class AuthService {
     return this.http.get(url, { headers: this.headers2 });
   }
 
+  getTasksByProject(emailUser: string, idProject: string, state: string): Observable<any> {
+    const params = {
+      participants: emailUser,
+    };
+    const url = `${this.baseUrl}/element/project/` + idProject + '/user/' + emailUser + '/state/' + state;
+    return this.http.get(url, { headers: this.headers2 });
+  }
+
+  getTasksByUserProject(emailUser: string, idProject: string): Observable<any> {
+    const params = {
+      participants: emailUser,
+    };
+    const url = `${this.baseUrl}/element/project/` + idProject + '/user/' + emailUser;
+    return this.http.get(url, { headers: this.headers2 });
+  }
+
   addResponsible(user: string, idElement: string): Observable<any> {
     const params = {
       _id: idElement,
@@ -636,6 +726,7 @@ export class AuthService {
       participants: meetingMinute.participants,
       meeting: 'hola',
       secretaries: meetingMinute.secretaries,
+      leaders: meetingMinute.leaders,
       number: meetingMinute.number,
       fase: state,
       linky: linky
@@ -643,11 +734,30 @@ export class AuthService {
     };
     console.log("[ SERVICIO] LO que envio como minuta para notificar es: ", params)
 
-    const url = `${this.baseUrl}/meeting-minute/notificar`;
+    const url = `${this.baseUrl}/meeting-minute/notify/state/change`;
     return this.http.post(url, params, { headers: this.headers2 });
   }
 
-  muestraKanban(){
+  notifyExternal(meetingMinute: any, meetingId: any, state: string, linky: string, emailExternal: string) {
+    const params = {
+      title: meetingMinute.name,
+      place: meetingMinute.place,
+      startTime: meetingMinute.fechaI,
+      endTime: meetingMinute.fechaT,
+      topics: meetingMinute.topics,
+      participants: meetingMinute.participants,
+      meeting: 'hola',
+      secretaries: meetingMinute.secretaries,
+      number: meetingMinute.number,
+      fase: state,
+      linky: linky,
+      emailExternal: emailExternal
+    };
+    const url = `${this.baseUrl}/meeting-minute/notify/user/external'`;
+    return this.http.post(url, params, { headers: this.headers2 });
+  }
+
+  muestraKanban() {
     const params = {
       title: '',
 
@@ -657,10 +767,10 @@ export class AuthService {
 
     return this.http.get(url, { headers: this.headers2 });
 
-    
+
   }
 
-  muestraTare(){
+  muestraTare() {
     const params = {
       title: '',
 
@@ -670,9 +780,30 @@ export class AuthService {
 
   }
 
+  resetPass(email: string) {
+    console.log("[SERVICE AUTH: RESET_PASS] email:", email);
+    const url = `${this.baseUrl}/auth/resetpass/` + email;
+    return this.http.get(url, { headers: this.headers2 });
+  }
+
+  deleteElement(idElement: string) {
+    const url = `${this.baseUrl}/element/` + idElement;
+    return this.http.delete(url, { headers: this.headers2 });
+  }
 
 
 
+  countUsers(): Observable<any> {
+    const url = `${this.baseUrl}/user/counts`;
+    return this.http.get(url, { headers: this.headers2 });
+  }
 
-  
+
+  countMeetings(): Observable<any> {
+    const url = `${this.baseUrl}/meeting/counts`;
+    return this.http.get(url, { headers: this.headers2 });
+  }
+
+
+
 }

@@ -1,6 +1,7 @@
-import { Component, Inject, Input, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/auth/services/auth.service';
+import { SidebarTasksComponent } from 'src/app/shared/sidebar-tasks/sidebar-tasks.component';
 
 const $openClose = document.getElementById('open-close');
 const $aside = document.getElementById('aside');
@@ -21,12 +22,31 @@ const body = document.querySelector('body'),
 
 export class MenuComponent implements OnInit {
 
-  menuItems?: any[] = ['hola', 'juanito', 'perez'];
+  @ViewChild(SidebarTasksComponent)
+  component!: SidebarTasksComponent;
+
+  
 
   @Input() sideNavStatus: boolean = false;
+  @Input() sideNavTaskStatus: boolean = false;
+
+  @Input() nameProjectEmiteFunction: any;
+
+  funcionEmiter: string = 'hola';
   @Input() nameProjectEmite: string = '';
   @Input() nameMeetingEmite: string = '';
+
+  @Input() nameTaskEmite: string = '';
+  @Input() nameReminderEmite: string = '';
+
+  @Input() nameSectionEmite: string = '';
+
   @Input() newParticipants: any = [];
+
+  @Input() nameProjectEmiteFunction2(name: string){
+    console.log('estoy recibiendo esto como evento main: ', name);
+    return this.authService.emitirEvento();
+  }
 
   get usuario() {
     return this.authService.usuario;
@@ -37,8 +57,6 @@ export class MenuComponent implements OnInit {
     private authService: AuthService,
 
   ) {
-
-    console.log('ITEMS : ', this.menuItems);
     console.log("ESTADO DESDE EL MENU COMPONENT: ", this.sideNavStatus);
   }
 

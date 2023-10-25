@@ -12,6 +12,7 @@ import Swal from 'sweetalert2';
 export class MeetingComponent {
   projectSelectedId: string = '';
   meetingSelectedId: string = '';
+  isFinish = false;
   isMeetingMinute = true;
   constructor(
     private authService: AuthService,
@@ -25,14 +26,16 @@ export class MeetingComponent {
     /*  this.listMeetingsInicial("639add0a0292225f19c9c870"); */
 
     this.route.params.subscribe((params: Params) => {
-   /*    console.log('ESTE SON LOS PARAMETROS', params); */
+      /*    console.log('ESTE SON LOS PARAMETROS', params); */
       this.projectSelectedId = params['idP'];
       this.meetingSelectedId = params['idM'];
 
       this.authService.stateMeeting(params['idM']).subscribe(
         (resp: any) => {
-   /*        console.log('ESTADO', resp.state); */
-
+          /*        console.log('ESTADO', resp.state); */
+          if (resp.state === 'finish') {
+            this.isFinish = true;
+          }
           if (resp.state === 'pre-meeting') {
             const url2 =
               '/main/' +
@@ -59,21 +62,70 @@ export class MeetingComponent {
               this.meetingSelectedId +
               '/post-meeting';
             this.router.navigateByUrl(url2);
-          }else{
+          } else {
             console.log("ENTRO AQUI DESDE MEETING");
             /* this.addPreMeeting(); */
           }
-       
+
         },
         (err: string | undefined) => {
-       /*    Swal.fire('Error', err, 'error'); */
+          /*    Swal.fire('Error', err, 'error'); */
         }
       );
     });
   }
 
+  muestraKanban() {
+    this.authService
+      .muestraKanban()
+      .subscribe((resp) => {
+
+        console.log("KANBAN", resp);
+        const Toast = Swal.mixin({
+          toast: true,
+          position: 'bottom-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+          }
+        })
+
+        Toast.fire({
+          icon: 'success',
+          title: 'Visualización Microservice-kanban estado:',
+          text: 'en desarrollo'
+        })
+      },
+        (err: any) => {
+          const Toast = Swal.mixin({
+            toast: true,
+            position: 'bottom-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.addEventListener('mouseenter', Swal.stopTimer)
+              toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+          })
+
+          Toast.fire({
+            icon: 'success',
+            title: 'Visualización Microservice-kanban estado:',
+            text: 'en desarrollo'
+          })
+          /*   console.log(err); */
+          /* Swal.fire('Error', err.message, 'error'); */
+        }
+      );
+
+  }
+
   addPreMeeting() {
-   /*  console.log('addpremeeting'); */
+    /*  console.log('addpremeeting'); */
     this.authService.addPreMeeting(this.meetingSelectedId).subscribe(
       (resp: any) => {
         const url2 =
@@ -82,12 +134,12 @@ export class MeetingComponent {
           '/meeting/' +
           this.meetingSelectedId +
           '/pre-meeting';
-       /*  console.log(this.projectSelectedId); */
-  /*       this.router.navigateByUrl(url2); */
+        /*  console.log(this.projectSelectedId); */
+        /*       this.router.navigateByUrl(url2); */
 
-    /*     console.log('RESP 1:', resp); */
+        /*     console.log('RESP 1:', resp); */
 
-        this.authService.setStateMeeting('new', this.meetingSelectedId ).subscribe(
+        this.authService.setStateMeeting('new', this.meetingSelectedId).subscribe(
           (resp: any) => {
             const url2 =
               '/main/' +
@@ -95,18 +147,18 @@ export class MeetingComponent {
               '/meeting/' +
               this.meetingSelectedId +
               '/pre-meeting';
-      /*       console.log(this.projectSelectedId); */
+            /*       console.log(this.projectSelectedId); */
             this.router.navigateByUrl(url2);
 
-     /*        console.log('RESP 1:', resp); */
+            /*        console.log('RESP 1:', resp); */
           },
           (err: string | undefined) => {
-         /*    Swal.fire('Error', err, 'error'); */
+            /*    Swal.fire('Error', err, 'error'); */
           }
         );
       },
       (err: string | undefined) => {
-  /*       Swal.fire('Error', err, 'error'); */
+        /*       Swal.fire('Error', err, 'error'); */
       }
     );
   }
@@ -156,7 +208,7 @@ export class MeetingComponent {
   }
  */
 
-  
+
 
 
 }

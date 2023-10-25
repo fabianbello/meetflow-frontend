@@ -12,6 +12,8 @@ import { PostMeetingComponent } from '../meeting/post-meeting/post-meeting.compo
 import { UserComponent } from '../user/user.component';
 import { TaskComponent } from '../task/task.component';
 import { RememberComponent } from '../remember/remember.component';
+import { SidebarTasksComponent } from '../shared/sidebar-tasks/sidebar-tasks.component';
+import { HomeComponent } from '../home/home.component';
 
 const routes: Routes = [
   {
@@ -28,7 +30,9 @@ const routes: Routes = [
       { path: 'user-edit', component: UserComponent},
       { path: 'task', component: TaskComponent},
       { path: 'remember', component: RememberComponent},
-      { path: '**', redirectTo: ''},
+      {path: 'admin', component: LoadingComponent},
+      {path: 'home', component: HomeComponent},
+      { path: '**', redirectTo: 'home'},
     ]
   }
 ];

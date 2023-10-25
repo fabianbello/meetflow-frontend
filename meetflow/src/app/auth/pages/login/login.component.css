@@ -26,7 +26,7 @@ button:hover{
     top: 50%;
     left: 50%;
     width: 420px;
-    height: 480px;
+    height: 520px;
     position: absolute;
     transform: translate(-50%, -50%);
 
@@ -36,3 +36,26 @@ img{
     background-size: cover;
 }
 
+
+.button1 {
+
+    font-weight: 300;
+    color: rgba(132, 131, 131, 0.5);
+    padding: 10px 10px;
+    background: rgba(41, 41, 41, 0);
+  
+    cursor: pointer;
+    transition: all 0.5;
+    justify-content: left;
+    content: '\f107'; 
+    align-content: left;
+    border: none;
+  
+  }
+  
+  .button1:hover {
+    background-color: rgba(41, 41, 41, 0);
+    color: rgb(226, 226, 226);
+    transform: scale(1.2);
+    justify-content: left;
+  }

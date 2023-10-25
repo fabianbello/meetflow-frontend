@@ -8,142 +8,329 @@
 
 
 
-<div class="" style="padding-left: 10px;">
-
-
-    <div class="" style="padding-bottom: 15px; padding-top: 15px;">
-        <!--     <button style=" border-radius: 5px; color: rgb(0, 0, 0);  background-color: rgb(202, 226, 255); "
-      class="btn btn-light btn-rounded" mdbRipple>
-      Recordatorios
-      <br>
-    </button>
-    <br> -->
-    </div>
-
-
-
+<div class="" style="padding-left: 0px;">
 
     <div class="card2">
 
-        <div class="card2-body">
-            <!-- <br> -->
-            <!-- <br> -->
-            <div class="card">
-                <div class="card-body">
+        <div class="card">
+            <div class="card-body">
+
+                <h1>
+                    &nbsp;
+                    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24"
+                        style="fill: rgba(255, 255, 255, 1);transform: ;msFilter:;">
+                        <path
+                            d="M4 7h11v2H4zm0 4h11v2H4zm0 4h7v2H4zm15.299-2.708-4.3 4.291-1.292-1.291-1.414 1.415 2.706 2.704 5.712-5.703z">
+                        </path>
+                    </svg>
+                    <span class="" style="color: white;"> Mis tareas</span>
+                    <br>
+                    <hr style="color: white;">
+                </h1>
+                <form class="" autocomplete="off" (ngSubmit)="saveRemember()">
+
+                    <form autocomplete="off" [formGroup]="searchForm" (ngSubmit)="searchP()">
+                        <div class="row">
+
+                            <div class="col-4">
+                                <h6>
+                                    <span class="" style="color: white;"> Proyectos: </span>
+                                </h6>
+                                <select class="form-select" formControlName="filterProject"
+                                    aria-label="Default select example"
+                                    style="background-color:  rgba(11, 11, 11, 0.9); color: whitesmoke">
+                                    <option selected value={{userSelected.currentProjectId}}>
+                                        {{userSelected.currentProject}}
+                                    </option>
+                                    <option *ngFor="let project of projects; let p = index" value={{project._id}}>
+                                        {{project.shortName}}
+                                    </option>
+                                    <option value="all">
+                                        Todos
+                                    </option>
 
 
-                    <form class="" autocomplete="off" [formGroup]="rememberForm" (ngSubmit)="saveRemember()">
-                        <div class="">
-                            <h1>
-                                <span class="" style="color: white;"> Mis Tareas </span>
-                            </h1>
-                        </div>
-                        <hr />
-                        <br />
-
-
-                        <!-- <label class="col-8 col-form-label" style="color: #208fd8"> Nombre</label> -->
-                        <div class="input-group-vertical">
-                            <li *ngFor="let compromise of compromisesUserSelected; let i = index">
-                                <!-- CASO EN QUE COMPROMISO ES NUEVO -->
-                                <div class="" *ngIf="compromise.state === 'new'">
-                                    <a style="font-size: 110%" class="">
-                                        <span style="color: orangered">{{i+1}} </span> <span
-                                            style="color: white;">{{compromise.description}} </span><span
-                                            style="color: orangered"><br>Fecha
-                                            límite: </span> <span style="color: white;">{{compromise.dateLimit}}</span>
-                                        <br>
-                                        <button (click)="setStateElement(compromise._id)"
-                                            class="btn btn-light btn-rounded" mdbRipple>
-                                            <span style=" color:
-                      orangered">ESTADO: </span>
-                                            <span style="color: rgb(42, 42, 42);">Nueva</span>
-                                        </button>
-                                        
-                                        <button (click)="addRemember(compromise)" style="top: 8px; position: relative" class="button2">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35"
-                                                viewBox="0 0 24 24"
-                                                style="fill: rgba(247, 246, 246, 1);transform: msFilter;">
-                                                <path
-                                                    d="M12 22a2.98 2.98 0 0 0 2.818-2H9.182A2.98 2.98 0 0 0 12 22zm8.707-5.707L19 14.586V10c0-3.217-2.185-5.926-5.145-6.743C13.562 2.52 12.846 2 12 2s-1.562.52-1.855 1.258C7.185 4.074 5 6.783 5 10v4.586l-1.707 1.707A.997.997 0 0 0 3 17v1a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-1a.997.997 0 0 0-.293-.707zM16 12h-3v3h-2v-3H8v-2h3V7h2v3h3v2z">
-                                                </path>
-                                            </svg>
-                                        </button>
-
-                                    </a>
-                                </div>
-                                <!-- ASO EN QUE EL COMPROMISO ESTA EN DESARROLLO -->
-                                <div class="" *ngIf="compromise.state === 'desarrollo'">
-                                    <a style="font-size: 110%" class="">
-                                        <span style="color: orangered">{{i+1}} </span> <span
-                                            style="color: white;">{{compromise.description}} </span><span
-                                            style="color: orangered"><br>Fecha
-                                            límite: </span> <span style="color: white;">{{compromise.dateLimit}}</span>
-                                        <br>
-                                        <button (click)="setStateElement(compromise._id)"
-                                            class="btn btn-light btn-rounded" mdbRipple>
-                                            <span style=" color:
-                      orangered">ESTADO: </span>
-                                            <span style="color: rgb(255, 179, 72);">En desarrollo</span>
-                                        </button>
-                                        <button (click)="addRemember(compromise)" style="top: 8px; position: relative" class="button2">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24"
-                                              style="fill: rgba(247, 246, 246, 1);transform: msFilter;">
-                                              <path
-                                                d="M12 22a2.98 2.98 0 0 0 2.818-2H9.182A2.98 2.98 0 0 0 12 22zm8.707-5.707L19 14.586V10c0-3.217-2.185-5.926-5.145-6.743C13.562 2.52 12.846 2 12 2s-1.562.52-1.855 1.258C7.185 4.074 5 6.783 5 10v4.586l-1.707 1.707A.997.997 0 0 0 3 17v1a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-1a.997.997 0 0 0-.293-.707zM16 12h-3v3h-2v-3H8v-2h3V7h2v3h3v2z">
-                                              </path>
-                                            </svg>
-                                          </button>
-
-                                    </a>
-                                </div>
-                                <!-- ASO EN QUE EL COMPROMISO ESTA FINALIZADO-->
-                                <div class="" *ngIf="compromise.state === 'finalizado'">
-                                    <a style="font-size: 110%" class="">
-                                        <span style="color: orangered">{{i+1}} </span> <span
-                                            style="color: white;">{{compromise.description}} </span><span
-                                            style="color: orangered"><br>Fecha
-                                            límite: </span> <span style="color: white;">{{compromise.dateLimit}}</span>
-                                        <br>
-                                        <button (click)="setStateElement(compromise._id)"
-                                            class="btn btn-light btn-rounded" mdbRipple>
-                                            <span style=" color:
-                      orangered">ESTADO: </span>
-                                            <span style="color: rgb(0, 255, 13);">Finalizada</span>
-                                        </button>
-
-                                    </a>
-                                </div>
-
-                                <div class="">
-
-                                </div>
-
-
-
+                                </select>
 
                                 <br>
+
+                            </div>
+                            <div class="col-4">
+                                <h6>
+                                    <span class="" style="color: white;"> Estados: </span>
+                                </h6>
+                                <select class="form-select" formControlName="filterState"
+                                    aria-label="Default select example"
+                                    style="background-color:  rgba(11, 11, 11, 0.9); color: whitesmoke">
+                                    <option value='all' selected>todos</option>
+                                    <option value="new">Nuevas</option>
+                                    <option value="desarrollo"> En desarrollo</option>
+                                    <option value="pausada"> Pausadas</option>
+                                    <option value="evaluando"> En evaluación</option>
+                                    <option value="finalizado"> Finalizadas</option>
+                                    <option value="borrada"> Borradas</option>
+                                </select>
+
                                 <br>
 
-
-                            </li>
-
-                            <br>
-
-
+                            </div>
                         </div>
-                        <br />
 
 
-
-
-                        <!--   <div>
-
-        <div class="login100-form-btn flex-col-r">
-          <button class="btn" type="submit"> Entendido</button>
-        </div>
-  </div> -->
-
+                        <button *ngIf="true" type="submit" class="btn btn-light btn-rounded"
+                            style="align-items: right; background-color: #e5e5e5; color: rgb(40, 40, 40)"
+                            (click)="searchP()">Filtrar tareas</button>
 
 
                     </form>
+
+
+                    <hr />
+
+
+                    <!-- <label class="col-8 col-form-label" style="color: #208fd8"> Nombre</label> -->
+                    <div class="card4edit">
+                        <div class="card4edit-body">
+                            <br>
+                            <div class="input-group-vertical" style="list-style:none; padding: 10px 10px;">
+                                <li *ngFor="let compromise of tasks; let i = index">
+                                    <div class="input-group" *ngIf="compromise.type === 'compromiso'">
+                                        <!-- CASO EN QUE COMPROMISO ES NUEVO -->
+                                        <div class="btn-group" *ngIf="compromise.state === 'new'">
+                                            <a style="font-size: 100%" class="">
+                                                <!--  <span style="color: rgb(255, 255, 255)">{{i+1}} </span> --> <span
+                                                    style="color: rgb(194, 194, 194);">{{compromise.description}}
+                                                </span><span style="color: rgb(255, 255, 255)">,
+
+                                                    <!--        <b> Encargado: </b>
+                                                    <span
+                                                        style="color: rgb(194, 194, 194);">{{compromise.participants}},
+                                                    </span> -->
+                                                    <!-- <b> Fecha límite: </b> --> </span> <span
+                                                    style="color: rgb(194, 194, 194);"> {{compromise.dateLimit}},
+                                                </span>
+
+                                                <b style="color: white;"> Estado: </b> <span
+                                                    style="color: rgb(200, 97, 97);">
+                                                    No atendida.</span>
+                                                <br>
+                                                <button (click)="setStateElement(compromise._id)"
+                                                    class="btn btn-light btn-rounded" mdbRipple>
+                                                    <span style=" color:
+                                                        rgb(14, 14, 14)">Cambiar estado </span>
+
+                                                </button>
+                                                <button (click)="addRemember(compromise)"
+                                                    style="top: 8px; position: relative" class="button2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35"
+                                                        viewBox="0 0 24 24"
+                                                        style="fill: rgba(247, 246, 246, 1);transform: msFilter;">
+                                                        <path
+                                                            d="M12 22a2.98 2.98 0 0 0 2.818-2H9.182A2.98 2.98 0 0 0 12 22zm8.707-5.707L19 14.586V10c0-3.217-2.185-5.926-5.145-6.743C13.562 2.52 12.846 2 12 2s-1.562.52-1.855 1.258C7.185 4.074 5 6.783 5 10v4.586l-1.707 1.707A.997.997 0 0 0 3 17v1a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-1a.997.997 0 0 0-.293-.707zM16 12h-3v3h-2v-3H8v-2h3V7h2v3h3v2z">
+                                                        </path>
+                                                    </svg>
+                                                </button>
+                                            </a>
+                                        </div>
+
+                                        <!-- ASO EN QUE EL COMPROMISO ESTA EN DESARROLLO -->
+                                        <div class="" *ngIf="compromise.state === 'desarrollo'">
+                                            <a style="font-size: 100%" class="">
+                                                <!--  <span style="color: rgb(255, 255, 255)">{{i+1}} </span> --> <span
+                                                    style="color: rgb(194, 194, 194);">{{compromise.description}}
+                                                </span><span style="color: rgb(255, 255, 255)">,
+
+                                                    <!--    <b> Encargado: </b>
+                                                    <span
+                                                        style="color: rgb(194, 194, 194);">{{compromise.participants}},
+                                                    </span> -->
+                                                    <!-- <b> Fecha límite: </b> --> </span> <span
+                                                    style="color: rgb(194, 194, 194);">{{compromise.dateLimit}}, </span>
+
+                                                <b style="color: white;"> Estado: </b> <span
+                                                    style="color: rgb(227, 198, 120);">
+                                                    En desarrollo.</span>
+                                                <br>
+                                                <button (click)="setStateElement(compromise._id)"
+                                                    class="btn btn-light btn-rounded" mdbRipple>
+                                                    <span style=" color:
+                                                        rgb(14, 14, 14)">Cambiar estado </span>
+
+                                                </button>
+                                                <button (click)="addRemember(compromise)" class="button2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35"
+                                                        viewBox="0 0 24 24"
+                                                        style="fill: rgba(247, 246, 246, 1);transform: msFilter;">
+                                                        <path
+                                                            d="M12 22a2.98 2.98 0 0 0 2.818-2H9.182A2.98 2.98 0 0 0 12 22zm8.707-5.707L19 14.586V10c0-3.217-2.185-5.926-5.145-6.743C13.562 2.52 12.846 2 12 2s-1.562.52-1.855 1.258C7.185 4.074 5 6.783 5 10v4.586l-1.707 1.707A.997.997 0 0 0 3 17v1a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-1a.997.997 0 0 0-.293-.707zM16 12h-3v3h-2v-3H8v-2h3V7h2v3h3v2z">
+                                                        </path>
+                                                    </svg>
+                                                </button>
+                                            </a>
+                                        </div>
+
+                                        <!-- ASO EN QUE EL COMPROMISO ESTA EN PAUSA -->
+                                        <div class="" *ngIf="compromise.state === 'pausada'">
+                                            <a style="font-size: 100%" class="">
+                                                <!--  <span style="color: rgb(255, 255, 255)">{{i+1}} </span> --> <span
+                                                    style="color: rgb(194, 194, 194);">{{compromise.description}}
+                                                </span><span style="color: rgb(255, 255, 255)">,
+
+                                                    <!--      <b> Encargado: </b>
+                                                    <span
+                                                        style="color: rgb(194, 194, 194);">{{compromise.participants}},
+                                                    </span> -->
+                                                    <!-- <b> Fecha límite: </b> --> </span> <span
+                                                    style="color: rgb(194, 194, 194);">{{compromise.dateLimit}}, </span>
+
+                                                <b style="color: white;"> Estado: </b> <span
+                                                    style="color: rgb(227, 198, 120);">
+                                                    En pausa.</span>
+                                                <br>
+
+                                                <button (click)="setStateElement(compromise._id)"
+                                                    class="btn btn-light btn-rounded" mdbRipple>
+                                                    <span style=" color:
+                                                                    rgb(14, 14, 14)">Cambiar estado </span>
+
+                                                </button>
+                                                <button (click)="addRemember(compromise)"
+                                                    style="top: 8px; position: relative" class="button2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35"
+                                                        viewBox="0 0 24 24"
+                                                        style="fill: rgba(247, 246, 246, 1);transform: msFilter;">
+                                                        <path
+                                                            d="M12 22a2.98 2.98 0 0 0 2.818-2H9.182A2.98 2.98 0 0 0 12 22zm8.707-5.707L19 14.586V10c0-3.217-2.185-5.926-5.145-6.743C13.562 2.52 12.846 2 12 2s-1.562.52-1.855 1.258C7.185 4.074 5 6.783 5 10v4.586l-1.707 1.707A.997.997 0 0 0 3 17v1a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-1a.997.997 0 0 0-.293-.707zM16 12h-3v3h-2v-3H8v-2h3V7h2v3h3v2z">
+                                                        </path>
+                                                    </svg>
+                                                </button>
+                                            </a>
+                                        </div>
+
+                                        <!-- ASO EN QUE EL COMPROMISO ESTA EN DESARROLLO -->
+                                        <div class="" *ngIf="compromise.state === 'evaluando'">
+                                            <a style="font-size: 100%" class="">
+                                                <!--  <span style="color: rgb(255, 255, 255)">{{i+1}} </span> --> <span
+                                                    style="color: rgb(194, 194, 194);">{{compromise.description}}
+                                                </span><span style="color: rgb(255, 255, 255)">,
+
+                                                    <!--  <b> Encargado: </b>
+                                                    <span
+                                                        style="color: rgb(194, 194, 194);">{{compromise.participants}},
+                                                    </span> -->
+                                                    <!--  <b> Fecha límite: </b> --> </span> <span
+                                                    style="color:rgb(194, 194, 194);">{{compromise.dateLimit}}, </span>
+
+                                                <b style="color: white;"> Estado: </b> <span
+                                                    style="color: rgb(227, 198, 120);">
+                                                    En evaluación.</span>
+                                                <br>
+
+                                                <button (click)="setStateElement(compromise._id)"
+                                                    class="btn btn-light btn-rounded" mdbRipple>
+                                                    <span style=" color:
+                                                                    rgb(14, 14, 14)">Cambiar estado </span>
+
+                                                </button>
+                                                <button (click)="addRemember(compromise)"
+                                                    style="top: 8px; position: relative" class="button2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35"
+                                                        viewBox="0 0 24 24"
+                                                        style="fill: rgba(247, 246, 246, 1);transform: msFilter;">
+                                                        <path
+                                                            d="M12 22a2.98 2.98 0 0 0 2.818-2H9.182A2.98 2.98 0 0 0 12 22zm8.707-5.707L19 14.586V10c0-3.217-2.185-5.926-5.145-6.743C13.562 2.52 12.846 2 12 2s-1.562.52-1.855 1.258C7.185 4.074 5 6.783 5 10v4.586l-1.707 1.707A.997.997 0 0 0 3 17v1a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-1a.997.997 0 0 0-.293-.707zM16 12h-3v3h-2v-3H8v-2h3V7h2v3h3v2z">
+                                                        </path>
+                                                    </svg>
+                                                </button>
+                                            </a>
+                                        </div>
+
+                                        <!-- ASO EN QUE EL COMPROMISO ESTA EN DESARROLLO -->
+                                        <div class="" *ngIf="compromise.state === 'borrada'">
+                                            <a style="font-size: 100%" class="">
+                                                <!--  <span style="color: rgb(255, 255, 255)">{{i+1}} </span> --> <span
+                                                    style="color: rgb(194, 194, 194);">{{compromise.description}}
+                                                </span><span style="color: rgb(255, 255, 255)">,
+
+                                                    <!--   <b> Encargado: </b>
+                                                    <span
+                                                        style="color: rgb(194, 194, 194);">{{compromise.participants}},
+                                                    </span> -->
+                                                    <!--  <b> Fecha límite: </b> --> </span> <span
+                                                    style="color: rgb(194, 194, 194);">{{compromise.dateLimit}}, </span>
+
+                                                <b style="color: white;"> Estado: </b> <span
+                                                    style="color: rgb(172, 203, 206);">
+                                                    Borrada.</span>
+                                                <br>
+
+                                                <button (click)="setStateElement(compromise._id)"
+                                                    class="btn btn-light btn-rounded" mdbRipple>
+                                                    <span style=" color:
+                                                                            rgb(14, 14, 14)">Cambiar estado </span>
+
+                                                </button>
+                                                <button (click)="addRemember(compromise)"
+                                                    style="top: 8px; position: relative" class="button2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35"
+                                                        viewBox="0 0 24 24"
+                                                        style="fill: rgba(247, 246, 246, 1);transform: msFilter;">
+                                                        <path
+                                                            d="M12 22a2.98 2.98 0 0 0 2.818-2H9.182A2.98 2.98 0 0 0 12 22zm8.707-5.707L19 14.586V10c0-3.217-2.185-5.926-5.145-6.743C13.562 2.52 12.846 2 12 2s-1.562.52-1.855 1.258C7.185 4.074 5 6.783 5 10v4.586l-1.707 1.707A.997.997 0 0 0 3 17v1a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-1a.997.997 0 0 0-.293-.707zM16 12h-3v3h-2v-3H8v-2h3V7h2v3h3v2z">
+                                                        </path>
+                                                    </svg>
+                                                </button>
+                                            </a>
+                                        </div>
+
+                                        <!-- ASO EN QUE EL COMPROMISO ESTA FINALIZADO-->
+                                        <div class="" *ngIf="compromise.state === 'finalizado'">
+                                            <a style="font-size: 100%" class="">
+                                                <!--  <span style="color: rgb(255, 255, 255)">{{i+1}} </span> --> <span
+                                                    style="color: rgb(194, 194, 194);">{{compromise.description}}
+                                                </span><span style="color: rgb(255, 255, 255)">,
+
+                                                    <!--     <b> Encargado: </b>
+                                                    <span
+                                                        style="color: rgb(194, 194, 194);">{{compromise.participants}},
+                                                    </span> -->
+                                                    <!--  <b> Fecha límite: </b>  --></span> <span
+                                                    style="color: rgb(194, 194, 194);">{{compromise.dateLimit}}, </span>
+
+                                                <b style="color: white;"> Estado: </b> <span
+                                                    style="color: rgb(152, 199, 150);">
+                                                    Finalizada.</span>
+                                                <br>
+
+                                                <button (click)="setStateElement(compromise._id)"
+                                                    class="btn btn-light btn-rounded" mdbRipple>
+                                                    <span style=" color:
+                                                        rgb(14, 14, 14)">Cambiar estado </span>
+
+                                                </button>
+
+
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <br>
+                                    <br>
+
+                                </li>
+
+                                <br>
+
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>

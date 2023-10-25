@@ -12,6 +12,12 @@
 /*     justify-content: center; */
 }
 
+/* iframe {
+    display: none;
+
+  } */
+
+
 .card4edit {
     /* background-color: rgba(33,37,41,1); */
     /*  background-color: rgba(33, 33, 33, 0.5); */
@@ -24,12 +30,11 @@
     width: 99%;
     height: 100%;
     overflow-y: auto;
-    height: calc(50vh - 6rem);
+    height: calc(35vh - 6rem);
     /*     padding-top: 500px; */
     /*   transform: translate(-40%, 2%); */
     /*     justify-content: center; */
   }
-
   .card2{
     background-color: rgba(33,37,41,0.5);
     box-shadow: 4px 4px 4px 3px rgba(21, 21, 21, 0.428);

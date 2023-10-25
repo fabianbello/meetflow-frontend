@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import Swal from 'sweetalert2';
@@ -11,11 +11,7 @@ import Swal from 'sweetalert2';
 })
 export class AddMeetingComponent implements OnInit {
 
-  miFormulario: FormGroup = this.fb.group({
-    name: ['', [Validators.required, Validators.minLength(6)]],
-    description: ['', [Validators.required, Validators.minLength(6)]],
-  });
-
+  miFormulario!: FormGroup;
   idProyecto: any = ' ';
   id: any = '';
 
@@ -25,13 +21,17 @@ export class AddMeetingComponent implements OnInit {
     private authService: AuthService,
     private route: ActivatedRoute
   ) {
+    this.miFormulario = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(6)]],
+      description: ['', [Validators.required, Validators.minLength(6)]],
+    });
 
-    
+
   }
 
   ngOnInit(): void {
     this.idProyecto = this.route.snapshot.paramMap.get('id');
-   
+
   }
 
   addMeeting() {

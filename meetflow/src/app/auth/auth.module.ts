@@ -21,6 +21,7 @@ import { MdbRippleModule } from 'mdb-angular-ui-kit/ripple';
 import { MdbScrollspyModule } from 'mdb-angular-ui-kit/scrollspy';
 import { MdbTooltipModule } from 'mdb-angular-ui-kit/tooltip';
 import { MdbValidationModule } from 'mdb-angular-ui-kit/validation';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
 
 
 @NgModule({
@@ -48,6 +49,7 @@ import { MdbValidationModule } from 'mdb-angular-ui-kit/validation';
     MdbTabsModule,
     MdbTooltipModule,
     MdbValidationModule,
+    PdfViewerModule
   ]
 })
 export class AuthModule { }

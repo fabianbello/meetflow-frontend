@@ -14,32 +14,6 @@ declare interface RouteInfo {
   class: string;
 }
 
-export const ROUTES: RouteInfo[] = [
-  { path: '/main', title: 'nombre 1 ', icon: 'pe-7s-home', class: '' },
-  { path: '/login', title: 'nombre 2', icon: 'pe-7s-note2', class: '' },
-  { path: '/main', title: 'nombre 3', icon: 'pe-7s-plus', class: '' },
-  {
-    path: '/management/board',
-    title: 'nombre 4',
-    icon: 'pe-7s-albums',
-    class: '',
-  },
-  {
-    path: '/list-reports',
-    title: 'nombre 5',
-    icon: 'pe-7s-copy-file',
-    class: '',
-  },
-  /* { path: '/observation', title: 'Observación',  icon: 'pe-7s-comment', class: '' }, */
-  { path: '/stats', title: 'nombre 6', icon: 'pe-7s-graph', class: '' },
-  // { path: '/user', title: 'User Profile',  icon: 'pe-7s-user', class: '' },
-  // { path: '/table', title: 'Table List',  icon: 'pe-7s-note2', class: '' },
-  // { path: '/typography', title: 'Typography',  icon: 'pe-7s-news-paper', class: '' },
-  // { path: '/icons', title: 'Icons',  icon: 'pe-7s-science', class: '' },
-  // { path: '/notifications', title: 'Notifications',  icon: 'pe-7s-bell', class: '' },
-  // { path: '/checking', title: 'Checking',  icon: 'pe-7s-note2', class: '' },
-];
-
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
@@ -48,55 +22,59 @@ export const ROUTES: RouteInfo[] = [
 export class SidebarComponent implements OnInit {
   @Input() sideNavStatus: boolean = true;
 
-  // VARIABLES EVENTO EMITIDO!
+
+  // Variables de evento emitido al menu component
   @Output() projectStatus = new EventEmitter<string>();
   @Output() meetingStatus = new EventEmitter<string>();
   @Output() changeStatus = new EventEmitter<string>();
+  @Output() sectionStatus = new EventEmitter<string>();
+  @Output() projectStatusFunction = new EventEmitter<any>();
 
+  // Complemento a las variables emitidas
   newParticipants: any = [];
   nameProjectEmite: string = '';
   nameMeetingEmite: string = '';
+  nameSectionEmite: string = 'noSection';
   idMeetingEmite: string = '';
   idProjectEmite: string = '';
 
-  list = [
-    {
-      number: '1',
-      name: 'home',
-      icon: 'fa-solid fa-house',
-    },
-  ];
-
+  // Variables de edicion
   isProyectos = true;
   isReuniones = false;
 
+  // Variables de identificacion
   currentProject = 'Default';
   currentMeeting = 'Default';
   currentState = 'Default';
 
-  menuItems: any[] = ROUTES;
-  logged = false;
-  process = false;
+  // Variables de proyecto
   projects: any;
   projectSelectedId: string = '';
+  projectsFilters: any;
+  projectSelected: any;
+
+  // Variables de reunion
   meetingSelectedId: string = '';
   countMeetings: any = 1;
   meetings: any;
 
-  miFormulario: FormGroup = this.fb.group({
-    asd: ['proyect 2'],
-  });
-
-  persona = {
-    asd: 'proyecto 3',
-  };
-  projectsFilters: any;
-
+  // Variables de acceso
+  logged = false;
   user: any;
   userRol: any;
   userEditForm!: FormGroup;
   userSelected: any;
+  isOwner = false;
+  isMember = false;
 
+  // Formularios
+  searchForm!: FormGroup;
+
+  isSecretary = false;
+
+  // ____________________________
+  // CONSTRUCTOR
+  //_____________________________
   constructor(
     private authService: AuthService,
     private router: Router,
@@ -104,19 +82,12 @@ export class SidebarComponent implements OnInit {
     private socket: Socket
   ) {
 
+
+    // evento de recargar pagina
     socket.fromEvent('new_reload').subscribe(async (user: any) => {
       if (user.email === this.user.email) {
-        console.log('USUARIO SOY YO GUARDANDO: ', user);
       } else {
-        console.log('USUARIO RECARGANDO: ', user);
-
-        
         let stringAux2 = user.email
-
-    
-        console.log('USUARIO RECARGANDO: ', user);
-     
-
         const Toast = Swal.mixin({
           toast: true,
           position: 'bottom-end',
@@ -128,101 +99,71 @@ export class SidebarComponent implements OnInit {
             toast.addEventListener('mouseleave', Swal.resumeTimer)
           }
         })
-  
         Toast.fire({
           icon: 'success',
           title: 'Usuario:' + user.email + ' cambiando opciones de sesión. Se reiniciará la pagina web.',
         })
-
         setTimeout(() => {
           location.reload();
         }, 5000);
-        
-
       }
     });
 
-    //! AQUI VAMOS SUMANDO A LOS NUEVOS
-
+    // evento de nuevo usuario uniendose a la sesion
     socket.fromEvent('new_user').subscribe(async (user: any) => {
-
       console.log('USER NUEVO UNIENDOSE: ', user);
       let stringAux2 = '' + user.tagName + ',' + user.color + ',' + user.name + ',' + user.email + ',' + user.institution;
-
       this.authService
         .getMeetingMinute(user.currentMeetingId)
         .subscribe(
           async (resp) => {
-
-   /*          const Toast = Swal.mixin({
-              toast: true,
-              position: 'bottom-end',
-              showConfirmButton: false,
-              timer: 1000,
-              timerProgressBar: true,
-              didOpen: (toast) => {
-                toast.addEventListener('mouseenter', Swal.stopTimer)
-                toast.addEventListener('mouseleave', Swal.resumeTimer)
-              }
-            })
-
-            Toast.fire({
-              icon: 'success',
-              title: 'Se ha unido el usuario: ' + user.email + ' a la sesión.'
-            }) */
-
             let secretaries = resp[0].secretaries;
             let participants = resp[0].participants;
             let leaders = resp[0].leaders;
-
             console.log("[SIDEBAR] MEETING MINUTE DEL COMPADRE QUE ENTRO, :", resp);
+
+            if (secretaries.includes(this.user.email)) {
+              this.isSecretary = true;
+            }
+            if (leaders.includes(this.user.email)) {
+              this.isSecretary = true;
+            }
+
+
             if (secretaries.includes(user.email)) {
               stringAux2 = stringAux2 + ',' + 'Secretario';
-              /* console.log("[SIDEBAR] ES SECRETARIO", user.email, stringAux2) */
             }
-             else if(participants.includes(user.email)) {
-              stringAux2 = stringAux2 + ',' + 'Participante';
-              /* console.log("[SIDEBAR] NO ES SECRETARIO", user.email, stringAux2); */
-            } else if(leaders.includes(user.email)){
+            else if (participants.includes(user.email)) {
+              stringAux2 = stringAux2 + ',' + 'Asistente';
+            } else if (leaders.includes(user.email)) {
               stringAux2 = stringAux2 + ',' + 'Lider';
-            /*   console.log("[SIDEBAR] NO ES SECRETARIO", user.email, stringAux2); */
-            }else{
-              stringAux2 = stringAux2 + ',' + 'Invitado';
+            } else {
+              stringAux2 = stringAux2 + ',' + 'Espectador';
             }
 
-            if (!this.newParticipants.includes(stringAux2) && user.id != this.userSelected.id) {
-              console.log('SE HA AÑADIDO EL USUARIO: ', stringAux2);
+
+            if (!this.newParticipants.includes(stringAux2) /* && user.id != this.userSelected.id */) {
 
               this.newParticipants.push(stringAux2);
 
-              console.log('REUNION A REENVIAR: ', user.id);
-              /*  this.joinRoom(user.id); */
-              /*  estoyAqui(user.id); */
               if (user.currentMeeting != '') {
                 await this.joinRoom(user.currentMeetingId);
               } else {
                 await this.joinRoom(user.currentProjectId);
               }
 
-
-              /*  this.joinRoom(user.id); */
             }
+            this.getProjectId(user.currentProjectId);
 
           },
-
           (err: any) => {
-
           }
-
         );
-
       this.changeStatus.emit(this.newParticipants);
-
       console.log('USUARIOS TOTALES: ', this.newParticipants);
     });
 
-    //! AQUI VAMOS QUITANDO A LOS QUE SE VAN
-
+    // evento de usuario saliendo de la sesion
     socket.fromEvent('left_user').subscribe((user: any) => {
       console.log('USUER SALIENDOSE: ', user);
 
@@ -233,31 +174,12 @@ export class SidebarComponent implements OnInit {
 
       console.log('USUARIOS: ', this.newParticipants);
       this.changeStatus.emit(this.newParticipants);
-/*       const Toast = Swal.mixin({
-        toast: true,
-        position: 'bottom-end',
-        showConfirmButton: false,
-        timer: 4000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-          toast.addEventListener('mouseenter', Swal.stopTimer)
-          toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-      })
-
-      Toast.fire({
-        icon: 'success',
-        title: 'Usuario: ' + user.email + ' saliendo de la sesión.'
-      }) */
     });
 
-    // METODO PARA ENTERARME DE QUE SE CREO UNA REUNION
-
+    // Evento de que se ha creado una nueva reunion
     socket.fromEvent('new_meet').subscribe(async (user: any) => {
       if (user.email === this.user.email) {
-        console.log('USUARIO SOY YO: ', user);
       } else {
-        console.log('USUARIO VIENDO NUEVA REUNION: ', user);
         this.listMeetingsInicial(this.userSelected.currentProjectId);
         let stringAux2 = user.email
 
@@ -272,7 +194,6 @@ export class SidebarComponent implements OnInit {
             toast.addEventListener('mouseleave', Swal.resumeTimer)
           }
         })
-
         Toast.fire({
           icon: 'success',
           title: 'Usuario: ' + user.email + ' creando una nueva reunión.'
@@ -280,8 +201,7 @@ export class SidebarComponent implements OnInit {
       }
     });
 
-    // METODO PARA ENTERARME DE QUE SE CREO UN PROOJECTO
-
+    // Evento de que se ha creado un nuevo proyecto
     socket.fromEvent('new_project').subscribe(async (user: any) => {
       if (user.email === this.user.email) {
         console.log('USUARIO SOY YO: ', user);
@@ -289,39 +209,30 @@ export class SidebarComponent implements OnInit {
         console.log('USUARIO VIENDO NUEVA PROYECTO: ', user);
         this.listProjectsInicial();
         let stringAux2 = user.email
-
-        
       }
     });
 
+    // Identificar al usuario logeado
     this.authService.userLogin().subscribe(
       async (resp) => {
-        /* console.log('CUAL ES EL USUARIO DESDE SIDEBAR?', resp); */
         this.user = resp;
         this.getUserProfile(this.user.id);
-
-
       },
       (err) => {
-        /*    Swal.fire('Error', err.message, 'error'); */
       }
     );
-
-    /*         this.currentProject =  this.userSelected.currentProject;
-    this.currentMeeting =  this.userSelected.currentMeeting; */
-    /*   this.listProjectsInicial();
-      this.miFormulario.reset({ ...this.persona}); */
-    /*  this.listMeetingsInicial("639add0a0292225f19c9c870"); */
   }
 
-  searchForm!: FormGroup;
+  // ____________________________
+  // NG ON INIT
+  //_____________________________
   ngOnInit(): void {
+
+    // Formulario de buscar
     this.searchForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(6)]],
     });
-
-    /* const bsButton = new bootstrap.Button('#myButton') */
-    this.menuItems = ROUTES;
+    // Se listan los proyectos del usuario al inciar
     this.listProjectsInicial();
   }
 
@@ -347,27 +258,36 @@ export class SidebarComponent implements OnInit {
             setTimeout(() => { }, 2000);
             /* console.log('[NAVBAR] PROJECTO', this.userSelected.currentProjectId);
             console.log('[NAVBAR] REUNION', this.meetingSelectedId); */
-            let lastLink2 = resp2.lastLink.split('/');
-            console.log('[NAVBAR] LINK', lastLink2[3]);
 
-            if (lastLink2[3] === 'meeting') {
-              let payload = {
-                room: this.userSelected.currentMeetingId,
-                user: this.userSelected,
-              };
-              this.socket.emit('event_message', payload);
-            } else if (lastLink2[3] === 'edit-project') {
-              let payload = {
-                room: this.userSelected.currentProjectId,
-                user: this.userSelected,
-              };
-              this.socket.emit('event_message', payload);
+            if (resp2.lastLink === '/main/task') {
+              /*  this.router.navigateByUrl('/main/task'); */
+
             } else {
-              let payload = { room: 'all', user: this.userSelected };
-              this.socket.emit('event_message', payload);
+              let lastLink2 = resp2.lastLink.split('/');
+              console.log('[NAVBAR] LINK', lastLink2[3]);
+
+              if (lastLink2[3] === 'meeting') {
+                let payload = {
+                  room: this.userSelected.currentMeetingId,
+                  user: this.userSelected,
+                };
+                this.socket.emit('event_message', payload);
+              } else if (lastLink2[3] === 'edit-project') {
+                let payload = {
+                  room: this.userSelected.currentProjectId,
+                  user: this.userSelected,
+                };
+                this.socket.emit('event_message', payload);
+              } else {
+                let payload = { room: 'all', user: this.userSelected };
+                this.socket.emit('event_message', payload);
+              }
+
             }
+
+
           },
-          (err: { message: string | undefined }) => { }
+          /* (err: { message: string | undefined }) => { } */
         );
 
         /*   this.userTag = resp */
@@ -375,11 +295,15 @@ export class SidebarComponent implements OnInit {
       (err) => {
         if (err.status === 401) {
           this.router.navigateByUrl('auth/login');
-          Swal.fire(
-            'Error',
-            'Usuario no ingresado, por favor registrarse.',
-            'error'
-          );
+/*           Swal.fire({
+            title: 'Autentificarse en la plataforma antes de ingresar a la reunión.',
+            text: "",
+            icon: 'info',
+
+
+          }
+
+          ) */
         }
         console.log('ERROR DESDE NAVBAR: ', err);
       }
@@ -403,10 +327,14 @@ export class SidebarComponent implements OnInit {
         this.currentProject = resp.currentProject;
         this.currentMeeting = resp.currentMeeting;
 
+        this.projectStatusFunction.emit(this.currentProject);
         this.projectStatus.emit(this.currentProject);
         this.meetingStatus.emit(this.currentMeeting);
-
-        if (this.currentProject != '') {
+        /* this.sectionStatus.emit('nada'); */
+        console.log("[USER] ha iniciado con el usuario: ", resp);
+        if (resp.lastLink === '/main/task') {
+          this.router.navigateByUrl(resp.lastLink);
+        } else if (this.currentProject != '') {
           this.isReuniones = true;
           this.isProyectos = false;
           this.meetingSelectedId = resp.currentMeetingId;
@@ -415,9 +343,15 @@ export class SidebarComponent implements OnInit {
           this.router.navigateByUrl(resp.lastLink);
 
           console.log('[SIDEBAR] currentMeeting = ', this.currentMeeting);
+
           if (resp.currentMeetingId != '') {
+
+
+
             await this.joinRoom(resp.currentMeetingId);
           } else {
+
+
             await this.joinRoom(resp.currentProjectId);
           }
 
@@ -471,6 +405,19 @@ export class SidebarComponent implements OnInit {
       }
     );
   }
+
+  listMeetingsInicialRefresh() {
+    this.authService.meeting(this.projectSelectedId).subscribe(
+      (resp: any) => {
+        /*         console.log('RESPUESTA DE ERROR AL CARGAR PROYECTOS', resp); */
+        this.meetings = resp;
+      },
+      (err) => {
+        /*         console.log('RESPUESTA DE ERROR AL CARGAR PROYECTOS', err); */
+        Swal.fire('Error', err, 'error');
+      }
+    );
+  }
   //! ------------------------------------
   //! SALIDA DE LA SALA
   //! ------------------------------------
@@ -500,7 +447,7 @@ export class SidebarComponent implements OnInit {
       console.log('ENTRE DONDE SI HAY REUNION');
       await this.socket.emit('event_leave', payloadLeave2);
       //! REUNION SELECTED ID
-      this.projectSelectedId = id;
+      /*   this.projectSelectedId = id; */
     }
   }
 
@@ -516,11 +463,46 @@ export class SidebarComponent implements OnInit {
     };
     await this.socket.emit('event_join', payloadJoin);
   }
+  getProjectId(id: string) {
 
+    // solicitamos saber cual es taoda la informacion del proyecto en base a id
+    this.authService.projectById(id).subscribe(
+      (resp: any) => {
+
+        console.log('[edit project] proyecto obtenido: ', resp);
+        this.projectSelected = resp;
+
+        let result1 = this.projectSelected.userOwner.filter((role: any) =>
+          role.includes(this.user.email)
+        );
+        let result2 = this.projectSelected.userMembers.filter((role: any) =>
+          role.includes(this.user.email)
+        );
+
+        if (result1.length > 0) {
+          this.isOwner = true;
+          this.isMember = true;
+        } else if (result2.length > 0) {
+          this.isOwner = false;
+          this.isMember = true;
+        } else {
+          this.isOwner = false;
+          this.isMember = false;
+        }
+      },
+      (err: { message: string | undefined }) => {
+        Swal.fire('Error', err.message, 'error');
+      }
+    );
+  }
   //! ________________
   //! EDIT PROYECT
   //! ________________
   async editProject(id: string, nameProject: string) {
+
+    this.getProjectId(id);
+
+    console.log("[sidebar] ID DEL PROYECTO: ", id);
     /* this.changeStatus.emit(); */
     this.listMeetingsInicial(id);
     this.currentProject = nameProject;
@@ -538,9 +520,13 @@ export class SidebarComponent implements OnInit {
     // EVENTO EMITIDO!
     this.nameProjectEmite = nameProject;
     this.nameMeetingEmite = '';
+    this.nameSectionEmite = '  ';
+
     /*     console.log('MENU STATUS: ', this.nameProjectEmite); */
     this.projectStatus.emit(this.nameProjectEmite);
+    this.projectStatusFunction.emit(this.currentProject);
     this.meetingStatus.emit(this.nameMeetingEmite);
+    this.sectionStatus.emit('    ');
 
     /*  this.projectStatus.emit(this.idProjectEmite);
     this.meetingStatus.emit(this.idMeetingEmite); */
@@ -548,7 +534,25 @@ export class SidebarComponent implements OnInit {
     this.authService.meeting(id).subscribe(
       async (resp: any) => {
         this.meetings = resp;
-        /*         console.log('RESPUESTA', resp); */
+        if (resp.length === 0) {
+          let largo = resp.length;
+          console.log("REUNION LARGO: ", largo);
+
+          this.countMeetings = 0;
+        } else {
+          let largo = resp.length - 1;
+          console.log("REUNION LARGO: ", largo);
+
+          let ultimo = this.meetings[largo].name;
+
+          let numberUltimo = parseInt(ultimo.split(' ')[1]);
+          console.log("REUNION Ultimo: ", numberUltimo);
+
+          this.countMeetings = numberUltimo + 1;
+        }
+
+        /*       let numeroultimo = parseInt(ultimo);
+              console.log("REUNION Ultimo: ", numeroultimo); */
 
         this.authService
           .saveProjectCurrent(this.user.id, this.userSelected)
@@ -573,12 +577,16 @@ export class SidebarComponent implements OnInit {
           );
 
         const asd = await this.router.navigateByUrl('/main/loading');
-        this.router.navigateByUrl('/main/' + id + '/edit-project');
+
+        if (this.userSelected.lastLink === '/main/task') {
+          /* this.router.navigateByUrl('/main/task'); */
+
+        } else {
+          this.router.navigateByUrl('/main/' + this.projectSelectedId + '/edit-project');
+        }
 
 
-        /*         console.log('MEETING', this.meetings); */
 
-        this.countMeetings = this.meetings.length;
 
         /*         console.log('CANTIDAD', this.countMeetings); */
 
@@ -613,8 +621,13 @@ export class SidebarComponent implements OnInit {
     this.userSelected.currentMeeting = nameMeeting;
     this.userSelected.currentMeetingId = id;
     this.meetingSelectedId = id;
+    if (this.userSelected.lastLink === '/main/task') {
 
-    this.userSelected.lastLink = url2;
+      /* this.router.navigateByUrl('/main/task'); */
+    } else {
+      this.userSelected.lastLink = url2;
+    }
+
 
     this.authService
       .saveProjectCurrent(this.user.id, this.userSelected)
@@ -650,14 +663,31 @@ export class SidebarComponent implements OnInit {
 
     /*  console.log(url2) */
     /*     console.log('IDE DE REUNION ', id);
-    console.log('IDE DE PROJECTO ', this.projectSelectedId); */
+    console.log('I DE DE PROJECTO ', this.projectSelectedId); */
 
     // EVENTO EMITIDO!
     this.nameMeetingEmite = nameMeeting;
     /*     console.log('MENU STATUS: ', this.nameMeetingEmite); */
     this.meetingStatus.emit(this.nameMeetingEmite);
 
-    this.router.navigateByUrl(url2);
+    let numberRandom = this.getRandomInt(5);
+    let espaciosRandom = ' ';
+    for (let i = 0; i < numberRandom; i++) {
+      espaciosRandom = espaciosRandom + ' ';
+    }
+    this.sectionStatus.emit(espaciosRandom);
+    if (this.userSelected.lastLink === '/main/task') {
+      /* this.router.navigateByUrl('/main/task'); */
+
+    } else {
+      this.router.navigateByUrl(url2);
+    }
+
+
+  }
+
+  getRandomInt(max: number) {
+    return Math.floor(Math.random() * max);
   }
 
   addMeeting() {
@@ -666,60 +696,178 @@ export class SidebarComponent implements OnInit {
     /*     this.router.navigateByUrl(url2); */
     /*     console.log(this.countMeetings); */
 
+    // Identificar al usuario logeado
+    this.authService.userLogin().subscribe(
+      async (resp) => {
+        this.user = resp;
+        await this.getUserProfile(this.user.id);
+
+        this.authService.meeting(this.userSelected.currentProjectId).subscribe(
+          async (resp: any) => {
+            this.meetings = resp;
+            if (resp.length === 0) {
+              let largo = resp.length;
+              console.log("REUNION LARGO: ", largo);
+              this.countMeetings = 0;
+              this.authService
+                .addMeeting(this.projectSelectedId, 0)
+                .subscribe(
+                  (resp: any) => {
+                    /*       console.log('RESP 1:', resp); */
+                    const Toast = Swal.mixin({
+                      toast: true,
+                      position: 'bottom-end',
+                      showConfirmButton: false,
+                      timer: 3000,
+                      timerProgressBar: true,
+                      didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                      }
+                    })
+
+                    Toast.fire({
+                      icon: 'success',
+                      title: 'Se ha creado la reunión exitosamente.'
+                    })
+
+                    this.authService.meeting(this.projectSelectedId).subscribe(
+                      (resp: any) => {
+                        /*            console.log('RESP 2', resp); */
+
+                        console.log("PROYECTO DESDE DONDE SE CREA: ",this.projectSelectedId );
+                        this.meetings = resp;
+                        if (resp.length === 0) {
+                          let largo = resp.length;
+                          console.log("REUNION LARGO: ", largo);
+
+                          this.countMeetings = 0;
+                        } else {
+                          let largo = resp.length - 1;
+                          console.log("REUNION LARGO: ", largo);
+
+                          let ultimo = this.meetings[largo].name;
+
+                          let numberUltimo = parseInt(ultimo.split(' ')[1]);
+                          console.log("REUNION Ultimo: ", numberUltimo);
+
+                          this.countMeetings = numberUltimo + 1;
+                        }
+
+                        let payloadSave = {
+                          room: this.projectSelectedId,
+                          user: this.user
+                        }
+                        this.socket.emit('event_meet', payloadSave);
+
+                        let payloadSave2 = {
+                          room: this.meetingSelectedId,
+                          user: this.user
+                        }
+                        this.socket.emit('event_meet', payloadSave2);
+
+                      },
+                      (err: string | undefined) => {
+                        Swal.fire('Error', err, 'error');
+                      }
+                    );
+                  },
+                  (err: string | undefined) => {
+                    Swal.fire('Error', err, 'error');
+                  }
+                );
 
 
-    this.authService
-      .addMeeting(this.projectSelectedId, this.countMeetings)
-      .subscribe(
-        (resp: any) => {
-          /*       console.log('RESP 1:', resp); */
-          const Toast = Swal.mixin({
-            toast: true,
-            position: 'bottom-end',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-            didOpen: (toast) => {
-              toast.addEventListener('mouseenter', Swal.stopTimer)
-              toast.addEventListener('mouseleave', Swal.resumeTimer)
+            } else {
+              let largo = resp.length - 1;
+              console.log("REUNION LARGO: ", largo);
+
+              let ultimo = this.meetings[largo].name;
+
+              let numberUltimo = parseInt(ultimo.split(' ')[1]);
+              console.log("REUNION Ultimo: ", numberUltimo);
+
+              this.countMeetings = numberUltimo + 1;
+
+              this.authService
+                .addMeeting(this.projectSelectedId, numberUltimo + 1)
+                .subscribe(
+                  (resp: any) => {
+                    /*       console.log('RESP 1:', resp); */
+                    const Toast = Swal.mixin({
+                      toast: true,
+                      position: 'bottom-end',
+                      showConfirmButton: false,
+                      timer: 3000,
+                      timerProgressBar: true,
+                      didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                      }
+                    })
+
+                    Toast.fire({
+                      icon: 'success',
+                      title: 'Se ha creado la reunión exitosamente.'
+                    })
+
+                    this.authService.meeting(this.projectSelectedId).subscribe(
+                      (resp: any) => {
+                        /*            console.log('RESP 2', resp); */
+
+                        this.meetings = resp;
+                        if (resp.length === 0) {
+                          let largo = resp.length;
+                          console.log("REUNION LARGO: ", largo);
+
+                          this.countMeetings = 0;
+                        } else {
+                          let largo = resp.length - 1;
+                          console.log("REUNION LARGO: ", largo);
+
+                          let ultimo = this.meetings[largo].name;
+
+                          let numberUltimo = parseInt(ultimo.split(' ')[1]);
+                          console.log("REUNION Ultimo: ", numberUltimo);
+
+                          this.countMeetings = numberUltimo + 1;
+                        }
+
+
+
+                        let payloadSave = {
+                          room: this.projectSelectedId,
+                          user: this.user
+                        }
+                        this.socket.emit('event_meet', payloadSave);
+
+                        let payloadSave2 = {
+                          room: this.meetingSelectedId,
+                          user: this.user
+                        }
+                        this.socket.emit('event_meet', payloadSave2);
+
+                      },
+                      (err: string | undefined) => {
+                        Swal.fire('Error', err, 'error');
+                      }
+                    );
+                  },
+                  (err: string | undefined) => {
+                    Swal.fire('Error', err, 'error');
+                  }
+                );
             }
-          })
+          },
+          (err: string | undefined) => {
+            Swal.fire('Error', err, 'error');
+          }
+        );
+      },
+      (err) => {
+      }
+    );
 
-          Toast.fire({
-            icon: 'success',
-            title: 'Se ha creado la reunión exitosamente.'
-          })
-
-          this.authService.meeting(this.projectSelectedId).subscribe(
-            (resp: any) => {
-              /*            console.log('RESP 2', resp); */
-
-              this.meetings = resp;
-              this.countMeetings = this.meetings.length;
-
-              let payloadSave = {
-                room: this.meetingSelectedId,
-                user: this.user
-              }
-              this.socket.emit('event_meet', payloadSave);
-
-              /*      Swal.fire({
-          position: 'center',
-          icon: 'success',
-          title: 'reuniones cargadas correctamente',
-          showConfirmButton: false,
-          timer: 1000
-        })  */
-            },
-            (err: string | undefined) => {
-              Swal.fire('Error', err, 'error');
-            }
-          );
-        },
-        (err: string | undefined) => {
-          Swal.fire('Error', err, 'error');
-        }
-      );
   }
 
   onScroll() { }
@@ -834,13 +982,63 @@ export class SidebarComponent implements OnInit {
       if (result.isConfirmed) {
 
         this.borrarP(id);
+        this.volverProyects();
 
       } else if (result.isDenied) {
 
       }
     })
+  }
 
+  borrarMM(id: string) {
+    Swal.fire({
+      title: '¿Eliminar reunión?',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Si, eliminar reunión',
+      denyButtonText: `No`,
+    }).then((result) => {
 
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        this.borrarM(id);
+
+      } else if (result.isDenied) {
+      }
+    })
+
+  }
+
+  borrarM(id: string) {
+    this.authService.borrarMeet(id).subscribe(
+      async (resp) => {
+
+        const Toast = Swal.mixin({
+          toast: true,
+          position: 'bottom-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+          }
+        })
+
+        Toast.fire({
+          icon: 'success',
+          title: 'Se ha borrado la reunión exitosamente.'
+        })
+
+        setTimeout(() => {
+          this.listMeetingsInicial(this.userSelected.currentProjectId);
+        }, 1000);
+
+      },
+      (err: { message: string | undefined }) => {
+        Swal.fire('Error', err.message, 'error');
+      }
+    );
   }
 
 
@@ -867,7 +1065,7 @@ export class SidebarComponent implements OnInit {
           icon: 'success',
           title: 'Se ha borrado el proyecto exitosamente.'
         })
-        this.miFormulario.reset();
+
         /*       setTimeout(() => {
                 this.router.navigateByUrl('/main');
               }, 2000); */

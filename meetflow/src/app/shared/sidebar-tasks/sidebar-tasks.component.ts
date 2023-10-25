@@ -1,17 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from '../auth/services/auth.service';
+import { AuthService } from 'src/app/auth/services/auth.service';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-task',
-  templateUrl: './task.component.html',
-  styleUrls: ['./task.component.css']
+  selector: 'app-sidebar-tasks',
+  templateUrl: './sidebar-tasks.component.html',
+  styleUrls: ['./sidebar-tasks.component.css']
 })
-export class TaskComponent {
+export class SidebarTasksComponent {
+  @Input() sideNavTaskStatus: boolean = true;
 
-  
+
   user: any;
   constructor(
     private fb: FormBuilder,
@@ -19,14 +20,36 @@ export class TaskComponent {
     private authService: AuthService,
     private route: ActivatedRoute
   ) {
+    authService.$emitter.subscribe(() => {
+      setTimeout(() => {
 
+        this.ngOnInit();
+      }, 1000);
+     
+  
+  
+    });
   }
+
+  @Input() nameProjectEmite: string = 'Sin Asignar';
+
+ /*  @Input() nameProjectEmiteFunction() {
+    this.funcionEmiter = "chao"
+  }  */
+  /* @Input() nameProjectEmiteFunction = this.nameProjectEmiteFunction2(); */
+
+  nameProjectEmiteFunction2(name: string){
+    return this.funcionEmiter = name;
+  }
+
+  //
+  funcionEmiter: string = 'hola';
 
   // Usuario
   userSelected: any;
 
   // Proyecto
-  projectSelected: any = 'none';
+  projectSelected: any = 'hola';
 
   // Tareas
   compromisesUserSelected: any;
@@ -48,11 +71,11 @@ export class TaskComponent {
         this.getUserProfile(this.user.id);
       },
       (err) => {
-        Swal.fire('Error', err.message, 'error');
+        /* Swal.fire('Error', err.message, 'error'); */
       }
     );
     this.listProjectsInicial();
-    
+
     // Formulario de filtrar por usuarios y proyectos
     this.searchForm = this.fb.group({
       filterUser: ['', [Validators.required, Validators.minLength(20)]],
@@ -67,27 +90,24 @@ export class TaskComponent {
       async (resp) => {
         this.userSelected = resp;
         console.log("[tasks]aaaa USUARIO LOGEADO: ", this.userSelected);
-        this.userSelected.lastLink = '/main/task';
 
         this.authService
-        .saveProjectCurrent2(this.user.id, resp)
-        .subscribe(
-          async (resp) => {
-            console.log("[USER] se ha guardado este usuario", this.userSelected)
-          },
-          (err: { message: string | undefined }) => { }
-        );
-        
+          .saveProjectCurrent2(this.user.id, resp)
+          .subscribe(
+            async (resp) => {
+              console.log("[USER] se ha guardado este usuario", this.userSelected)
+            },
+            (err: { message: string | undefined }) => { }
+          );
+
         this.authService.projectById(resp.currentProjectId).subscribe(
           async (resp) => {
-
-         
             /*    console.log(resp); */
             this.projectSelected = resp;
-       
             /*     console.log("RESPUESTA FECHA!: ", resp); */
             /* this.router.navigateByUrl('/main/add-project'); */
             this.searchForm.controls['filterUser'].setValue(this.userSelected.email);
+            this.searchForm.controls['filterProject'].setValue(this.userSelected.currentProjectId);
             setTimeout(() => {
               /*  Swal.fire({
               position: 'center',
@@ -101,8 +121,9 @@ export class TaskComponent {
             }, 1000);
           },
           (err: { message: string | undefined }) => {
-            this.projectSelected = 'none'
-            Swal.fire('Error', err.message, 'error');
+
+            /*  this.projectSelected ='no proyecto';
+             Swal.fire('Error esteeeeeee', err.message, 'error'); */
           }
         );
 
@@ -133,7 +154,7 @@ export class TaskComponent {
       input: 'select',
       inputOptions: {
         Estado: {
-          new: 'No atendida',
+          new: 'Nuevo',
           desarrollo: 'En desarrollo',
           pausada: 'En pausa',
           evaluando: 'En evaluación',
@@ -178,8 +199,11 @@ export class TaskComponent {
           title: 'Se ha actualizado el estado exitosamente.'
         })
 
-
-        this.searchP();
+        setTimeout(() => {
+          /*   this.getCompromisesPreviews(); */
+          /*     location.reload(); */
+        }, 2000);
+        this.getUserProfile(this.user.id);
       },
       (err: { message: string | undefined }) => { }
     );
@@ -210,7 +234,7 @@ export class TaskComponent {
 
         this.addTimeReminder(dateLimit, compromise);
 
-       /*  this.saveRememberTask(compromise.description, dateLimit, compromise); */
+        /*  this.saveRememberTask(compromise.description, dateLimit, compromise); */
       },
       allowOutsideClick: () => !Swal.isLoading(),
     }).then((result) => {
@@ -221,7 +245,8 @@ export class TaskComponent {
       }
     });
   }
-  addTimeReminder(dateLimit: string, compromise: any){
+
+  addTimeReminder(dateLimit: string, compromise: any) {
     Swal.fire({
       title: 'Agregar un recordatorio',
       text: '¿Cuál es la hora para el recordatorio?',
@@ -240,7 +265,7 @@ export class TaskComponent {
       showDenyButton: true,
       /*       denyButtonText: `Avanzado`, */
       preConfirm: (timeLimit) => {
-       this.saveRememberTask(compromise.description, ''+dateLimit+' '+ timeLimit, compromise);
+        this.saveRememberTask(compromise.description, '' + dateLimit + ' ' + timeLimit, compromise);
       },
       allowOutsideClick: () => !Swal.isLoading(),
     }).then((result) => {
@@ -249,7 +274,6 @@ export class TaskComponent {
 
       }
     });
-
 
   }
 
@@ -272,17 +296,17 @@ export class TaskComponent {
     console.log("NUMERO RESTA FECHAS: ", restaTimes);
 
     this.authService
-    .saveRemember2(this.user, nameType, conditionTime, restaTimes, compromiso)
-    .subscribe(
-      async (resp) => {
-      },
-      (err: { message: string | undefined }) => {
-        Swal.fire('Error', err.message, 'error');
-      }
-    );
+      .saveRemember2(this.user, nameType, conditionTime, restaTimes, compromiso.participants)
+      .subscribe(
+        async (resp) => {
+        },
+        (err: { message: string | undefined }) => {
+          /*  Swal.fire('Error', err.message, 'error'); */
+        }
+      );
 
     this.authService
-      .saveRemember3(this.user, nameType, conditionTime, restaTimes, compromiso.participants)
+      .saveRemember3(this.user, nameType, conditionTime, restaTimes, compromiso)
       .subscribe(
         async (resp) => {
 
@@ -308,16 +332,13 @@ export class TaskComponent {
           }, 1000);
         },
         (err: { message: string | undefined }) => {
-          Swal.fire('Error', err.message, 'error');
+          /*  Swal.fire('Error', err.message, 'error'); */
         }
       );
-
   }
 
   async searchP() {
     let { filterUser, filterProject, filterState } = this.searchForm.value;
-
-
 
     console.log("usuario: " + filterUser + " estado: " + filterState);
     this.authService.getTasksByProject(filterUser, filterProject, filterState).subscribe(
@@ -344,18 +365,18 @@ export class TaskComponent {
         this.projects = resp;
       },
       (err: any) => {
-        this.projects = ['none'];
+        this.projects = ['no hay proyectos'];
         /*         console.log("ESTO ES LO QUE SUEANA?",err.status); */
         if (err.status === '401') {
-          this.projects = ['none'];
+          this.projects = ['no hay proyectos'];
+
         }
-        this.projects = ['none'];
+        this.projects = ['no hay proyectos'];
       }
     );
   }
 
-  projects:  any = ['none'];
+  projects: any = ['none'];
+
+
 }
-
-
-

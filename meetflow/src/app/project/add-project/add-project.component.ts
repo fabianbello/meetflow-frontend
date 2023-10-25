@@ -10,19 +10,20 @@ import Swal from 'sweetalert2';
   styleUrls: ['./add-project.component.css'],
 })
 export class AddProjectComponent {
-  miFormulario2: FormGroup = this.fb.group({
-    name: ['', [Validators.required, Validators.minLength(6)]],
-    description: ['', [Validators.required, Validators.minLength(6)]],
-    fechaI: ['', [ ]],
-    fechaT: ['', [ ]],
-  });
 
+  miFormulario2!: FormGroup
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private authService: AuthService
   ) {
-    
+    this.miFormulario2 = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(6)]],
+      description: ['', [Validators.required, Validators.minLength(6)]],
+      fechaI: ['', [ ]],
+      fechaT: ['', [ ]],
+    });
+  
   }
 
   ngOnInit(): void {

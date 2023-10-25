@@ -6,138 +6,161 @@
 <!-- MDB -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css" rel="stylesheet" />
 
-
-
-<div class="" style="padding-left: 10px;">
-
-
-  <div class="" style="padding-bottom: 15px; padding-top: 15px;">
-    <!--     <button style=" border-radius: 5px; color: rgb(0, 0, 0);  background-color: rgb(202, 226, 255); "
-      class="btn btn-light btn-rounded" mdbRipple>
-      Recordatorios
-      <br>
-    </button>
-    <br> -->
-  </div>
-
-
-
+<div class="" style="padding-left: 0px;">
 
   <div class="card2">
+    <div class="card">
+      <div class="card-body">
 
-    <div class="card2-body">
-      <!-- <br> -->
-      <!-- <br> -->
-      <div class="card">
-        <div class="card-body">
+   
+        <h1>
+          &nbsp;
+          <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" style="fill: rgb(255, 255, 255);transform: ;msFilter:;"><path d="M5 22h14c1.103 0 2-.897 2-2V6c0-1.103-.897-2-2-2h-2V2h-2v2H9V2H7v2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2zm6-3.586-3.707-3.707 1.414-1.414L11 15.586l4.293-4.293 1.414 1.414L11 18.414zM5 7h14v2H5V7z"></path></svg>&nbsp;
+          <span class="" style="color: white;"> Recordatorios </span> <button class="button1" data-toggle="tooltip"
+            data-placement="right" title="Refrescar lista de recordatorios" (click)="getRemembers();">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+              style="fill: rgba(186, 223, 168, 1);">
+              <path
+                d="M10 11H7.101l.001-.009a4.956 4.956 0 0 1 .752-1.787 5.054 5.054 0 0 1 2.2-1.811c.302-.128.617-.226.938-.291a5.078 5.078 0 0 1 2.018 0 4.978 4.978 0 0 1 2.525 1.361l1.416-1.412a7.036 7.036 0 0 0-2.224-1.501 6.921 6.921 0 0 0-1.315-.408 7.079 7.079 0 0 0-2.819 0 6.94 6.94 0 0 0-1.316.409 7.04 7.04 0 0 0-3.08 2.534 6.978 6.978 0 0 0-1.054 2.505c-.028.135-.043.273-.063.41H2l4 4 4-4zm4 2h2.899l-.001.008a4.976 4.976 0 0 1-2.103 3.138 4.943 4.943 0 0 1-1.787.752 5.073 5.073 0 0 1-2.017 0 4.956 4.956 0 0 1-1.787-.752 5.072 5.072 0 0 1-.74-.61L7.05 16.95a7.032 7.032 0 0 0 2.225 1.5c.424.18.867.317 1.315.408a7.07 7.07 0 0 0 2.818 0 7.031 7.031 0 0 0 4.395-2.945 6.974 6.974 0 0 0 1.053-2.503c.027-.135.043-.273.063-.41H22l-4-4-4 4z">
+              </path>
+            </svg>
+          </button>
+          &nbsp;
+          <button (click)="addRemember()" class="button1">
 
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+              style="fill: rgba(247, 246, 246, 1);transform: msFilter;">
+              <path
+                d="M12 22a2.98 2.98 0 0 0 2.818-2H9.182A2.98 2.98 0 0 0 12 22zm8.707-5.707L19 14.586V10c0-3.217-2.185-5.926-5.145-6.743C13.562 2.52 12.846 2 12 2s-1.562.52-1.855 1.258C7.185 4.074 5 6.783 5 10v4.586l-1.707 1.707A.997.997 0 0 0 3 17v1a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-1a.997.997 0 0 0-.293-.707zM16 12h-3v3h-2v-3H8v-2h3V7h2v3h3v2z">
+              </path>
 
-          <form class="" autocomplete="off" [formGroup]="rememberForm" (ngSubmit)="saveRemember()">
-            <div class="row">
-              <div class="col-4">
-                <h1>
-                  <span class="" style="color: white;"> Recordatorios </span>
-                </h1>
-              </div>
-              <div class=col>
-                <button (click)="addRemember()" class="button1">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24"
-                    style="fill: rgba(247, 246, 246, 1);transform: msFilter;">
-                    <path
-                      d="M12 22a2.98 2.98 0 0 0 2.818-2H9.182A2.98 2.98 0 0 0 12 22zm8.707-5.707L19 14.586V10c0-3.217-2.185-5.926-5.145-6.743C13.562 2.52 12.846 2 12 2s-1.562.52-1.855 1.258C7.185 4.074 5 6.783 5 10v4.586l-1.707 1.707A.997.997 0 0 0 3 17v1a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-1a.997.997 0 0 0-.293-.707zM16 12h-3v3h-2v-3H8v-2h3V7h2v3h3v2z">
-                    </path>
-                  </svg>
-                </button>
-              </div>
-
-
-
-            </div>
-
-            <br />
-
-
-            <!-- <label class="col-8 col-form-label" style="color: #208fd8"> Nombre</label> -->
-            <div class="input-group-vertical">
-              <li *ngFor="let remember of remembersUserSelected; let i = index">
-                <!-- CASO EN QUE RECORDATORIO ES REUNION -->
-                <div class="" *ngIf="remember.type === 'meet'">
-                  <span style="font-size: 110%" class="">
-                    <span style="color: orangered">Recordatorio {{i+1}} <br>Tipo: </span> <span style="color: white;">
-                      Reuniones
-                    </span><span style="color: orangered"><br>
-
-                      Condición: </span> <span style="color: white;">{{remember.time}} antes de iniciar cada
-                      reunión</span>
-
-                    <br>
-
-                    <!--      <button (click)="setStateElement(compromise._id)" class="btn btn-light btn-rounded" mdbRipple>
-                      <span style=" color:
-                      orangered">ESTADO: </span>
-                      <span style="color: rgb(42, 42, 42);">Nueva</span>
-                    </button> -->
-
-                  </span>
-                </div>
-                <!-- ASO EN QUE EL RECORDATORIO ES TAREA -->
-
-                <div class="" *ngIf="remember.type === 'task'">
-                  <span style="font-size: 110%" class="">
-                    <span style="color: orangered">Recordatorio {{i+1}} <br>Tipo: </span> <span style="color: white;">
-                      Tareas
-                    </span><span style="color: orangered"><br>
-
-                      Condición: </span> <span *ngIf="remember.time === 'allDays'" style="color: white;">Todos los dias
-                    </span>
-                    <span *ngIf="remember.time === 'allMondays'" style="color: white;">Todos los lunes
-                    </span>
-
-                    <br>
-
-                    <!--      <button (click)="setStateElement(compromise._id)" class="btn btn-light btn-rounded" mdbRipple>
-                      <span style=" color:
-                      orangered">ESTADO: </span>
-                      <span style="color: rgb(42, 42, 42);">Nueva</span>
-                    </button> -->
-
-                  </span>
-                </div>
-
-                <!-- ASO EN QUE EL COMPROMISO ESTA FINALIZADO-->
-                <div class="" *ngIf="remember.type != 'task' && remember.type != 'meet'">
-                  <span style="font-size: 110%" class="">
-                    <span style="color: orangered">Recordatorio {{i+1}} <br>Tipo: </span> <span style="color: white;">
-                      Tarea: {{remember.type}}
-                    </span><span style="color: orangered"><br>
-
-                      Condición: </span> <span *ngIf="remember.time === 'allDays'" style="color: white;">Todos los dias
-                    </span>
-                    <span style="color: white;">Fecha: {{remember.time}}
-                    </span>
-
-                    <br>
-
-                    <!--      <button (click)="setStateElement(compromise._id)" class="btn btn-light btn-rounded" mdbRipple>
-                      <span style=" color:
-                      orangered">ESTADO: </span>
-                      <span style="color: rgb(42, 42, 42);">Nueva</span>
-                    </button> -->
-
-                  </span>
-                </div>
+            </svg> <span style=" color: rgb(123, 123, 123); font-size: 50%;"> Añadir auto recordatorio </span>
+          </button>
+          <br>
+          <hr style="color: white;">
+        </h1>
 
 
-                <br>
-                <br>
 
 
-              </li>
+        <form class="" autocomplete="off" [formGroup]="rememberForm" (ngSubmit)="saveRemember()">
 
+          <br />
+
+          <!-- <label class="col-8 col-form-label" style="color: #208fd8"> Nombre</label> -->
+          <div class="card4edit">
+            <div class="card4edit-body">
               <br>
+              <div class="input-group-vertical" style="list-style:none; padding: 10px 10px;">
+                <li *ngFor="let remember of remembersUserSelected; let i = index">
+                  <!-- CASO EN QUE RECORDATORIO ES REUNION -->
+                  <div class="" *ngIf="remember.type === 'meet'">
+                    <span style="font-size: 110%" class="">
+                      <span style="color: rgb(0, 0, 0)">Recordatorio {{i+1}} <br>Tipo: </span> <span
+                        style="color: white;">
+                        Reuniones
+                      </span><span style="color: rgb(232, 232, 232)"><br>
+
+                        Condición: </span> <span style="color: white;">{{remember.time}} antes de iniciar cada
+                        reunión</span>
+
+                      <br>
+
+                      <!--      <button (click)="setStateElement(compromise._id)" class="btn btn-light btn-rounded" mdbRipple>
+                      <span style=" color:
+                      orangered">ESTADO: </span>
+                      <span style="color: rgb(42, 42, 42);">Nueva</span>
+                    </button> -->
+
+                    </span>
+                  </div>
+                  <!-- ASO EN QUE EL RECORDATORIO ES TAREA -->
+
+                  <div class="" *ngIf="remember.type === 'task'">
+                    <span style="font-size: 110%" class="">
+                      <span style="color: rgb(0, 0, 0)">Recordatorio {{i+1}} <br>Tipo: </span> <span
+                        style="color: rgb(0, 0, 0);">
+                        Tareas
+                      </span><span style="color: rgb(0, 0, 0)"><br>
+
+                        Condición: </span> <span *ngIf="remember.time === 'allDays'" style="color: rgb(0, 0, 0);">Todos
+                        los dias
+                      </span>
+                      <span *ngIf="remember.time === 'allMondays'" style="color: white;">Todos los lunes
+                      </span>
+
+                      <br>
+
+                      <!--      <button (click)="setStateElement(compromise._id)" class="btn btn-light btn-rounded" mdbRipple>
+                      <span style=" color:
+                      orangered">ESTADO: </span>
+                      <span style="color: rgb(42, 42, 42);">Nueva</span>
+                    </button> -->
+
+                    </span>
+                  </div>
+
+                  <!-- ASO EN QUE EL COMPROMISO ESTA FINALIZADO-->
+                  <div class="" *ngIf="remember.type != 'task' && remember.type != 'meet'">
+                    <span style="font-size: 110%" class="">
+                      <span style="color: rgb(124, 120, 120); font-weight: bold">Recordatorio {{i+1}}
+
+                        <button data-toggle="tooltip" data-placement="right" title="Eliminar recordatorio"
+                          (click)="deleteRemember(remember._id)" class="button2">
+
+                          <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24"
+                            style="fill: rgba(232, 191, 191, 1);">
+                            <path
+                              d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm4.207 12.793-1.414 1.414L12 13.414l-2.793 2.793-1.414-1.414L10.586 12 7.793 9.207l1.414-1.414L12 10.586l2.793-2.793 1.414 1.414L13.414 12l2.793 2.793z">
+                            </path>
+                          </svg>
+                        </button>
+
+                        <br>Tarea: </span>
+                      <span style="color: white;">
+                        {{remember.type}}
+                      </span>
+                      <span style="color: rgb(124, 120, 120); font-weight: bold"><br>
+                        Activado: </span>
+                      <!--        <span *ngIf="remember.time === 'allDays'" style="color: white;">Todos los dias </span> -->
+                      <span style="color: white;"> {{remember.time}}
+                      </span>
+                      <span style="color: rgb(124, 120, 120); font-weight: bold"><br>
+                        de: </span> <span style="color: white;"> {{remember.email}}
+                      </span>
+                      <span style="color: rgb(124, 120, 120); font-weight: bold"><br>
+                        para: </span> <span style="color: white;"> {{remember.oncharge}}
+                      </span>
+
+                      <br>
+
+                      <!--      <button (click)="setStateElement(compromise._id)" class="btn btn-light btn-rounded" mdbRipple>
+                      <span style=" color:
+                      orangered">ESTADO: </span>
+                      <span style="color: rgb(42, 42, 42);">Nueva</span>
+                    </button> -->
+
+                    </span>
+                  </div>
 
 
+                  <br>
+                  <br>
+
+
+                </li>
+
+                <br>
+
+
+              </div>
+              </div>
             </div>
-            <br />
+              <br />
 
-          </form>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>

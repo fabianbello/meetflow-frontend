@@ -508,7 +508,6 @@ body.dark .home .text {
     position: absolute;
     width: 100%;
     top: 3rem;
-    z-index: 1;
  }
 
  app-sidebar{
@@ -516,44 +515,77 @@ body.dark .home .text {
     left: 0rem;
     width: 0px;
     height: calc(100vh - 4rem);
-    box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
-    background-color: rgba(33,37,41,0.5);
+    box-shadow: 0px 0px 10px rgba(0,0,0,1);
+    background-color:  rgb(27, 34, 39);
     border-top: 2px solid white;
     overflow-y: hidden;
     white-space: nowrap;
-
     transition: width 250ms linear;
-
+    z-index: 1;
  }
 
-/*  app-sidebar::-webkit-scrollbar {
-    background-color: #505050;
-    color: #ffffff;
-    border-radius: 2px;
-    width: 4px;
-    size: 10px;
-    border-radius: 5px;
-}
- */
- app-footer{
-   position: absolute;
+ app-sidebar-tasks{
+    position: fixed;
+    left: 100%;
+    right: 500px;
+    width: 0px;
+    height: calc(100vh - 4rem);
+    box-shadow: 0px 0px 10px rgba(0,0,0,1);
+    background-color:  rgb(27, 34, 39);
+    border-top: 2px solid white;
+   /*  overflow-y: hidden; */
+    white-space: nowrap;
+    transition: width 400ms linear;
+    z-index: 1;
  }
-
 
 
  .app-side-nav-open{
     width: 300px;
  }
 
+ .app-side-nav-open-task{
+    width: 500px;
+    transform: translateX(-100%);
+ }
+
  .display-area{
-    position: absolute;
-    left: 290px;
-    width: calc(100% - 485px);
-    transition: left 250ms ease-in, width 250ms ease-in;
+    position: relative;
+    left: 20px;
+    width: calc(85%);
+    transition: left 250ms ease-in, width 250ms ease-in; 
  }
 
  .display-area-shrink {
-    width: calc(100% - 80);
-    left: 50px;
+    width: calc(100% - 400px);
+    left: 300px;
   /*   display: flex; */
  }
+
+ .display-area-shrink-task {
+    width: calc(100% - 590px);
+    right: 300px;
+    position:absolute;
+    
+  /*   display: flex; */
+ }
+
+ .display-area-shrink-all{
+    width: calc(100% - 840px);
+    left: 300px;
+    right: 300px;
+ }
+
+ .display-area-shrink-task-full{
+    width: calc(100% - 700px);
+    right: 300px;
+ }
+
+ .display-area-shrink-full{
+    width: calc(100% - 180px);
+    left: 300px;
+ }
+
+ app-footer{
+    position: absolute;
+  }

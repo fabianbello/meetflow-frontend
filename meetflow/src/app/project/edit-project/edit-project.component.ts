@@ -7,72 +7,82 @@ import { Socket } from 'ngx-socket-io';
 
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
 
-
 @Component({
   selector: 'app-edit-project',
   templateUrl: './edit-project.component.html',
   styleUrls: ['./edit-project.component.css'],
 })
+
+
 export class EditProjectComponent {
-  miFormulario: FormGroup = this.fb.group({
-    shortName: ['', [Validators.required, Validators.minLength(6)]],
-    name: ['', [Validators.required, Validators.minLength(6)]],
-    description: ['', [Validators.required, Validators.minLength(6)]],
-    fechaI: ['', []],
-    fechaT: ['', []],
-  });
 
+
+
+  // VARIABLES
+
+  // Variables de proyecto
   idProyect: any = ' ';
-
   projectSelected: any = {
     name: '',
   };
-
-  isEditable = false;
-
   projectSelectedDateI: any;
   projectSelectedDateT: any;
-  isOwner: boolean = false;
-  isMember: boolean = true;
 
+  // Variables de usuario
+  user: any;
+
+  // Variables de acceso
+  isEditable = false;
+  isOwner: boolean = true;
+  isMember: boolean = true;
+  miFormulario!: FormGroup ;
+  // _________________________________________________________
+  // CONSTRUCTOR
+  // _________________________________________________________
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private authService: AuthService,
     private route: ActivatedRoute,
     private socket: Socket) {
-    // AQUI PARA RECARGAR LA PAGINA
-    socket.fromEvent('new_save_project').subscribe(async (user: any) => {
 
-      console.log('USUARIO SOY YO GUARDANDO: ', user);
-
-      console.log('USUARIO guardando projecto: ', user);
-      this.getProjectId();
-
+    this.miFormulario = this.fb.group({
+      shortName: ['', [Validators.required, Validators.minLength(6)]],
+      name: ['', [Validators.required, Validators.minLength(6)]],
+      description: ['', [Validators.required, Validators.minLength(6)]],
+      fechaI: ['', []],
+      fechaT: ['', []],
     });
 
-
-
+    // Evento web socket: nuevo proyecto creado.
+    socket.fromEvent('new_save_project').subscribe(async (user: any) => {
+      console.log('[edit project] Creando proyecto: ', user);
+      this.getProjectId(this.idProyect);
+    });
   }
-  user: any;
+
+  // _________________________________________________________
+  // NG ON INIT
+  // _________________________________________________________
   ngOnInit(): void {
+    // obtenemos id de proyecto gracias a la ruta.
     this.idProyect = this.route.snapshot.paramMap.get('id');
-    // _________________________________________________________
-    // PRIMERO SABEMOS CUAL ES EL USUARIO?
-    // _________________________________________________________
+    console.log("[edit project] ID de proyecto es: ", this.idProyect)
+
+    // obtenemos el proyecto a partir del id obtenido de la ruta.
+    this.getProjectId(this.idProyect);
+
+    // obtenemos el email de usuario logeado por token jwt
     this.authService.userLogin().subscribe(
       async (resp) => {
         this.user = resp;
-
       },
       (err) => {
-        // _________________________________________________________
-        // ERROR EN CASO DE QUE NO SE A LOGEADO
-        // _________________________________________________________
+        // en caso de haber un error
         if (err.status === 401) {
+          // si no ha iniciado sesion, redirigimos usuario a logearse.
           this.user = 'noLogin';
           this.router.navigateByUrl('auth/login');
-
           Swal.fire(
             'Error',
             'Usuario no autorizado para ver el acta dialógica',
@@ -81,47 +91,38 @@ export class EditProjectComponent {
         }
       }
     );
-    this.getProjectId();
   }
 
-  getProjectId() {
-    this.authService.projectById(this.idProyect).subscribe(
-      async (resp) => {
-        /*    console.log(resp); */
+  // _________________________________________________________
+  // Obtener proyecto en base a un id
+  // _________________________________________________________
+  async getProjectId(idP: string) {
+    // solicitamos saber cual es taoda la informacion del proyecto en base a id
+    this.authService.projectById(idP).subscribe(
+      (resp: any) => {
+        console.log('[edit project] obteniendo proyecto con id: ', idP);
+        console.log('[edit project] proyecto obtenido: ', resp);
         this.projectSelected = resp;
-        /*     console.log("RESPUESTA FECHA!: ", resp); */
-
-        /* this.router.navigateByUrl('/main/add-project'); */
-
         this.miFormulario.patchValue(this.projectSelected);
-        setTimeout(() => {
-          console.log("SOY: ", this.user.email);
 
-          let result = this.projectSelected.userOwner.filter((role: any) =>
-            role.includes(this.user.email)
-          );
 
-          let result2 = this.projectSelected.userMembers.filter((role: any) =>
-            role.includes(this.user.email)
-          );
+        let result1 = this.projectSelected.userOwner.filter((role: any) =>
+          role.includes(this.user.email)
+        );
+        let result2 = this.projectSelected.userMembers.filter((role: any) =>
+          role.includes(this.user.email)
+        );
 
-          /*  console.log("RESULTADO!", result.length); */
-          if (result.length > 0 ) {
-            console.log("ES LIDER");
-            this.isOwner = true;
-          } else if(result2.length > 0) {
-            console.log("ES MIEMBRO")
-            this.isMember = true;
-          }
-          /*  Swal.fire({
-          position: 'center',
-          icon: 'success',
-          title: 'informacion del proyecto: ',
-          text: resp.name,
-          showConfirmButton: false,
-          timer: 1000,
-        }); */
-        }, 1000);
+        if (result1.length > 0) {
+          this.isOwner = true;
+          this.isMember = true;
+        } else if (result2.length > 0) {
+          this.isOwner = false;
+          this.isMember = true;
+        } else {
+          this.isOwner = false;
+          this.isMember = false;
+        }
       },
       (err: { message: string | undefined }) => {
         Swal.fire('Error', err.message, 'error');
@@ -130,6 +131,11 @@ export class EditProjectComponent {
   }
 
   saveProject() {
+    this.isDescriptionEdit = false;
+    this.isFechaInicioEdit = false;
+    this.isNombreCortoEdit = false;
+    this.isNombreExtendidoEdit = false;
+    this.isFechaTerminoEdit = false;
 
     console.log(this.miFormulario.value);
     console.log(this.miFormulario.valid);
@@ -151,6 +157,26 @@ export class EditProjectComponent {
           /* this.router.navigateByUrl('/main/add-project'); */
           this.projectSelected = resp;
 
+
+          let result1 = this.projectSelected.userOwner.filter((role: any) =>
+            role.includes(this.user.email)
+          );
+          let result2 = this.projectSelected.userMembers.filter((role: any) =>
+            role.includes(this.user.email)
+          );
+
+          if (result1.length > 0) {
+            this.isOwner = true;
+            this.isMember = true;
+          } else if (result2.length > 0) {
+            this.isOwner = false;
+            this.isMember = true;
+          } else {
+            this.isOwner = false;
+            this.isMember = false;
+          }
+
+
           const Toast = Swal.mixin({
             toast: true,
             position: 'bottom-end',
@@ -166,7 +192,11 @@ export class EditProjectComponent {
           Toast.fire({
             icon: 'success',
             title: 'Se ha guardado el proyecto exitosamente.'
-          })
+          });
+
+
+
+
 
           let payload = {
             room: this.idProyect,
@@ -176,7 +206,7 @@ export class EditProjectComponent {
           this.isEditable = false;
 
           setTimeout(() => {
-            this.getProjectId();
+            this.getProjectId(this.idProyect);
 
           }, 1000);
         },
@@ -331,51 +361,35 @@ export class EditProjectComponent {
   async modificarMember(member: any) {
     console.log("MIEMBRO: ", member);
     const { value: modification } = await Swal.fire({
-      title: 'Modificar usuario',
+      title: 'Asignar rol de usuario',
       input: 'select',
       inputOptions: {
-        modificación: {
-          miembro: 'Miembro',
-          lider: 'Lider',
-          eliminar: 'Eliminar',
-        },
+        lider: 'Ceder rol de Jefe de proyecto',
+        eliminar: 'Desvincular del proyecto',
       },
-      inputPlaceholder: 'Seleccionar la modificación al usuario',
+      inputPlaceholder: 'Seleccionar nivel de permisos del usuario',
       showCancelButton: true,
       showDenyButton: true,
     });
 
     if (modification === 'lider') {
-      this.projectSelected.userOwner.push(member);
-      let pos = this.projectSelected.userMembers.indexOf(member);
-      console.log('POSICIOIN A ELIMINAR: ', pos);
-      this.projectSelected.userMembers.splice(pos, 1);
-
+      this.projectSelected.userOwner = [member];
+      /*      let pos = this.projectSelected.userMembers.indexOf(member);
+           this.projectSelected.userMembers.splice(pos, 1); */
+      /*    this.projectSelected.userMembers.push(this.user.email); */
       setTimeout(() => {
         this.saveProject();
-        /*  this.socket.emit('event_reload', payloadSave); */
-        /* location.reload(); */
-      }, 2000);
+      }, 1000);
       /*  this.setRoleUser(id, user.value, modification, roleUser); */
     } else if (modification === 'miembro') {
       this.projectSelected.userMembers.push(member);
       let pos = this.projectSelected.userOwner.indexOf(member);
       console.log('POSICIOIN A ELIMINAR: ', pos);
       this.projectSelected.userOwner.splice(pos, 1);
-
-
-
-
-
       setTimeout(() => {
         this.saveProject();
-        /*  this.socket.emit('event_reload', payloadSave); */
-        /* location.reload(); */
-      }, 2000);
+      }, 1000);
     } else if (modification === 'eliminar') {
-      let pos = this.projectSelected.userOwner.indexOf(member);
-      console.log('POSICIOIN A ELIMINAR: ', pos);
-      this.projectSelected.userOwner.splice(pos, 1);
       let pos2 = this.projectSelected.userMembers.indexOf(member);
       console.log('POSICIOIN A ELIMINAR: ', pos2);
       this.projectSelected.userMembers.splice(pos2, 1);
@@ -384,10 +398,37 @@ export class EditProjectComponent {
         /*  this.socket.emit('event_reload', payloadSave); */
         /* location.reload(); */
       }, 2000);
-
     }
-
   }
 
+  isEditNombreCorto() {
+    this.isNombreCortoEdit = !this.isNombreCortoEdit;
+  }
+
+  isNombreCortoEdit = false;
+
+  isEditNombreExtendido() {
+    this.isNombreExtendidoEdit = !this.isNombreExtendidoEdit;
+  }
+
+  isNombreExtendidoEdit = false;
+
+  isEditDescription() {
+    this.isDescriptionEdit = !this.isDescriptionEdit;
+  }
+
+  isDescriptionEdit = false;
+
+  isEditFechaInicio() {
+    this.isFechaInicioEdit = !this.isFechaInicioEdit;
+  }
+
+  isFechaInicioEdit = false;
+
+  isEditFechaTermino() {
+    this.isFechaTerminoEdit = !this.isFechaTerminoEdit;
+  }
+
+  isFechaTerminoEdit = false;
 
 }

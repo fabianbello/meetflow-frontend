@@ -1,85 +1,57 @@
-<link
-  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-  rel="stylesheet"
-/>
+<!-- Importación de estilos -->
 
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
 <!-- Font Awesome -->
-<link
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-  rel="stylesheet"
-/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
 <!-- Google Fonts -->
-<link
-  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-  rel="stylesheet"
-/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
 <!-- MDB -->
-<link
-  href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css"
-  rel="stylesheet"
-/>
-<link
-  href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css"
-  rel="stylesheet"
-/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet" />
 
 <div class="card">
   <div class="card-body">
     <mdb-tabs style="color: rgb(73, 73, 73)" [pills]="true" [fill]="true">
       <mdb-tab title="Iniciar Sesión">
-        <form
-          class="login100-form"
-          autocomplete="off"
-          [formGroup]="miFormulario"
-          (ngSubmit)="login()"
-        >
+        <form class="login100-form" autocomplete="on" [formGroup]="loginForm" (ngSubmit)="login()">
           <span class="login200-form-title p-b-165" style="color: white">
-            Bienvenido al Framework de Actas Dialógicas <br
-          /></span>
+            Bienvenido a Meetflow <br> Framework de Actas Dialógicas </span>
           <br />
           <br />
-
-          <mdb-form-control class="form-white" autocomplete="off">
-            <input
-              mdbInput
-              autocomplete="off"
-              type="email"
-              id="registerName"
-              class="form-control"
-              formControlName="email"
-              style="background: rgb(29, 29, 29)"
-              onfocus="(this.type='email')"
-            />
-            <label mdbLabel class="form-label" for="registerName"
-              >Correo electronico</label
-            >
+          <!-- campo de correo electrónico -->
+          <mdb-form-control class="form-white" autocomplete="on">
+            <input mdbInput autocomplete="off" type="email" id="registerName" class="form-control"
+              formControlName="email" style="background: rgb(29, 29, 29)" onfocus="(this.type='email')" />
+            <label mdbLabel class="form-label" for="registerName">Correo electronico</label>
           </mdb-form-control>
           <span class="form-text text-danger" *ngIf="campoEsValido('email')">
             campo obligatorio y debe ser un correo electronico.
           </span>
           <br />
           <br />
-
+          <!-- campo de contraseña -->
           <mdb-form-control class="form-white" autocomplete="off">
-            <input
-              mdbInput
-              type="text"
-              autocomplete="off"
-              id="formWhite"
-              class="form-control"
-              formControlName="password"
-              style="background: rgb(29, 29, 29)"
-              onfocus="(this.type='password')"
-            />
+            <input mdbInput type="text" autocomplete="off" id="formWhite" class="form-control"
+              formControlName="password" style="background: rgb(29, 29, 29)" onfocus="(this.type='password')" />
             <label mdbLabel class="form-label" for="formWhite">Password</label>
           </mdb-form-control>
+
           <span class="form-text text-danger" *ngIf="campoEsValido('password')">
             campo obligatorio y de al menos 6 caracteres.
           </span>
-          <br />
+
+          <br>
+          <div class="row">
+           
+
+              <button class="button1" style="justify-content: left; position:left;" type="button" (click)="requestResetPass()">
+                RESTABLECER CONTRASEÑA
+              </button>
+          
+     
+          </div>
 
           <br />
-
           <div class="login100-form-btn">
             <button type="submit" class="btn btn-light btn-rounded" mdbRipple>
               Entrar
@@ -87,16 +59,10 @@
           </div>
           <br />
           <div class="flex-col-c p-t-30">
-            <!-- <span class="txt1 p-b-17"> ¿No tienes cuenta? </span> -->
-
-            <a
-              routerLink="/auth/registro"
-              class="txt2"
-              style="color: whitesmoke"
-            >
-              Registrar una nueva cuenta de usuario</a
-            >
+            <a routerLink="/auth/registro" class="txt2" style="color: whitesmoke">
+              Registrar una nueva cuenta de usuario</a>
           </div>
+     
         </form>
       </mdb-tab>
     </mdb-tabs>

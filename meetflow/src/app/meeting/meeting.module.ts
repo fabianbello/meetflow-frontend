@@ -6,11 +6,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MainRoutingModule } from '../main/main-routing.module';
 import { SharedModule } from '../shared/shared.module';
 import { PreMeetingComponent } from './pre-meeting/pre-meeting.component';
-import { MeetingMinuteComponent } from '../meeting-minute/meeting-minute.component';
-import { MeetingMinuteModule } from '../meeting-minute/meeting-minute.module';
 import { TopicComponent } from '../topic/topic.component';
 import { InMeetingComponent } from './in-meeting/in-meeting.component';
 import { PostMeetingComponent } from './post-meeting/post-meeting.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MeetingMinuteComponent } from '../meeting-minute/meeting-minute.component';
 
 
 
@@ -19,9 +19,9 @@ import { PostMeetingComponent } from './post-meeting/post-meeting.component';
     MeetingComponent,
     AddMeetingComponent,
     PreMeetingComponent,
-    MeetingMinuteComponent,
     InMeetingComponent,
     PostMeetingComponent,
+    MeetingMinuteComponent
   ],
   imports: [
     CommonModule,
@@ -29,6 +29,7 @@ import { PostMeetingComponent } from './post-meeting/post-meeting.component';
     MainRoutingModule,
     FormsModule,
     SharedModule,
+    DragDropModule
   ]
 })
 export class MeetingModule { }

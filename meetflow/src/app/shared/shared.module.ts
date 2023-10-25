@@ -24,6 +24,8 @@ import { MdbScrollspyModule } from 'mdb-angular-ui-kit/scrollspy';
 import { MdbTooltipModule } from 'mdb-angular-ui-kit/tooltip';
 import { MdbValidationModule } from 'mdb-angular-ui-kit/validation';
 import { SocketIoModule } from 'ngx-socket-io';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { SidebarTasksComponent } from './sidebar-tasks/sidebar-tasks.component';
 
 
 @NgModule({
@@ -31,6 +33,7 @@ import { SocketIoModule } from 'ngx-socket-io';
     SidebarComponent,
     NavbarComponent,
     FooterComponent,
+    SidebarTasksComponent,
   ],
   imports: [
     CommonModule,
@@ -52,9 +55,9 @@ import { SocketIoModule } from 'ngx-socket-io';
     MdbTabsModule,
     MdbTooltipModule,
     MdbValidationModule,
-    
+    DragDropModule
     
   ],
-  exports: [FooterComponent, NavbarComponent, SidebarComponent]
+  exports: [FooterComponent, NavbarComponent, SidebarComponent, SidebarTasksComponent]
 })
 export class SharedModule { }

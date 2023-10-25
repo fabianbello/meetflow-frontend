@@ -27,6 +27,55 @@ export class InMeetingComponent {
 
   }
 
+  muestraKanban() {
+    this.authService
+      .muestraKanban()
+      .subscribe((resp) => {
+
+        console.log("KANBAN", resp);
+        const Toast = Swal.mixin({
+          toast: true,
+          position: 'bottom-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+          }
+        })
+
+        Toast.fire({
+          icon: 'success',
+          title: 'Visualización Microservice-kanban estado:',
+          text: 'en desarrollo'
+        })
+      },
+        (err: any) => {
+          const Toast = Swal.mixin({
+            toast: true,
+            position: 'bottom-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.addEventListener('mouseenter', Swal.stopTimer)
+              toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+          })
+
+          Toast.fire({
+            icon: 'success',
+            title: 'Visualización Microservice-kanban estado:',
+            text: 'en desarrollo'
+          })
+          /*   console.log(err); */
+          /* Swal.fire('Error', err.message, 'error'); */
+        }
+      );
+
+  }
+
   pomg(){
     if(this.isMeetingMinute){
       this.isMeetingMinute = false;

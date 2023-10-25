@@ -95,16 +95,16 @@ button:hover{
 } */
 
 .card{
-    background-color: rgba(33,37,41,1);
+    background-color: rgb(39, 44, 49);
     box-shadow: 4px 4px 4px 3px rgba(13, 13, 13, 0.428);
-    border-radius: 20px;
-    top: 60%;
+    border-radius: 5px;
+    top: 30px;
     left: 28%;
-    width: 90%;
-    height: 100%;
+    width: 96%;
+    height: 88%;
 /*     padding-top: 500px; */
     transform: translate(-27%, 2%);
-    position: flex;
+/*     position: flex; */
 /*     justify-content: center; */
 }
 
@@ -120,7 +120,7 @@ button:hover{
 
  /*    justify-content: fixed; */
     overflow-y: auto;
-    height: calc(90vh - 6rem);
+    height: calc(100vh - 6rem);
 }
 
 

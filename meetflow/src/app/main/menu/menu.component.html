@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -14,17 +13,69 @@
 
   <section class="home">
     <div class="text">
-      <app-navbar (sideNavToggled)="sideNavStatus = $event" [nameMeetingEmite]="nameMeetingEmite"
-        [nameProjectEmite]="nameProjectEmite" [newParticipants]="newParticipants"></app-navbar>
-      <main>
-        <app-sidebar [sideNavStatus]="sideNavStatus" [ngClass]="{'app-side-nav-open': sideNavStatus}"
-          class="black-border" (meetingStatus)="nameMeetingEmite = $event" (projectStatus)="nameProjectEmite = $event"
-          (changeStatus)="newParticipants = $event"></app-sidebar>
-        <div class="display-area p-3" [ngClass]="{'display-area-shrink': !sideNavStatus}">
+      <!--  conecta variables de sideNavToggled de app-navbar (output) recibidas alla
+       con variables de sideNavStatus de menu (input) recibidas aqui -->
 
+      <!--   
+      
+      () aqui -> alla
+
+      [] alla -> aqui
+          
+      -->
+
+      <app-navbar 
+        (sideNavToggled)="sideNavStatus = $event" 
+        (sideNavTaskToggled)="sideNavTaskStatus = $event"
+        [nameMeetingEmite]="nameMeetingEmite" 
+        [nameSectionEmite]="nameSectionEmite"
+        [nameProjectEmite]="nameProjectEmite" 
+        [newParticipants]="newParticipants"></app-navbar>
+        <!-- SIDEBAR TASK -->
+        <app-sidebar-tasks 
+          [sideNavTaskStatus]="sideNavTaskStatus"
+          [nameProjectEmite]="nameProjectEmite" 
+          [ngClass]="{'app-side-nav-open-task': sideNavTaskStatus}"
+          class="black-border" >
+        </app-sidebar-tasks>
+         
+      <main>
+               <!-- SIDEBAR PROJECT MEET -->
+               <app-sidebar 
+               [sideNavStatus]="sideNavStatus" 
+               [ngClass]="{'app-side-nav-open': sideNavStatus}"
+       
+               class="black-border" 
+               
+               (meetingStatus)="nameMeetingEmite = $event" 
+               (projectStatusFunction)="nameProjectEmiteFunction2($event)"
+               (projectStatus)="nameProjectEmite = $event"
+               (sectionStatus)="nameSectionEmite = $event" 
+               (changeStatus)="newParticipants = $event"
+               
+               ></app-sidebar>
+
+
+
+
+
+       <!--  CONTENIDO DENTRO -->
+        <div class="display-area p-3" 
+             [ngClass]="{'display-area-shrink': sideNavStatus}"
+             [ngClass]="{'display-area-shrink-task': sideNavTaskStatus}"
+             [ngClass]="{'display-area-shrink-all': sideNavTaskStatus && sideNavStatus}"
+            >
+
+      
+
+          <!-- TODO -->
           <router-outlet></router-outlet>
+
+          <!-- FOOTER -->
           <app-footer></app-footer>
+
         </div>
+
       </main>
 
     </div>

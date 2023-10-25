@@ -314,7 +314,6 @@ export class RememberComponent {
 
   addRemember2(nameType: string) {
 
-
   }
 
   getUserProfile(userId: string) {
@@ -322,7 +321,16 @@ export class RememberComponent {
 
     this.authService.getUserProfile(userId).subscribe(
       async (resp) => {
-        console.log('RESPUESTAAAAAAAAA', resp);
+        
+        this.authService
+        .saveProjectCurrent3(this.user.id, resp)
+        .subscribe(
+          async (resp) => {
+            console.log("[USER] se ha guardado este usuario", this.userSelected)
+          },
+          (err: { message: string | undefined }) => { }
+        );
+  
 
         this.userSelected = resp;
         this.userSelected.password = '';
@@ -429,6 +437,36 @@ export class RememberComponent {
           /*     location.reload(); */
         }, 2000);
         this.getUserProfile(this.user.id);
+      },
+      (err: { message: string | undefined }) => { }
+    );
+
+  }
+
+
+  deleteRemember(idReminder: string){
+
+    this.authService.deleteRemember(idReminder).subscribe(
+      async (resp) => {
+
+        const Toast = Swal.mixin({
+          toast: true,
+          position: 'bottom-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+          }
+        })
+
+        Toast.fire({
+          icon: 'success',
+          title: 'Se ha eliminado el recordatorio exitosamente.'
+        })
+
+        this.getRemembers();
       },
       (err: { message: string | undefined }) => { }
     );
