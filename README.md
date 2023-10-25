@@ -7,7 +7,7 @@ Tech demo D-Meetflow creada utilizando framework D-Meetflow-backend https://gith
 
 # Instalación local:
 
-# 1. Instalar e incializar meetflow-backend https://github.com/fabianbello/meetflow-backend
+# 1. Instalar e incializar D-Meetflow-backend https://github.com/fabianbello/meetflow-backend
 # 2. Inicializar cada microservicio en sus correspondientes ubicaciones:
 En terminal:
 1. npm install --force
